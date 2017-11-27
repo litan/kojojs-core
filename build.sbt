@@ -43,8 +43,9 @@ lazy val page = project
   .settings(commonSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % versions.dom,
-      "com.lihaoyi"  %%% "scalatags"   % versions.scalatags
+      "org.scala-js" %%% "scalajs-dom"   % versions.dom,
+      "com.lihaoyi"  %%% "scalatags"     % versions.scalatags,
+      "com.fbksoft"  %%% "pixi-scala-js" % "1.0"
     )
   )
 
