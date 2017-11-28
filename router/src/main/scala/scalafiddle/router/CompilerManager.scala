@@ -99,7 +99,7 @@ class CompilerManager extends Actor with ActorLogging {
     // extract libs from the source
     log.debug(s"Source\n${req.source}")
     val (libs, scalaVersionOpt) = extractLibs(req.source)
-    val scalaVersion            = scalaVersionOpt.getOrElse("2.11")
+    val scalaVersion            = scalaVersionOpt.getOrElse("2.12")
 
     log.debug(s"Selecting compiler for Scala $scalaVersion and libs $libs")
     // check that all libs are supported

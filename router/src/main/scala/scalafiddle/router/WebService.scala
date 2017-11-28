@@ -298,6 +298,39 @@ class WebService(system: ActorSystem, cache: Cache, compilerManager: ActorRef) {
               }
             }
           }
+        } ~ path("complete") {
+          handleRejections(CorsDirectives.corsRejectionHandler) {
+            CorsDirectives.cors(corsSettings) {
+              parameterMap { paramMap =>
+                withSizeLimit(64 * 1024) {
+                  extractClientIP { clientIP =>
+                    extractRequest { request =>
+                      complete {
+                        request.entity.toStrict(5.seconds).flatMap { entity =>
+                          val source = decodeSource(paramMap("source"))
+//                          val source    = entity.data.decodeString(StandardCharsets.UTF_8)
+                          val compileId = UUID.randomUUID().toString
+                          ask(compilerManager,
+                              CompletionRequest(compileId, source, clientIP.toString, paramMap("offset").toInt))
+                            .mapTo[Either[String, CompletionResponse]]
+                            .map {
+                              case Right(response: CompletionResponse) =>
+                                HttpResponse(entity = HttpEntity(`application/json`, write(response).getBytes("UTF-8")))
+                              case Left(error) =>
+                                HttpResponse(StatusCodes.BadRequest, entity = error)
+                            } recover {
+                            case e: Exception =>
+                              compilerManager ! CancelCompilation(compileId)
+                              HttpResponse(StatusCodes.InternalServerError, entity = "Internal error")
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         } ~ path("compileResult") {
           handleRejections(CorsDirectives.corsRejectionHandler) {
             CorsDirectives.cors(corsSettings) {
