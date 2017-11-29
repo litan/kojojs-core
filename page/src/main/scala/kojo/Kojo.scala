@@ -1,11 +1,11 @@
 package kojo
 
 import org.scalajs.dom.{document, html, window}
-
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSExportTopLevel
 import pixiscalajs.PIXI
-import pixiscalajs.PIXI.{Pixi, RendererOptions, CanvasRenderer}
+import pixiscalajs.PIXI.{CanvasRenderer, Pixi, RendererOptions}
+
+import scala.collection.mutable
+import scala.scalajs.js
 
 object Kojo {
 
@@ -117,11 +117,13 @@ object Kojo {
   class TurtleWorld {
     val fiddleContainer = document.getElementById("fiddle-container").asInstanceOf[html.Div]
     val canvas_holder   = document.getElementById("canvas-holder").asInstanceOf[html.Div]
-    //    val renderer = new CanvasRenderer(800, 600, rendererOptions(canvas))
     val (width, height) = (fiddleContainer.clientWidth, fiddleContainer.clientHeight)
-    val renderer        = Pixi.autoDetectRenderer(width, height, rendererOptions())
+    //    val renderer        = Pixi.autoDetectRenderer(width, height, rendererOptions())
+    val renderer = new CanvasRenderer(width, height, rendererOptions())
+    renderer.backgroundColor = 0xFFFFFF
     canvas_holder.appendChild(renderer.view)
     val stage = new PIXI.Container()
+    stage.name = "Stage"
     init()
 
     def init() {
@@ -135,6 +137,24 @@ object Kojo {
       stage.addChild(layer)
     }
 
+    def scheduleLater(fn: () => Unit): Unit = {
+      window.setTimeout(fn, 0)
+    }
+
+    def addSprite(sprite: PIXI.Sprite): Unit = {
+      def endFrame(): Unit = {
+        stage.addChild(sprite)
+        render()
+      }
+
+      def frame(): Unit = {
+        scheduleLater(endFrame)
+        render()
+      }
+
+      scheduleLater(frame)
+    }
+
     def render(): Unit = {
       renderer.render(stage)
     }
@@ -144,91 +164,107 @@ object Kojo {
     }
   }
 
+  sealed trait Command
+
+  case class Forward(n: Double) extends Command
+
+  case class Turn(angle: Double) extends Command
+
   class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
-    val turtleLayer = new PIXI.Container()
-    turtleWorld.addTurtleLayer(turtleLayer)
+    val commandQ = mutable.Queue.empty[Command]
 
-    val turtleImage = loadTurtleImage(x, y)
-    turtleLayer.addChild(turtleImage)
+    val turtleLayer                 = new PIXI.Container()
+    var turtleImage: PIXI.Container = _
+    val turtlePath                  = new PIXI.Graphics()
 
-    var penWidth       = 2
-    var penColor       = 0x0000FF
-    var animationDelay = 1000l
+    Pixi.loader.add("turtle32", "assets/images/turtle32.png").load(init)
 
-    val turtlePath = new PIXI.Graphics()
-    turtlePath.lineStyle(penWidth, penColor, 1)
-    turtlePath.moveTo(x, y)
-    turtleLayer.addChild(turtlePath)
+    def init(loader: PIXI.loaders.Loader, any: Any) {
+      turtleLayer.name = "Turtle Layer"
+      turtleWorld.addTurtleLayer(turtleLayer)
+      turtleImage = loadTurtle(x, y, loader)
+      turtleImage.name = "Turtle Icon"
+
+      var penWidth       = 2
+      var penColor       = 0x0000FF
+      var animationDelay = 1000l
+
+      turtlePath.name = "Turtle Path"
+      turtlePath.lineStyle(penWidth, penColor, 1)
+      turtlePath.moveTo(x, y)
+      turtleLayer.addChild(turtlePath)
+      turtleLayer.addChild(turtleImage)
+      turtleWorld.scheduleLater(queueHandler)
+    }
 
     def position = turtleImage.position
 
-    def heading = turtleImage.rotation
+    def headingRadians = turtleImage.rotation
 
-    def loadTurtleImage(x: Double, y: Double): PIXI.Graphics = {
-      val turtleImage = new PIXI.Graphics()
-      turtleImage.lineStyle(2, 0xFF0000, 1).beginFill(0xFF700B, 1)
-      turtleImage.drawRect(-10, -10, 20, 20)
-      turtleImage.endFill()
-      turtleImage.position.set(x, y)
-      turtleImage.rotation = Utils.deg2radians(90)
-      turtleImage
+    def heading = Utils.rad2degrees(headingRadians)
+
+    def loadTurtle(x: Double, y: Double, loader: PIXI.loaders.Loader): PIXI.Container = {
+      val turtle = {
+        val rasterTurtle = new PIXI.Sprite(loader.resources("turtle32").texture)
+        rasterTurtle.position.set(-16, -16)
+        rasterTurtle.alpha = 0.7
+        rasterTurtle
+      }
+      val turtleHolder = new PIXI.Container()
+      turtleHolder.addChild(turtle)
+      turtleHolder.position.set(x, y)
+      turtleHolder.rotation = Utils.deg2radians(90)
+      turtleHolder
     }
 
-    def forward(n: Double) {
-      def forwardEndFrame(frameTime: Double): Unit = {
-        turtleLayer.addChild(turtlePath)
-        turtleWorld.render()
-      }
+    def forward(n: Double): Unit = {
+      commandQ.enqueue(Forward(n))
+    }
 
-      def forwardFrame(frameTime: Double): Unit = {
+    def left(angle: Double): Unit = {
+      commandQ.enqueue(Turn(angle))
+    }
+
+    def right(angle: Double) = left(-angle)
+
+    def queueHandler(): Unit = {
+      if (commandQ.size > 0) {
+        commandQ.dequeue() match {
+          case Forward(n)  => forwardImpl(n)
+          case Turn(angle) => leftImpl(angle)
+        }
+      }
+    }
+
+    def forwardImpl(n: Double) {
+      def forwardFrame(): Unit = {
         val p0x        = position.x
         val p0y        = position.y
-        val (pfx, pfy) = TurtleHelper.posAfterForward(p0x, p0y, heading, n)
+        val (pfx, pfy) = TurtleHelper.posAfterForward(p0x, p0y, headingRadians, n)
         turtlePath.lineTo(pfx, pfy)
-        turtleLayer.removeChild(turtlePath)
+        //        turtlePath.dirty += 1
+        turtlePath.clearDirty += 1
         turtleImage.position.x = pfx
         turtleImage.position.y = pfy
-        window.requestAnimationFrame(forwardEndFrame)
         turtleWorld.render()
+        turtleWorld.scheduleLater(queueHandler)
       }
 
-      window.requestAnimationFrame(forwardFrame)
+      forwardFrame()
     }
 
-    def right(angle: Double): Unit = {
-      def rightEndFrame(frameTime: Double): Unit = {
-        turtleLayer.addChild(turtlePath)
-        turtleWorld.render()
-      }
+    def leftImpl(angle: Double): Unit = {
 
-      def rightFrame(frameTime: Double): Unit = {
+      def leftFrame(): Unit = {
         val angleRads = Utils.deg2radians(angle)
-        turtleLayer.removeChild(turtlePath)
-        turtleImage.rotation -= angleRads
-        window.requestAnimationFrame(rightEndFrame)
+        turtleImage.rotation += angleRads
         turtleWorld.render()
+        turtleWorld.scheduleLater(queueHandler)
       }
 
-      window.requestAnimationFrame(rightFrame)
-
+      leftFrame()
     }
 
-  }
-
-  object TurlePlay {
-    def main(args: Array[String]): Unit = {
-      implicit val turtleWorld = new TurtleWorld()
-      val turtle               = new Turtle(0, 0)
-      import turtle._
-      import RepeatCommands._
-      repeat(6000) {
-        repeat(4) {
-          forward(100)
-          right(90)
-        }
-        right(8)
-      }
-    }
   }
 
 }
