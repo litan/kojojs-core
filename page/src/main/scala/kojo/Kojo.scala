@@ -118,15 +118,15 @@ object Kojo {
     val fiddleContainer = document.getElementById("fiddle-container").asInstanceOf[html.Div]
     val canvas_holder   = document.getElementById("canvas-holder").asInstanceOf[html.Div]
     val (width, height) = (fiddleContainer.clientWidth, fiddleContainer.clientHeight)
-    //    val renderer        = Pixi.autoDetectRenderer(width, height, rendererOptions())
+    //    val renderer = Pixi.autoDetectRenderer(width, height, rendererOptions())
     val renderer = new CanvasRenderer(width, height, rendererOptions())
-    renderer.backgroundColor = 0xFFFFFF
-    canvas_holder.appendChild(renderer.view)
-    val stage = new PIXI.Container()
-    stage.name = "Stage"
+    val stage    = new PIXI.Container()
     init()
 
     def init() {
+      render()
+      canvas_holder.appendChild(renderer.view)
+      stage.name = "Stage"
       stage.width = width
       stage.height = height
       stage.interactive = true
@@ -159,8 +159,12 @@ object Kojo {
       renderer.render(stage)
     }
 
-    def rendererOptions(antialias: Boolean = true, resolution: Double = 1): RendererOptions = {
-      js.Dynamic.literal(antialias = antialias, resolution = resolution).asInstanceOf[RendererOptions]
+    def rendererOptions(antialias: Boolean = true,
+                        resolution: Double = 1,
+                        backgroundColor: Int = 0xFFFFFF): RendererOptions = {
+      js.Dynamic
+        .literal(antialias = antialias, resolution = resolution, backgroundColor = backgroundColor)
+        .asInstanceOf[RendererOptions]
     }
   }
 
@@ -170,12 +174,25 @@ object Kojo {
 
   case class Turn(angle: Double) extends Command
 
+  case class SetAnimationDelay(delay: Long) extends Command
+
+  case class SetPenThickness(t: Double) extends Command
+
+  case class SetPenColor(color: Int) extends Command
+
+  case class SetFillColor(color: Int) extends Command
+
   class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
     val commandQ = mutable.Queue.empty[Command]
 
     val turtleLayer                 = new PIXI.Container()
     var turtleImage: PIXI.Container = _
     val turtlePath                  = new PIXI.Graphics()
+    val tempGraphics                = new PIXI.Graphics()
+
+    var penWidth       = 2d
+    var penColor       = 0x0000FF
+    var animationDelay = 1000l
 
     Pixi.loader.add("turtle32", "assets/images/turtle32.png").load(init)
 
@@ -184,10 +201,6 @@ object Kojo {
       turtleWorld.addTurtleLayer(turtleLayer)
       turtleImage = loadTurtle(x, y, loader)
       turtleImage.name = "Turtle Icon"
-
-      var penWidth       = 2
-      var penColor       = 0x0000FF
-      var animationDelay = 1000l
 
       turtlePath.name = "Turtle Path"
       turtlePath.lineStyle(penWidth, penColor, 1)
@@ -227,33 +240,101 @@ object Kojo {
 
     def right(angle: Double) = left(-angle)
 
+    def setAnimationDelay(delay: Long): Unit = {
+      commandQ.enqueue(SetAnimationDelay(delay))
+    }
+
+    def setPenThickness(t: Double): Unit = {
+      commandQ.enqueue(SetPenThickness(t))
+    }
+
+    def setPenColor(color: Int): Unit = {
+      commandQ.enqueue(SetPenColor(color))
+    }
+
+    def setFillColor(color: Int): Unit = {
+      commandQ.enqueue(SetFillColor(color))
+    }
+
     def queueHandler(): Unit = {
       if (commandQ.size > 0) {
         commandQ.dequeue() match {
-          case Forward(n)  => forwardImpl(n)
-          case Turn(angle) => leftImpl(angle)
+          case Forward(n)               => realForward(n)
+          case Turn(angle)              => realLeft(angle)
+          case SetAnimationDelay(delay) => animationDelay = delay; turtleWorld.scheduleLater(queueHandler)
+          case SetPenThickness(t)       => realSetPenThickness(t)
+          case SetPenColor(c)           => realSetPenColor(c)
+          case SetFillColor(c)          => realSetFillColor(c)
         }
       }
     }
 
-    def forwardImpl(n: Double) {
-      def forwardFrame(): Unit = {
-        val p0x        = position.x
-        val p0y        = position.y
-        val (pfx, pfy) = TurtleHelper.posAfterForward(p0x, p0y, headingRadians, n)
-        turtlePath.lineTo(pfx, pfy)
-        //        turtlePath.dirty += 1
-        turtlePath.clearDirty += 1
-        turtleImage.position.x = pfx
-        turtleImage.position.y = pfy
+    def realSetPenThickness(t: Double): Unit = {
+      penWidth = t
+      turtlePath.lineStyle(penWidth, penColor, 1)
+      turtleWorld.scheduleLater(queueHandler)
+    }
+
+    def realSetPenColor(color: Int): Unit = {
+      penColor = color
+      turtlePath.lineStyle(penWidth, penColor, 1)
+      turtleWorld.scheduleLater(queueHandler)
+    }
+
+    def realSetFillColor(color: Int): Unit = {
+      turtlePath.beginFill(color, 1)
+      turtleWorld.scheduleLater(queueHandler)
+    }
+
+    def realForward(n: Double) {
+
+      turtleLayer.addChild(tempGraphics)
+      var len        = 0
+      val p0x        = position.x
+      val p0y        = position.y
+      val (pfx, pfy) = TurtleHelper.posAfterForward(p0x, p0y, headingRadians, n)
+      val aDelay     = TurtleHelper.delayFor(n, animationDelay)
+      //      println(s"($p0x, $p0y) -> ($pfx, $pfy) [$aDelay]")
+      val startTime = window.performance.now()
+
+      def forwardEndFrame(frameTime: Double): Unit = {
         turtleWorld.render()
         turtleWorld.scheduleLater(queueHandler)
       }
 
-      forwardFrame()
+      def forwardFrame(frameTime: Double): Unit = {
+        val elapsedTime = frameTime - startTime
+        val frac        = elapsedTime / aDelay
+        //        println(s"Fraction: $frac")
+
+        if (frac > 1) {
+          tempGraphics.clear()
+          turtleLayer.removeChild(tempGraphics)
+          turtlePath.lineTo(pfx, pfy)
+          turtlePath.clearDirty += 1
+          turtleImage.position.x = pfx
+          turtleImage.position.y = pfy
+          window.requestAnimationFrame(forwardEndFrame)
+        } else {
+          val currX = p0x * (1 - frac) + pfx * frac
+          val currY = p0y * (1 - frac) + pfy * frac
+
+          tempGraphics.clear()
+          tempGraphics.lineStyle(penWidth, 0x00FF00, 1)
+          tempGraphics.moveTo(p0x, p0y)
+          tempGraphics.lineTo(currX, currY)
+          //          tempGraphics.clearDirty += 1
+          turtleImage.position.x = currX
+          turtleImage.position.y = currY
+          window.requestAnimationFrame(forwardFrame)
+        }
+        turtleWorld.render()
+      }
+
+      window.requestAnimationFrame(forwardFrame)
     }
 
-    def leftImpl(angle: Double): Unit = {
+    def realLeft(angle: Double): Unit = {
 
       def leftFrame(): Unit = {
         val angleRads = Utils.deg2radians(angle)
