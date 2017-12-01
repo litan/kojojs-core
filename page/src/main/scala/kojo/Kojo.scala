@@ -138,7 +138,7 @@ object Kojo {
     }
 
     def scheduleLater(fn: () => Unit): Unit = {
-      window.setTimeout(fn, 0)
+      window.setTimeout(fn, 10)
     }
 
     def addSprite(sprite: PIXI.Sprite): Unit = {
@@ -161,9 +161,13 @@ object Kojo {
 
     def rendererOptions(antialias: Boolean = true,
                         resolution: Double = 1,
-                        backgroundColor: Int = 0xFFFFFF): RendererOptions = {
+                        backgroundColor: Int = 0xFFFFFF,
+                        clearBeforeRender: Boolean = true): RendererOptions = {
       js.Dynamic
-        .literal(antialias = antialias, resolution = resolution, backgroundColor = backgroundColor)
+        .literal(antialias = antialias,
+                 resolution = resolution,
+                 backgroundColor = backgroundColor,
+                 clearBeforeRender = clearBeforeRender)
         .asInstanceOf[RendererOptions]
     }
   }
@@ -181,6 +185,8 @@ object Kojo {
   case class SetPenColor(color: Int) extends Command
 
   case class SetFillColor(color: Int) extends Command
+
+  case class Hop(n: Double) extends Command
 
   class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
     val commandQ = mutable.Queue.empty[Command]
@@ -230,8 +236,16 @@ object Kojo {
       turtleHolder
     }
 
+    def clear(): Unit = {
+      // no-op for now
+    }
+
     def forward(n: Double): Unit = {
       commandQ.enqueue(Forward(n))
+    }
+
+    def hop(n: Double): Unit = {
+      commandQ.enqueue(Hop(n))
     }
 
     def left(angle: Double): Unit = {
@@ -260,6 +274,7 @@ object Kojo {
       if (commandQ.size > 0) {
         commandQ.dequeue() match {
           case Forward(n)               => realForward(n)
+          case Hop(n)                   => realHop(n)
           case Turn(angle)              => realLeft(angle)
           case SetAnimationDelay(delay) => animationDelay = delay; turtleWorld.scheduleLater(queueHandler)
           case SetPenThickness(t)       => realSetPenThickness(t)
@@ -284,6 +299,53 @@ object Kojo {
     def realSetFillColor(color: Int): Unit = {
       turtlePath.beginFill(color, 1)
       turtleWorld.scheduleLater(queueHandler)
+    }
+
+    def realHop(n: Double): Unit = {
+      turtleLayer.addChild(tempGraphics)
+      var len        = 0
+      val p0x        = position.x
+      val p0y        = position.y
+      val (pfx, pfy) = TurtleHelper.posAfterForward(p0x, p0y, headingRadians, n)
+      val aDelay     = TurtleHelper.delayFor(n, animationDelay)
+      //      println(s"($p0x, $p0y) -> ($pfx, $pfy) [$aDelay]")
+      val startTime = window.performance.now()
+
+      def forwardEndFrame(frameTime: Double): Unit = {
+        turtleWorld.render()
+        turtleWorld.scheduleLater(queueHandler)
+      }
+
+      def forwardFrame(frameTime: Double): Unit = {
+        val elapsedTime = frameTime - startTime
+        val frac        = elapsedTime / aDelay
+        //        println(s"Fraction: $frac")
+
+        if (frac > 1) {
+          tempGraphics.clear()
+          turtleLayer.removeChild(tempGraphics)
+          turtlePath.moveTo(pfx, pfy)
+          turtlePath.clearDirty += 1
+          turtleImage.position.x = pfx
+          turtleImage.position.y = pfy
+          window.requestAnimationFrame(forwardEndFrame)
+        } else {
+          val currX = p0x * (1 - frac) + pfx * frac
+          val currY = p0y * (1 - frac) + pfy * frac
+
+          tempGraphics.clear()
+          tempGraphics.lineStyle(penWidth, 0x00FF00, 1)
+          tempGraphics.moveTo(p0x, p0y)
+          tempGraphics.lineTo(currX, currY)
+          //          tempGraphics.clearDirty += 1
+          turtleImage.position.x = currX
+          turtleImage.position.y = currY
+          window.requestAnimationFrame(forwardFrame)
+        }
+        turtleWorld.render()
+      }
+
+      window.requestAnimationFrame(forwardFrame)
     }
 
     def realForward(n: Double) {
