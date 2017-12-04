@@ -394,7 +394,7 @@ object Client {
   var intervalHandles = List.empty[SetIntervalHandle]
   var timeoutHandles  = List.empty[SetTimeoutHandle]
 
-  dom.window.onerror = { (event: dom.Event, source: String, fileno: Int, columnNumber: Int) =>
+  dom.window.onerror = { (event: dom.Event, source: String, fileno: Int, columnNumber: Int, x: Any) =>
     dom.console.log("dom.onerror")
     Client.logError(event.toString)
   }
