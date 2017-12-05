@@ -138,7 +138,10 @@ object Kojo {
     }
 
     def scheduleLater(fn: () => Unit): Unit = {
-      window.setTimeout(fn, 10)
+      window.requestAnimationFrame { t =>
+        fn()
+      }
+      //      window.setTimeout(fn, 10)
     }
 
     def addSprite(sprite: PIXI.Sprite): Unit = {
