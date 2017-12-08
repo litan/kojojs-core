@@ -9,13 +9,13 @@ import scala.collection.mutable
 class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
   val commandQ = mutable.Queue.empty[Command]
 
-  val turtleLayer = new PIXI.Container()
+  val turtleLayer                 = new PIXI.Container()
   var turtleImage: PIXI.Container = _
-  val turtlePath = new PIXI.Graphics()
-  val tempGraphics = new PIXI.Graphics()
+  val turtlePath                  = new PIXI.Graphics()
+  val tempGraphics                = new PIXI.Graphics()
 
-  var penWidth = 2d
-  var penColor = 0x0000FF
+  var penWidth       = 2d
+  var penColor       = 0x0000FF
   var animationDelay = 1000l
 
   Pixi.loader.add("turtle32", "assets/images/turtle32.png").load(init)
@@ -40,9 +40,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
 
   def heading = Utils.rad2degrees(headingRadians)
 
-  def loadTurtle(x: Double,
-                 y: Double,
-                 loader: PIXI.loaders.Loader): PIXI.Container = {
+  def loadTurtle(x: Double, y: Double, loader: PIXI.loaders.Loader): PIXI.Container = {
     val turtle = {
       val rasterTurtle = new PIXI.Sprite(loader.resources("turtle32").texture)
       rasterTurtle.position.set(-16, -16)
@@ -124,11 +122,11 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
 
   def realHop(n: Double): Unit = {
     turtleLayer.addChild(tempGraphics)
-    var len = 0
-    val p0x = position.x
-    val p0y = position.y
+    var len        = 0
+    val p0x        = position.x
+    val p0y        = position.y
     val (pfx, pfy) = TurtleHelper.posAfterForward(p0x, p0y, headingRadians, n)
-    val aDelay = TurtleHelper.delayFor(n, animationDelay)
+    val aDelay     = TurtleHelper.delayFor(n, animationDelay)
     //      println(s"($p0x, $p0y) -> ($pfx, $pfy) [$aDelay]")
     val startTime = window.performance.now()
 
@@ -139,7 +137,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
 
     def forwardFrame(frameTime: Double): Unit = {
       val elapsedTime = frameTime - startTime
-      val frac = elapsedTime / aDelay
+      val frac        = elapsedTime / aDelay
       //        println(s"Fraction: $frac")
 
       if (frac > 1) {
@@ -172,11 +170,11 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
   def realForward(n: Double) {
 
     turtleLayer.addChild(tempGraphics)
-    var len = 0
-    val p0x = position.x
-    val p0y = position.y
+    var len        = 0
+    val p0x        = position.x
+    val p0y        = position.y
     val (pfx, pfy) = TurtleHelper.posAfterForward(p0x, p0y, headingRadians, n)
-    val aDelay = TurtleHelper.delayFor(n, animationDelay)
+    val aDelay     = TurtleHelper.delayFor(n, animationDelay)
     //      println(s"($p0x, $p0y) -> ($pfx, $pfy) [$aDelay]")
     val startTime = window.performance.now()
 
@@ -187,7 +185,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
 
     def forwardFrame(frameTime: Double): Unit = {
       val elapsedTime = frameTime - startTime
-      val frac = elapsedTime / aDelay
+      val frac        = elapsedTime / aDelay
       //        println(s"Fraction: $frac")
 
       if (frac > 1) {

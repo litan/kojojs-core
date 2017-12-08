@@ -15,7 +15,7 @@ class TurtleWorld {
     (fiddleContainer.clientWidth, fiddleContainer.clientHeight)
   //    val renderer = Pixi.autoDetectRenderer(width, height, rendererOptions())
   val renderer = new CanvasRenderer(width, height, rendererOptions())
-  val stage = new PIXI.Container()
+  val stage    = new PIXI.Container()
   init()
 
   def init() {
