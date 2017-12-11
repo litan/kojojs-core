@@ -14,9 +14,10 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
   val turtlePath                  = new PIXI.Graphics()
   val tempGraphics                = new PIXI.Graphics()
 
-  var penWidth       = 2d
-  var penColor       = 0x0000FF
-  var animationDelay = 1000l
+  var penWidth         = 2d
+  var penColor         = Color.blue
+  var fillColor: Color = _
+  var animationDelay   = 1000l
 
   Pixi.loader.add("turtle32", "assets/images/turtle32.png").load(init)
 
@@ -27,7 +28,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
     turtleImage.name = "Turtle Icon"
 
     turtlePath.name = "Turtle Path"
-    turtlePath.lineStyle(penWidth, penColor, 1)
+    turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
     turtlePath.moveTo(x, y)
     turtleLayer.addChild(turtlePath)
     turtleLayer.addChild(turtleImage)
@@ -80,11 +81,11 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
     commandQ.enqueue(SetPenThickness(t))
   }
 
-  def setPenColor(color: Int): Unit = {
+  def setPenColor(color: Color): Unit = {
     commandQ.enqueue(SetPenColor(color))
   }
 
-  def setFillColor(color: Int): Unit = {
+  def setFillColor(color: Color): Unit = {
     commandQ.enqueue(SetFillColor(color))
   }
 
@@ -105,18 +106,22 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
 
   def realSetPenThickness(t: Double): Unit = {
     penWidth = t
-    turtlePath.lineStyle(penWidth, penColor, 1)
+    turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def realSetPenColor(color: Int): Unit = {
+  def realSetPenColor(color: Color): Unit = {
     penColor = color
-    turtlePath.lineStyle(penWidth, penColor, 1)
+    turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def realSetFillColor(color: Int): Unit = {
-    turtlePath.beginFill(color, 1)
+  def realSetFillColor(color: Color): Unit = {
+    // start new path
+    turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
+    // set new fill
+    fillColor = color
+    turtlePath.beginFill(fillColor.toRGBDouble, fillColor.alpha.get)
     turtleWorld.scheduleLater(queueHandler)
   }
 
@@ -153,7 +158,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
         val currY = p0y * (1 - frac) + pfy * frac
 
         tempGraphics.clear()
-        tempGraphics.lineStyle(penWidth, 0x00FF00, 1)
+        tempGraphics.lineStyle(penWidth, Color.green.toRGBDouble, 1)
         tempGraphics.moveTo(p0x, p0y)
         tempGraphics.lineTo(currX, currY)
         //          tempGraphics.clearDirty += 1
@@ -201,7 +206,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
         val currY = p0y * (1 - frac) + pfy * frac
 
         tempGraphics.clear()
-        tempGraphics.lineStyle(penWidth, 0x00FF00, 1)
+        tempGraphics.lineStyle(penWidth, Color.green.toRGBDouble, 1)
         tempGraphics.moveTo(p0x, p0y)
         tempGraphics.lineTo(currX, currY)
         //          tempGraphics.clearDirty += 1
