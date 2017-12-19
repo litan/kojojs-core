@@ -1,5 +1,5 @@
 // Borrowed from: https://github.com/underscoreio/doodle
-package kojo
+package kojo.doodle
 
 final case class UnsignedByte(value: Byte) extends AnyVal {
   def +(that: UnsignedByte): Int =

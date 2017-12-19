@@ -1,11 +1,11 @@
 package kojo.syntax
 
-import kojo.{Normalized, UnsignedByte}
+import kojo.doodle.{Normalized, UnsignedByte}
 import kojo.syntax.normalized._
 import kojo.syntax.uByte._
 
 object Builtins {
-  val Color = kojo.Color
+  val Color = kojo.doodle.Color
 
   implicit def int2ubyte(n: Int): UnsignedByte = n.uByte
 

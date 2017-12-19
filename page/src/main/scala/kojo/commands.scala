@@ -1,5 +1,7 @@
 package kojo
 
+import kojo.doodle.Color
+
 sealed trait Command
 
 case class Forward(n: Double) extends Command

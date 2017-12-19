@@ -1,7 +1,7 @@
 // Borrowed from: https://github.com/underscoreio/doodle
 package kojo.syntax
 
-import kojo.UnsignedByte
+import kojo.doodle.UnsignedByte
 
 trait UnsignedByteSyntax {
   implicit class ToUnsignedByteOps(val value: Int) {

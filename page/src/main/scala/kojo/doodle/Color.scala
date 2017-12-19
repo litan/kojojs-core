@@ -1,6 +1,7 @@
 // Borrowed from: https://github.com/underscoreio/doodle
-package kojo
+package kojo.doodle
 
+import kojo._
 import kojo.syntax.angle._
 import kojo.syntax.normalized._
 
@@ -203,7 +204,7 @@ sealed abstract class Color extends Product with Serializable {
           else
             Normalized.clip(delta / (1 - Math.abs(2 * lightness.get - 1)))
 
-        HSLA(hue, saturation, lightness, a)
+        doodle.HSLA(hue, saturation, lightness, a)
 
       case HSLA(h, s, l, a) => HSLA(h, s, l, a)
     }

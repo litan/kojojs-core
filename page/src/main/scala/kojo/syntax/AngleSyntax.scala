@@ -1,7 +1,7 @@
 // Borrowed from: https://github.com/underscoreio/doodle
 package kojo.syntax
 
-import kojo.Angle
+import kojo.doodle.Angle
 
 trait AngleSyntax {
   implicit class AngleOps(val angle: Double) {

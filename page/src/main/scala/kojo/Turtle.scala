@@ -1,5 +1,6 @@
 package kojo
 
+import kojo.doodle.Color
 import org.scalajs.dom.window
 import pixiscalajs.PIXI
 import pixiscalajs.PIXI.Pixi

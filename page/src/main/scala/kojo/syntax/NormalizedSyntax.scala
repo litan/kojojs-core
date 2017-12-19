@@ -1,7 +1,7 @@
 // Borrowed from: https://github.com/underscoreio/doodle
 package kojo.syntax
 
-import kojo.Normalized
+import kojo.doodle.Normalized
 
 trait NormalizedSyntax {
   implicit class ToNormalizedOps(val value: Double) {

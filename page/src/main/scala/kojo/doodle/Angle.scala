@@ -1,5 +1,5 @@
 // Borrowed from: https://github.com/underscoreio/doodle
-package kojo
+package kojo.doodle
 
 /**
   * An angle in radians
