@@ -93,8 +93,8 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
   def queueHandler(): Unit = {
     if (commandQ.size > 0) {
       commandQ.dequeue() match {
-        case Forward(n)  => realForward(n)
-        case Hop(n)      => realHop(n)
+        case Forward(n)  => realForward(n, false)
+        case Hop(n)      => realForward(n, true)
         case Turn(angle) => realLeft(angle)
         case SetAnimationDelay(delay) =>
           animationDelay = delay; turtleWorld.scheduleLater(queueHandler)
@@ -126,54 +126,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def realHop(n: Double): Unit = {
-    turtleLayer.addChild(tempGraphics)
-    var len        = 0
-    val p0x        = position.x
-    val p0y        = position.y
-    val (pfx, pfy) = TurtleHelper.posAfterForward(p0x, p0y, headingRadians, n)
-    val aDelay     = TurtleHelper.delayFor(n, animationDelay)
-    //      println(s"($p0x, $p0y) -> ($pfx, $pfy) [$aDelay]")
-    val startTime = window.performance.now()
-
-    def forwardEndFrame(frameTime: Double): Unit = {
-      turtleWorld.render()
-      turtleWorld.scheduleLater(queueHandler)
-    }
-
-    def forwardFrame(frameTime: Double): Unit = {
-      val elapsedTime = frameTime - startTime
-      val frac        = elapsedTime / aDelay
-      //        println(s"Fraction: $frac")
-
-      if (frac > 1) {
-        tempGraphics.clear()
-        turtleLayer.removeChild(tempGraphics)
-        turtlePath.moveTo(pfx, pfy)
-        turtlePath.clearDirty += 1
-        turtleImage.position.x = pfx
-        turtleImage.position.y = pfy
-        window.requestAnimationFrame(forwardEndFrame)
-      } else {
-        val currX = p0x * (1 - frac) + pfx * frac
-        val currY = p0y * (1 - frac) + pfy * frac
-
-        tempGraphics.clear()
-        tempGraphics.lineStyle(penWidth, Color.green.toRGBDouble, 1)
-        tempGraphics.moveTo(p0x, p0y)
-        tempGraphics.lineTo(currX, currY)
-        //          tempGraphics.clearDirty += 1
-        turtleImage.position.x = currX
-        turtleImage.position.y = currY
-        window.requestAnimationFrame(forwardFrame)
-      }
-      turtleWorld.render()
-    }
-
-    window.requestAnimationFrame(forwardFrame)
-  }
-
-  def realForward(n: Double) {
+  def realForward(n: Double, hop: Boolean) {
 
     turtleLayer.addChild(tempGraphics)
     var len        = 0
@@ -197,7 +150,11 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
       if (frac > 1) {
         tempGraphics.clear()
         turtleLayer.removeChild(tempGraphics)
-        turtlePath.lineTo(pfx, pfy)
+        if (hop) {
+          turtlePath.moveTo(pfx, pfy)
+        } else {
+          turtlePath.lineTo(pfx, pfy)
+        }
         turtlePath.clearDirty += 1
         turtleImage.position.x = pfx
         turtleImage.position.y = pfy
