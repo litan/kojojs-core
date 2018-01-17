@@ -7,7 +7,7 @@ import pixiscalajs.PIXI.Pixi
 
 import scala.collection.mutable
 
-class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
+class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends RichTurtleCommands {
   val commandQ = mutable.Queue.empty[Command]
 
   val turtleLayer                 = new PIXI.Container()
@@ -68,11 +68,9 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) {
     commandQ.enqueue(Hop(n))
   }
 
-  def left(angle: Double): Unit = {
+  def turn(angle: Double): Unit = {
     commandQ.enqueue(Turn(angle))
   }
-
-  def right(angle: Double) = left(-angle)
 
   def setAnimationDelay(delay: Long): Unit = {
     commandQ.enqueue(SetAnimationDelay(delay))
