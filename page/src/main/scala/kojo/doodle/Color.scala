@@ -4,6 +4,7 @@ package kojo.doodle
 import kojo._
 import kojo.syntax.angle._
 import kojo.syntax.normalized._
+import kojo.syntax.uByte._
 
 sealed abstract class Color extends Product with Serializable {
 
@@ -257,4 +258,7 @@ object Color extends CommonColors {
 
   def hsl(h: Angle, s: Normalized, l: Normalized): Color =
     hsla(h, s, l, 1.0.normalized)
+
+  // Kojo backward compatibility
+  def apply(r: Int, g: Int, b: Int, a: Int = 255) = rgba(r.uByte, g.uByte, b.uByte, a.normalized)
 }
