@@ -3,6 +3,7 @@ package kojo
 trait RichTurtleCommands {
   def turn(angle: Double): Unit
   def forward(n: Double): Unit
+  def hop(n: Double): Unit
   def setAnimationDelay(i: Long)
 
   def left(angle: Double): Unit = turn(angle)
@@ -12,6 +13,7 @@ trait RichTurtleCommands {
   def back(n: Double)           = forward(-n)
 
   def forward(): Unit = forward(25)
+  def hop(): Unit     = hop(25)
   def back(): Unit    = back(25)
 
   trait Speed

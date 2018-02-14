@@ -17,3 +17,5 @@ case class SetPenColor(color: Color) extends Command
 case class SetFillColor(color: Color) extends Command
 
 case class Hop(n: Double) extends Command
+
+case class SetPosition(x: Double, y: Double) extends Command

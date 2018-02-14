@@ -16,7 +16,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
   val tempGraphics                = new PIXI.Graphics()
 
   var penWidth         = 2d
-  var penColor         = Color.blue
+  var penColor         = Color.red
   var fillColor: Color = _
   var animationDelay   = 1000l
 
@@ -88,6 +88,10 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     commandQ.enqueue(SetFillColor(color))
   }
 
+  def setPosition(x: Double, y: Double): Unit = {
+    commandQ.enqueue(SetPosition(x, y))
+  }
+
   def queueHandler(): Unit = {
     if (commandQ.size > 0) {
       commandQ.dequeue() match {
@@ -99,6 +103,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         case SetPenThickness(t) => realSetPenThickness(t)
         case SetPenColor(c)     => realSetPenColor(c)
         case SetFillColor(c)    => realSetFillColor(c)
+        case SetPosition(x, y)  => realSetPosition(x, y)
       }
     }
   }
@@ -124,6 +129,13 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     turtleWorld.scheduleLater(queueHandler)
   }
 
+  def realSetPosition(x: Double, y: Double): Unit = {
+    turtleImage.position.x = x
+    turtleImage.position.y = y
+    turtleWorld.render()
+    turtleWorld.scheduleLater(queueHandler)
+  }
+
   def realForward(n: Double, hop: Boolean) {
 
     turtleLayer.addChild(tempGraphics)
@@ -146,11 +158,11 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
       //        println(s"Fraction: $frac")
 
       if (frac > 1) {
-        tempGraphics.clear()
-        turtleLayer.removeChild(tempGraphics)
         if (hop) {
           turtlePath.moveTo(pfx, pfy)
         } else {
+          tempGraphics.clear()
+          turtleLayer.removeChild(tempGraphics)
           turtlePath.lineTo(pfx, pfy)
         }
         turtlePath.clearDirty += 1
@@ -160,12 +172,13 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
       } else {
         val currX = p0x * (1 - frac) + pfx * frac
         val currY = p0y * (1 - frac) + pfy * frac
-
-        tempGraphics.clear()
-        tempGraphics.lineStyle(penWidth, Color.green.toRGBDouble, 1)
-        tempGraphics.moveTo(p0x, p0y)
-        tempGraphics.lineTo(currX, currY)
-        //          tempGraphics.clearDirty += 1
+        if (!hop) {
+          tempGraphics.clear()
+          tempGraphics.lineStyle(penWidth, Color.green.toRGBDouble, 1)
+          tempGraphics.moveTo(p0x, p0y)
+          tempGraphics.lineTo(currX, currY)
+          //          tempGraphics.clearDirty += 1
+        }
         turtleImage.position.x = currX
         turtleImage.position.y = currY
         window.requestAnimationFrame(forwardFrame)
