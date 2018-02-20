@@ -174,7 +174,26 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def realForward(n: Double, hop: Boolean) {
+  def realForwardNoAnim(n: Double, hop: Boolean): Unit = {
+    val p0x        = position.x
+    val p0y        = position.y
+    val (pfx, pfy) = TurtleHelper.posAfterForward(p0x, p0y, headingRadians, n)
+    if (hop) {
+      turtlePath.moveTo(pfx, pfy)
+    } else {
+      turtlePath.lineTo(pfx, pfy)
+    }
+    turtleImage.position.x = pfx
+    turtleImage.position.y = pfy
+    turtleWorld.render()
+    turtleWorld.scheduleLater(queueHandler)
+  }
+
+  def realForward(n: Double, hop: Boolean): Unit = {
+    if (animationDelay == 0) {
+      realForwardNoAnim(n, hop)
+      return
+    }
 
     turtleLayer.addChild(tempGraphics)
     var len        = 0
@@ -184,11 +203,6 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     val aDelay     = TurtleHelper.delayFor(n, animationDelay)
     //      println(s"($p0x, $p0y) -> ($pfx, $pfy) [$aDelay]")
     val startTime = window.performance.now()
-
-    def forwardEndFrame(frameTime: Double): Unit = {
-      turtleWorld.render()
-      turtleWorld.scheduleLater(queueHandler)
-    }
 
     def forwardFrame(frameTime: Double): Unit = {
       val elapsedTime = frameTime - startTime
@@ -206,7 +220,8 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         turtlePath.clearDirty += 1
         turtleImage.position.x = pfx
         turtleImage.position.y = pfy
-        window.requestAnimationFrame(forwardEndFrame)
+        turtleWorld.render()
+        turtleWorld.scheduleLater(queueHandler)
       } else {
         val currX = p0x * (1 - frac) + pfx * frac
         val currY = p0y * (1 - frac) + pfy * frac
@@ -258,7 +273,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         trans.translate(pos.x, pos.y)
         trans.rotate((head - 90).toRadians)
         trans.translate(-r, 0)
-        val step      = if (a > 0) 1 else -1
+        val step      = if (a > 0) 3 else -3
         val pt        = new Point(0, 0)
         val aabs      = a.abs
         val aabsFloor = aabs.floor
