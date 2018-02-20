@@ -3,12 +3,28 @@ package kojo
 import kojo.doodle.Color
 import org.scalajs.dom.window
 import pixiscalajs.PIXI
-import pixiscalajs.PIXI.Pixi
+import pixiscalajs.PIXI.{Pixi, Point}
 
 import scala.collection.mutable
 
 class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends RichTurtleCommands {
-  val commandQ = mutable.Queue.empty[Command]
+  var commandQs = mutable.Queue.empty[Command] :: Nil
+
+  def commandQ = commandQs.head
+
+  def pushQ(): Unit = {
+    commandQs = mutable.Queue.empty[Command] :: commandQs
+  }
+
+  def popQ(): Unit = {
+    commandQ.enqueue(PopQ)
+  }
+
+  def realPopQ(): Unit = {
+    assert(commandQ.size == 0)
+    commandQs = commandQs.tail
+    turtleWorld.scheduleLater(queueHandler)
+  }
 
   val turtleLayer                 = new PIXI.Container()
   var turtleImage: PIXI.Container = _
@@ -92,6 +108,18 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     commandQ.enqueue(SetPosition(x, y))
   }
 
+  def setHeading(theta: Double): Unit = {
+    commandQ.enqueue(SetHeading(Utils.deg2radians(theta)))
+  }
+
+  def moveTo(x: Double, y: Double): Unit = {
+    commandQ.enqueue(MoveTo(x, y))
+  }
+
+  def arc2(r: Double, a: Double): Unit = {
+    commandQ.enqueue(Arc2(r, a))
+  }
+
   def queueHandler(): Unit = {
     if (commandQ.size > 0) {
       commandQ.dequeue() match {
@@ -104,6 +132,10 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         case SetPenColor(c)     => realSetPenColor(c)
         case SetFillColor(c)    => realSetFillColor(c)
         case SetPosition(x, y)  => realSetPosition(x, y)
+        case SetHeading(theta)  => realSetHeading(theta)
+        case MoveTo(x, y)       => realMoveTo(x, y)
+        case Arc2(r, a)         => realArc2(r, a)
+        case PopQ               => realPopQ()
       }
     }
   }
@@ -132,6 +164,12 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
   def realSetPosition(x: Double, y: Double): Unit = {
     turtleImage.position.x = x
     turtleImage.position.y = y
+    turtleWorld.render()
+    turtleWorld.scheduleLater(queueHandler)
+  }
+
+  def realSetHeading(theta: Double): Unit = {
+    turtleImage.rotation = theta
     turtleWorld.render()
     turtleWorld.scheduleLater(queueHandler)
   }
@@ -199,6 +237,72 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     }
 
     leftFrame()
+  }
+
+  def realArc2(r: Double, a: Double) {
+    pushQ()
+    if (a == 0) {
+      return
+    }
+
+    def x(t: Double) = r * math.cos(t.toRadians)
+
+    def y(t: Double) = r * math.sin(t.toRadians)
+
+    def makeArc() {
+      val head = heading
+      if (r != 0) {
+        val pos       = position
+        var currAngle = 0.0
+        val trans     = new PIXI.Matrix
+        trans.translate(pos.x, pos.y)
+        trans.rotate((head - 90).toRadians)
+        trans.translate(-r, 0)
+        val step      = if (a > 0) 1 else -1
+        val pt        = new Point(0, 0)
+        val aabs      = a.abs
+        val aabsFloor = aabs.floor
+        while (currAngle.abs < aabsFloor) {
+          currAngle += step
+          pt.set(x(currAngle), y(currAngle))
+          trans(pt, pt)
+          moveTo(pt.x, pt.y)
+        }
+        if (a.floor != a) {
+          currAngle += (aabs - aabs.floor) * step
+          pt.set(x(currAngle), y(currAngle))
+          trans(pt, pt)
+          moveTo(pt.x, pt.y)
+        }
+      }
+      if (a > 0) {
+        setHeading(head + a)
+      } else {
+        setHeading(head + 180 + a)
+      }
+    }
+
+    makeArc()
+    popQ()
+    turtleWorld.scheduleLater(queueHandler)
+  }
+
+  def realMoveTo(x: Double, y: Double) {
+    pushQ()
+    val newTheta = towardsHelper(x, y)
+    setHeading(newTheta.toDegrees)
+    val d = distanceTo(x, y)
+    forward(d)
+    popQ()
+    turtleWorld.scheduleLater(queueHandler)
+  }
+
+  private def distanceTo(x: Double, y: Double): Double = {
+    TurtleHelper.distance(position.x, position.y, x, y)
+  }
+
+  private def towardsHelper(x: Double, y: Double): Double = {
+    TurtleHelper.thetaTowards(position.x, position.y, x, y, headingRadians)
   }
 
 }

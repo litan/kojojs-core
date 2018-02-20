@@ -19,3 +19,11 @@ case class SetFillColor(color: Color) extends Command
 case class Hop(n: Double) extends Command
 
 case class SetPosition(x: Double, y: Double) extends Command
+
+case class SetHeading(theta: Double) extends Command
+
+case class MoveTo(x: Double, y: Double) extends Command
+
+case class Arc2(r: Double, a: Double) extends Command
+
+case object PopQ extends Command
