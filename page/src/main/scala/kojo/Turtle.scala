@@ -274,12 +274,14 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         trans.translate(-r, 0)
         trans.rotate((head - 90).toRadians)
         trans.translate(pos.x, pos.y)
-        val step      = if (a > 0) 1 else -1
+        val step      = if (a > 0) 3 else -3
         val pt        = new Point(0, 0)
         val aabs      = a.abs
         val aabsFloor = aabs.floor
         while (currAngle.abs < aabsFloor) {
           currAngle += step
+          // account for step size > 1
+          while (currAngle.abs > aabsFloor) currAngle -= step / step.abs
           pt.set(x(currAngle), y(currAngle))
           trans(pt, pt)
           moveTo(pt.x, pt.y)
