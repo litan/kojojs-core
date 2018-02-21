@@ -164,6 +164,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
   def realSetPosition(x: Double, y: Double): Unit = {
     turtleImage.position.x = x
     turtleImage.position.y = y
+    turtlePath.moveTo(x, y)
     turtleWorld.render()
     turtleWorld.scheduleLater(queueHandler)
   }
@@ -270,10 +271,10 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         val pos       = position
         var currAngle = 0.0
         val trans     = new PIXI.Matrix
-        trans.translate(pos.x, pos.y)
-        trans.rotate((head - 90).toRadians)
         trans.translate(-r, 0)
-        val step      = if (a > 0) 3 else -3
+        trans.rotate((head - 90).toRadians)
+        trans.translate(pos.x, pos.y)
+        val step      = if (a > 0) 1 else -1
         val pt        = new Point(0, 0)
         val aabs      = a.abs
         val aabsFloor = aabs.floor

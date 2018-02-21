@@ -5,6 +5,7 @@ trait RichTurtleCommands {
   def forward(n: Double): Unit
   def hop(n: Double): Unit
   def setAnimationDelay(i: Long)
+  def arc2(r: Double, a: Double): Unit
 
   def left(angle: Double): Unit = turn(angle)
   def right(angle: Double)      = turn(-angle)
@@ -28,9 +29,9 @@ trait RichTurtleCommands {
     case `fast`      => setAnimationDelay(10)
     case `superFast` => setAnimationDelay(0)
   }
-//  def arc2(r: Double, a: Double): Unit = throw new UnsupportedOperationException("making arcs is not supported")
-//  def left(angle: Double, rad: Double): Unit = arc2(rad, angle)
-//  def right(angle: Double, rad: Double): Unit = { if (angle == 0) return; right(180); arc2(rad, -angle) }
-//  def turn(angle: Double, rad: Double): Unit = if (angle < 0) right(-angle, rad) else left(angle, rad)
-//  def arc(r: Double, a: Double): Unit = turn(a, r)
+
+  def left(angle: Double, rad: Double): Unit  = arc2(rad, angle)
+  def right(angle: Double, rad: Double): Unit = { if (angle == 0) return; right(180); arc2(rad, -angle) }
+  def turn(angle: Double, rad: Double): Unit  = if (angle < 0) right(-angle, rad) else left(angle, rad)
+  def arc(r: Double, a: Double): Unit         = turn(a, r)
 }
