@@ -26,4 +26,6 @@ case class MoveTo(x: Double, y: Double) extends Command
 
 case class Arc2(r: Double, a: Double) extends Command
 
+case class Write(text: String) extends Command
+
 case object PopQ extends Command

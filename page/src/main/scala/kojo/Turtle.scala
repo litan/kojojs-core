@@ -120,6 +120,10 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     commandQ.enqueue(Arc2(r, a))
   }
 
+  def write(text: String): Unit = {
+    commandQ.enqueue(Write(text))
+  }
+
   private def queueHandler(): Unit = {
     if (commandQ.size > 0) {
       commandQ.dequeue() match {
@@ -136,6 +140,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         case MoveTo(x, y)       => realMoveTo(x, y)
         case Arc2(r, a)         => realArc2(r, a)
         case PopQ               => realPopQ()
+        case Write(text)        => realWriteText(text)
       }
     }
   }
@@ -312,6 +317,16 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     val d = distanceTo(x, y)
     forward(d)
     popQ()
+    turtleWorld.scheduleLater(queueHandler)
+  }
+
+  private def realWriteText(text: String): Unit = {
+    val pixiText = new PIXI.Text(text)
+    pixiText.setTransform(0, 0, 1, -1, 0, 0, 0, 0, 0)
+    pixiText.position = position
+    pixiText.rotation = (heading - 90).toRadians
+    turtleLayer.addChild(pixiText)
+    turtleWorld.render()
     turtleWorld.scheduleLater(queueHandler)
   }
 
