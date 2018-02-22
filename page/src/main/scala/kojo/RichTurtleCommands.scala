@@ -34,4 +34,5 @@ trait RichTurtleCommands {
   def right(angle: Double, rad: Double): Unit = { if (angle == 0) return; right(180); arc2(rad, -angle) }
   def turn(angle: Double, rad: Double): Unit  = if (angle < 0) right(-angle, rad) else left(angle, rad)
   def arc(r: Double, a: Double): Unit         = turn(a, r)
+  def circle(r: Double)                       = left(360, r)
 }
