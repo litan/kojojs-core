@@ -10,35 +10,35 @@ import scala.collection.mutable
 class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends RichTurtleCommands {
   var commandQs = mutable.Queue.empty[Command] :: Nil
 
-  def commandQ = commandQs.head
+  private def commandQ = commandQs.head
 
-  def pushQ(): Unit = {
+  private def pushQ(): Unit = {
     commandQs = mutable.Queue.empty[Command] :: commandQs
   }
 
-  def popQ(): Unit = {
+  private def popQ(): Unit = {
     commandQ.enqueue(PopQ)
   }
 
-  def realPopQ(): Unit = {
+  private def realPopQ(): Unit = {
     assert(commandQ.size == 0)
     commandQs = commandQs.tail
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  val turtleLayer                 = new PIXI.Container()
-  var turtleImage: PIXI.Container = _
-  val turtlePath                  = new PIXI.Graphics()
-  val tempGraphics                = new PIXI.Graphics()
+  private val turtleLayer                 = new PIXI.Container()
+  private var turtleImage: PIXI.Container = _
+  private val turtlePath                  = new PIXI.Graphics()
+  private val tempGraphics                = new PIXI.Graphics()
 
-  var penWidth         = 2d
-  var penColor         = Color.red
-  var fillColor: Color = _
-  var animationDelay   = 1000l
+  private var penWidth         = 2d
+  private var penColor         = Color.red
+  private var fillColor: Color = _
+  private var animationDelay   = 1000l
 
   Pixi.loader.add("turtle32", "assets/images/turtle32.png").load(init)
 
-  def init(loader: PIXI.loaders.Loader, any: Any) {
+  private def init(loader: PIXI.loaders.Loader, any: Any) {
     turtleLayer.name = "Turtle Layer"
     turtleWorld.addTurtleLayer(turtleLayer)
     turtleImage = loadTurtle(x, y, loader)
@@ -52,13 +52,13 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def position = turtleImage.position
+  private def position = turtleImage.position
 
-  def headingRadians = turtleImage.rotation
+  private def headingRadians = turtleImage.rotation
 
-  def heading = Utils.rad2degrees(headingRadians)
+  private def heading = Utils.rad2degrees(headingRadians)
 
-  def loadTurtle(x: Double, y: Double, loader: PIXI.loaders.Loader): PIXI.Container = {
+  private def loadTurtle(x: Double, y: Double, loader: PIXI.loaders.Loader): PIXI.Container = {
     val turtle = {
       val rasterTurtle = new PIXI.Sprite(loader.resources("turtle32").texture)
       rasterTurtle.position.set(-16, -16)
@@ -120,7 +120,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     commandQ.enqueue(Arc2(r, a))
   }
 
-  def queueHandler(): Unit = {
+  private def queueHandler(): Unit = {
     if (commandQ.size > 0) {
       commandQ.dequeue() match {
         case Forward(n)  => realForward(n, false)
@@ -140,19 +140,19 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     }
   }
 
-  def realSetPenThickness(t: Double): Unit = {
+  private def realSetPenThickness(t: Double): Unit = {
     penWidth = t
     turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def realSetPenColor(color: Color): Unit = {
+  private def realSetPenColor(color: Color): Unit = {
     penColor = color
     turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def realSetFillColor(color: Color): Unit = {
+  private def realSetFillColor(color: Color): Unit = {
     // start new path
     turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
     // set new fill
@@ -161,7 +161,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def realSetPosition(x: Double, y: Double): Unit = {
+  private def realSetPosition(x: Double, y: Double): Unit = {
     turtleImage.position.x = x
     turtleImage.position.y = y
     turtlePath.moveTo(x, y)
@@ -169,13 +169,13 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def realSetHeading(theta: Double): Unit = {
+  private def realSetHeading(theta: Double): Unit = {
     turtleImage.rotation = theta
     turtleWorld.render()
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def realForwardNoAnim(n: Double, hop: Boolean): Unit = {
+  private def realForwardNoAnim(n: Double, hop: Boolean): Unit = {
     val p0x        = position.x
     val p0y        = position.y
     val (pfx, pfy) = TurtleHelper.posAfterForward(p0x, p0y, headingRadians, n)
@@ -190,7 +190,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def realForward(n: Double, hop: Boolean): Unit = {
+  private def realForward(n: Double, hop: Boolean): Unit = {
     if (animationDelay == 0) {
       realForwardNoAnim(n, hop)
       return
@@ -243,7 +243,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     window.requestAnimationFrame(forwardFrame)
   }
 
-  def realLeft(angle: Double): Unit = {
+  private def realLeft(angle: Double): Unit = {
 
     def leftFrame(): Unit = {
       val angleRads = Utils.deg2radians(angle)
@@ -255,7 +255,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     leftFrame()
   }
 
-  def realArc2(r: Double, a: Double) {
+  private def realArc2(r: Double, a: Double) {
     pushQ()
     if (a == 0) {
       return
@@ -305,7 +305,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     turtleWorld.scheduleLater(queueHandler)
   }
 
-  def realMoveTo(x: Double, y: Double) {
+  private def realMoveTo(x: Double, y: Double) {
     pushQ()
     val newTheta = towardsHelper(x, y)
     setHeading(newTheta.toDegrees)
