@@ -34,6 +34,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
   private var penWidth         = 2d
   private var penColor         = Color.red
   private var fillColor: Color = _
+  private var penFontSize      = 15
   private var animationDelay   = 1000l
 
   Pixi.loader.add("turtle32", "assets/images/turtle32.png").load(init)
@@ -100,6 +101,10 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     commandQ.enqueue(SetPenColor(color))
   }
 
+  def setPenFontSize(n: Int): Unit = {
+    commandQ.enqueue(SetPenFontSize(n))
+  }
+
   def setFillColor(color: Color): Unit = {
     commandQ.enqueue(SetFillColor(color))
   }
@@ -141,6 +146,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         case Arc2(r, a)         => realArc2(r, a)
         case PopQ               => realPopQ()
         case Write(text)        => realWriteText(text)
+        case SetPenFontSize(n)  => realSetPenFontSize(n)
       }
     }
   }
@@ -154,6 +160,11 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
   private def realSetPenColor(color: Color): Unit = {
     penColor = color
     turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
+    turtleWorld.scheduleLater(queueHandler)
+  }
+
+  private def realSetPenFontSize(n: Int): Unit = {
+    penFontSize = n
     turtleWorld.scheduleLater(queueHandler)
   }
 
@@ -325,6 +336,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     pixiText.setTransform(0, 0, 1, -1, 0, 0, 0, 0, 0)
     pixiText.position = position
     pixiText.rotation = (heading - 90).toRadians
+    pixiText.style.fontSize = penFontSize
     turtleLayer.addChild(pixiText)
     turtleWorld.render()
     turtleWorld.scheduleLater(queueHandler)

@@ -1141,6 +1141,7 @@ trait TextStyle extends js.Object {
   var textBaseline: String                                   = js.native
   var lineJoin: String                                       = js.native
   var miterLimit: Double                                     = js.native
+  var fontSize: String | Double                              = js.native
 }
 
 object TextStyle {
