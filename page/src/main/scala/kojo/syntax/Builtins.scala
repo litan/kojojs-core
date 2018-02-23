@@ -1,9 +1,10 @@
 package kojo.syntax
 
-import kojo.doodle.{Normalized, UnsignedByte, Angle}
+import kojo.doodle.{Angle, Normalized, UnsignedByte}
+import kojo.syntax.angle._
 import kojo.syntax.normalized._
 import kojo.syntax.uByte._
-import angle._
+import org.scalajs.dom.window
 
 object Builtins {
   val Color = kojo.doodle.Color
@@ -31,4 +32,16 @@ object Builtins {
   def randomColor = Color(random(256), random(256), random(256))
 
   def randomTransparentColor = Color(random(256), random(256), random(256), 100 + random(156))
+
+  def readln(prompt: String): String = {
+    val ret = window.prompt(prompt, "Type here")
+    if (ret == null)
+      throw new RuntimeException("Read failed.")
+    else
+      ret
+  }
+
+  def readInt(prompt: String): Int = readln(prompt).toInt
+
+  def readDouble(prompt: String): Double = readln(prompt).toDouble
 }
