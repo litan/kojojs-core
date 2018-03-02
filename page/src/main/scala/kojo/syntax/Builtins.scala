@@ -7,7 +7,8 @@ import kojo.syntax.uByte._
 import org.scalajs.dom.window
 
 object Builtins {
-  val Color = kojo.doodle.Color
+  val Color   = kojo.doodle.Color
+  val noColor = Color(0, 0, 0, 0)
 
   implicit def int2ubyte(n: Int): UnsignedByte = n.uByte
 
