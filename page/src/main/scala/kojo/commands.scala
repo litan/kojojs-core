@@ -30,4 +30,8 @@ case class Write(text: String) extends Command
 
 case class SetPenFontSize(n: Int) extends Command
 
+case object SavePosHe extends Command
+
+case object RestorePosHe extends Command
+
 case object PopQ extends Command

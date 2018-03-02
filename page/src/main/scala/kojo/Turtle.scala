@@ -36,6 +36,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
   private var fillColor: Color = _
   private var penFontSize      = 15
   private var animationDelay   = 1000l
+  private val savedPosHe       = new mutable.Stack[(PIXI.Point, Double)]
 
   Pixi.loader.add("turtle32", "assets/images/turtle32.png").load(init)
 
@@ -129,6 +130,14 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     commandQ.enqueue(Write(text))
   }
 
+  def savePosHe(): Unit = {
+    commandQ.enqueue(SavePosHe)
+  }
+
+  def restorePosHe(): Unit = {
+    commandQ.enqueue(RestorePosHe)
+  }
+
   private def queueHandler(): Unit = {
     if (commandQ.size > 0) {
       commandQ.dequeue() match {
@@ -147,6 +156,8 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         case PopQ               => realPopQ()
         case Write(text)        => realWriteText(text)
         case SetPenFontSize(n)  => realSetPenFontSize(n)
+        case SavePosHe          => realSavePosHe()
+        case RestorePosHe       => realRestorePosHe()
       }
     }
   }
@@ -244,7 +255,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         val currY = p0y * (1 - frac) + pfy * frac
         if (!hop) {
           tempGraphics.clear()
-          tempGraphics.lineStyle(penWidth, Color.green.toRGBDouble, 1)
+          tempGraphics.lineStyle(penWidth, Color.orange.toRGBDouble, 1)
           tempGraphics.moveTo(p0x, p0y)
           tempGraphics.lineTo(currX, currY)
           //          tempGraphics.clearDirty += 1
@@ -339,6 +350,21 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     pixiText.style.fontSize = penFontSize
     turtleLayer.addChild(pixiText)
     turtleWorld.render()
+    turtleWorld.scheduleLater(queueHandler)
+  }
+
+  private def realSavePosHe(): Unit = {
+    val pos = position
+    savedPosHe.push((PIXI.Point(pos.x, pos.y), heading))
+    turtleWorld.scheduleLater(queueHandler)
+  }
+
+  private def realRestorePosHe(): Unit = {
+    pushQ()
+    val (newPosition, newHeading) = savedPosHe.pop()
+    setPosition(newPosition.x, newPosition.y)
+    setHeading(newHeading)
+    popQ()
     turtleWorld.scheduleLater(queueHandler)
   }
 
