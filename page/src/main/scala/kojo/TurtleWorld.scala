@@ -13,9 +13,9 @@ class TurtleWorld {
     document.getElementById("canvas-holder").asInstanceOf[html.Div]
   val (width, height) =
     (fiddleContainer.clientWidth, fiddleContainer.clientHeight)
-  //    val renderer = Pixi.autoDetectRenderer(width, height, rendererOptions())
-  val renderer = new CanvasRenderer(width, height, rendererOptions())
-  val stage    = new PIXI.Container()
+  val renderer = PIXI.Pixi.autoDetectRenderer(width, height, rendererOptions())
+//  val renderer = new CanvasRenderer(width, height, rendererOptions())
+  val stage = new PIXI.Container()
   init()
 
   def init() {
