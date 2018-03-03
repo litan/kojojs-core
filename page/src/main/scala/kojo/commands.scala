@@ -34,4 +34,6 @@ case object SavePosHe extends Command
 
 case object RestorePosHe extends Command
 
+case object Clear extends Command
+
 case object PopQ extends Command

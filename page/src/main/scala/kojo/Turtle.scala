@@ -8,28 +8,11 @@ import pixiscalajs.PIXI.{Pixi, Point}
 import scala.collection.mutable
 
 class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends RichTurtleCommands {
-  var commandQs = mutable.Queue.empty[Command] :: Nil
-
-  private def commandQ = commandQs.head
-
-  private def pushQ(): Unit = {
-    commandQs = mutable.Queue.empty[Command] :: commandQs
-  }
-
-  private def popQ(): Unit = {
-    commandQ.enqueue(PopQ)
-  }
-
-  private def realPopQ(): Unit = {
-    assert(commandQ.size == 0)
-    commandQs = commandQs.tail
-    turtleWorld.scheduleLater(queueHandler)
-  }
 
   private val turtleLayer                 = new PIXI.Container()
   private var turtleImage: PIXI.Container = _
   private val turtlePath                  = new PIXI.Graphics()
-  private val tempGraphics                = new PIXI.Graphics()
+  private val tempForwardPath             = new PIXI.Graphics()
 
   private var penWidth         = 2d
   private var penColor         = Color.red
@@ -37,6 +20,8 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
   private var penFontSize      = 15
   private var animationDelay   = 1000l
   private val savedPosHe       = new mutable.Stack[(PIXI.Point, Double)]
+
+  var commandQs = mutable.Queue.empty[Command] :: Nil
 
   Pixi.loader.add("turtle32", "assets/images/turtle32.png").load(init)
 
@@ -47,11 +32,17 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     turtleImage.name = "Turtle Icon"
 
     turtlePath.name = "Turtle Path"
-    turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
-    turtlePath.moveTo(x, y)
     turtleLayer.addChild(turtlePath)
     turtleLayer.addChild(turtleImage)
+    initTurtleLayer()
     turtleWorld.scheduleLater(queueHandler)
+  }
+
+  private def initTurtleLayer(): Unit = {
+    turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
+    turtlePath.moveTo(x, y)
+    turtleImage.position.set(x, y)
+    turtleImage.rotation = Utils.deg2radians(90)
   }
 
   private def position = turtleImage.position
@@ -69,13 +60,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     }
     val turtleHolder = new PIXI.Container()
     turtleHolder.addChild(turtle)
-    turtleHolder.position.set(x, y)
-    turtleHolder.rotation = Utils.deg2radians(90)
     turtleHolder
-  }
-
-  def clear(): Unit = {
-    // no-op for now
   }
 
   def forward(n: Double): Unit = {
@@ -138,6 +123,10 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     commandQ.enqueue(RestorePosHe)
   }
 
+  def clear(): Unit = {
+    commandQ.enqueue(Clear)
+  }
+
   private def queueHandler(): Unit = {
     if (commandQ.size > 0) {
       commandQ.dequeue() match {
@@ -158,6 +147,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         case SetPenFontSize(n)  => realSetPenFontSize(n)
         case SavePosHe          => realSavePosHe()
         case RestorePosHe       => realRestorePosHe()
+        case Clear              => realClear()
       }
     }
   }
@@ -211,6 +201,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     } else {
       turtlePath.lineTo(pfx, pfy)
     }
+    turtlePath.clearDirty += 1
     turtleImage.position.x = pfx
     turtleImage.position.y = pfy
     turtleWorld.render()
@@ -223,7 +214,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
       return
     }
 
-    turtleLayer.addChild(tempGraphics)
+    turtleLayer.addChild(tempForwardPath)
     var len        = 0
     val p0x        = position.x
     val p0y        = position.y
@@ -241,8 +232,8 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         if (hop) {
           turtlePath.moveTo(pfx, pfy)
         } else {
-          tempGraphics.clear()
-          turtleLayer.removeChild(tempGraphics)
+          tempForwardPath.clear()
+          turtleLayer.removeChild(tempForwardPath)
           turtlePath.lineTo(pfx, pfy)
         }
         turtlePath.clearDirty += 1
@@ -254,10 +245,10 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         val currX = p0x * (1 - frac) + pfx * frac
         val currY = p0y * (1 - frac) + pfy * frac
         if (!hop) {
-          tempGraphics.clear()
-          tempGraphics.lineStyle(penWidth, Color.orange.toRGBDouble, 1)
-          tempGraphics.moveTo(p0x, p0y)
-          tempGraphics.lineTo(currX, currY)
+          tempForwardPath.clear()
+          tempForwardPath.lineStyle(penWidth, Color.orange.toRGBDouble, 1)
+          tempForwardPath.moveTo(p0x, p0y)
+          tempForwardPath.lineTo(currX, currY)
           //          tempGraphics.clearDirty += 1
         }
         turtleImage.position.x = currX
@@ -368,12 +359,35 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     turtleWorld.scheduleLater(queueHandler)
   }
 
+  private def realClear(): Unit = {
+    turtlePath.clear()
+    initTurtleLayer()
+    turtleWorld.render()
+    turtleWorld.scheduleLater(queueHandler)
+  }
+
   private def distanceTo(x: Double, y: Double): Double = {
     TurtleHelper.distance(position.x, position.y, x, y)
   }
 
   private def towardsHelper(x: Double, y: Double): Double = {
     TurtleHelper.thetaTowards(position.x, position.y, x, y, headingRadians)
+  }
+
+  private def commandQ = commandQs.head
+
+  private def pushQ(): Unit = {
+    commandQs = mutable.Queue.empty[Command] :: commandQs
+  }
+
+  private def popQ(): Unit = {
+    commandQ.enqueue(PopQ)
+  }
+
+  private def realPopQ(): Unit = {
+    assert(commandQ.size == 0)
+    commandQs = commandQs.tail
+    turtleWorld.scheduleLater(queueHandler)
   }
 
 }
