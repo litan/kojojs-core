@@ -33,10 +33,10 @@ class TurtleWorld {
   }
 
   def scheduleLater(fn: () => Unit): Unit = {
-    window.requestAnimationFrame { t =>
-      fn()
-    }
-    //      window.setTimeout(fn, 10)
+//    window.requestAnimationFrame { t =>
+//      fn()
+//    }
+    window.setTimeout(fn, 0)
   }
 
   def addSprite(sprite: PIXI.Sprite): Unit = {
