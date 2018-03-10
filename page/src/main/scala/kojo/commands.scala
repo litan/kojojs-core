@@ -36,4 +36,6 @@ case object RestorePosHe extends Command
 
 case object Clear extends Command
 
+case class Pause(seconds: Double) extends Command
+
 case object PopQ extends Command

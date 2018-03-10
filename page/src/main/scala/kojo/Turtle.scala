@@ -127,6 +127,10 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     commandQ.enqueue(Clear)
   }
 
+  def pause(seconds: Double): Unit = {
+    commandQ.enqueue(Pause(seconds))
+  }
+
   private def queueHandler(): Unit = {
     if (commandQ.size > 0) {
       commandQ.dequeue() match {
@@ -148,6 +152,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         case SavePosHe          => realSavePosHe()
         case RestorePosHe       => realRestorePosHe()
         case Clear              => realClear()
+        case Pause(seconds)     => realPause(seconds)
       }
     }
   }
@@ -364,6 +369,18 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     initTurtleLayer()
     turtleWorld.render()
     turtleWorld.scheduleLater(queueHandler)
+  }
+
+  private def realPause(seconds: Double): Unit = {
+    val t0 = window.performance.now()
+    def pump(frameTime: Double): Unit = {
+      if (frameTime - t0 > seconds * 1000) {
+        turtleWorld.scheduleLater(queueHandler)
+      } else {
+        window.requestAnimationFrame(pump)
+      }
+    }
+    pump(t0)
   }
 
   private def distanceTo(x: Double, y: Double): Double = {
