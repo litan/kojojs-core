@@ -10,16 +10,6 @@ object Builtins {
   val Color   = kojo.doodle.Color
   val noColor = Color(0, 0, 0, 0)
 
-  implicit def int2ubyte(n: Int): UnsignedByte = n.uByte
-
-  implicit def double2norm(n: Double): Normalized = n.normalized
-
-  implicit def int2norm(n: Int): Normalized = n.normalized
-
-  implicit def double2angle(n: Double): Angle = n.degrees
-
-  implicit def int2angle(n: Int): Angle = n.degrees
-
   val Random = new java.util.Random
 
   def random(upperBound: Int) = Random.nextInt(upperBound)
