@@ -18,6 +18,7 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
   private var penColor         = Color.red
   private var fillColor: Color = _
   private var penFontSize      = 15
+  private var penIsUp          = false
   private var animationDelay   = 1000l
   private val savedPosHe       = new mutable.Stack[(PIXI.Point, Double)]
 
@@ -131,10 +132,18 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
     commandQ.enqueue(Pause(seconds))
   }
 
+  def penUp(): Unit = {
+    commandQ.enqueue(PenUp)
+  }
+
+  def penDown(): Unit = {
+    commandQ.enqueue(PenDown)
+  }
+
   private def queueHandler(): Unit = {
     if (commandQ.size > 0) {
       commandQ.dequeue() match {
-        case Forward(n)  => realForward(n, false)
+        case Forward(n)  => realForward(n, penIsUp)
         case Hop(n)      => realForward(n, true)
         case Turn(angle) => realLeft(angle)
         case SetAnimationDelay(delay) =>
@@ -153,6 +162,8 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
         case RestorePosHe       => realRestorePosHe()
         case Clear              => realClear()
         case Pause(seconds)     => realPause(seconds)
+        case PenUp              => realPenUpDown(true)
+        case PenDown            => realPenUpDown(false)
       }
     }
   }
@@ -339,13 +350,15 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
   }
 
   private def realWriteText(text: String): Unit = {
-    val pixiText = new PIXI.Text(text)
-    pixiText.setTransform(0, 0, 1, -1, 0, 0, 0, 0, 0)
-    pixiText.position = position
-    pixiText.rotation = (heading - 90).toRadians
-    pixiText.style.fontSize = penFontSize
-    turtleLayer.addChild(pixiText)
-    turtleWorld.render()
+    if (!penIsUp) {
+      val pixiText = new PIXI.Text(text)
+      pixiText.setTransform(0, 0, 1, -1, 0, 0, 0, 0, 0)
+      pixiText.position = position
+      pixiText.rotation = (heading - 90).toRadians
+      pixiText.style.fontSize = penFontSize
+      turtleLayer.addChild(pixiText)
+      turtleWorld.render()
+    }
     turtleWorld.scheduleLater(queueHandler)
   }
 
@@ -381,6 +394,15 @@ class Turtle(x: Double, y: Double)(implicit turtleWorld: TurtleWorld) extends Ri
       }
     }
     pump(t0)
+  }
+
+  private def realPenUpDown(up: Boolean): Unit = {
+    if (up) {
+      penIsUp = true
+    } else {
+      penIsUp = false
+    }
+    turtleWorld.scheduleLater(queueHandler)
   }
 
   private def distanceTo(x: Double, y: Double): Double = {

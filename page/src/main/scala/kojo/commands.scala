@@ -38,4 +38,8 @@ case object Clear extends Command
 
 case class Pause(seconds: Double) extends Command
 
+case object PenUp extends Command
+
+case object PenDown extends Command
+
 case object PopQ extends Command
