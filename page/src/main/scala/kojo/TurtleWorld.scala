@@ -32,11 +32,16 @@ class TurtleWorld {
     stage.addChild(layer)
   }
 
+  val MaxBurst   = 100
+  var burstCount = 0
   def scheduleLater(fn: () => Unit): Unit = {
-//    window.requestAnimationFrame { t =>
-//      fn()
-//    }
-    window.setTimeout(fn, 0)
+    burstCount += 1
+    if (burstCount < MaxBurst) {
+      fn()
+    } else {
+      window.setTimeout(fn, 0)
+      burstCount = 0
+    }
   }
 
   def addSprite(sprite: PIXI.Sprite): Unit = {
