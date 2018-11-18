@@ -58,6 +58,13 @@ object SCALE_MODES extends js.Object {
 }
 
 @js.native
+@JSGlobal("PIXI.TRANSFORM_MODE")
+object TRANSFORM_MODE extends js.Object {
+  var STATIC: Int  = js.native
+  var Dynamic: Int = js.native
+}
+
+@js.native
 @JSGlobal("PIXI.DEFAULT_RENDER_OPTIONS")
 object DEFAULT_RENDER_OPTIONS extends js.Object {
   var view: HTMLCanvasElement        = js.native
@@ -117,6 +124,19 @@ trait AccessibleTarget extends js.Object {
   var accessibleHint: String  = js.native
   var tabIndex: Double        = js.native
 }
+@js.native
+@JSGlobal("PIXI.TransformBase")
+class TransformBase extends js.Object {
+  var _parentID: Int               = js.native
+  def updateTransform(): Unit      = js.native
+  def updateLocalTransform(): Unit = js.native
+}
+
+@js.native
+@JSGlobal("PIXI.TransformStatic")
+class TransformStatic extends TransformBase {
+  def onChange(): Unit = js.native
+}
 
 @js.native
 @JSGlobal("PIXI.DisplayObject")
@@ -163,6 +183,8 @@ class DisplayObject extends utils.EventEmitter with interaction.InteractiveTarge
   var parent: Container                 = js.native
   var worldAlpha: Double                = js.native
   var worldTransform: Matrix            = js.native
+  var localTransform: Matrix            = js.native
+  var transform: TransformStatic        = js.native
   var filterArea: Rectangle             = js.native
   var x: Double                         = js.native
   var y: Double                         = js.native
@@ -269,17 +291,18 @@ class GraphicsData protected () extends js.Object {
 @js.native
 @JSGlobal("PIXI.Graphics")
 class Graphics extends Container {
-  var boundsDirty: Boolean  = js.native
-  var dirty: Int            = js.native
-  var clearDirty: Int       = js.native
-  var glDirty: Boolean      = js.native
-  var fillAlpha: Double     = js.native
-  var lineWidth: Double     = js.native
-  var lineColor: Double     = js.native
-  var tint: Double          = js.native
-  var blendMode: Double     = js.native
-  var isMask: Boolean       = js.native
-  var boundsPadding: Double = js.native
+  var boundsDirty: Boolean                 = js.native
+  var dirty: Int                           = js.native
+  var clearDirty: Int                      = js.native
+  var glDirty: Boolean                     = js.native
+  var fillAlpha: Double                    = js.native
+  var lineWidth: Double                    = js.native
+  var lineColor: Double                    = js.native
+  var tint: Double                         = js.native
+  var blendMode: Double                    = js.native
+  var isMask: Boolean                      = js.native
+  var boundsPadding: Double                = js.native
+  var graphicsData: js.Array[GraphicsData] = js.native
 
   def lineStyle(lineWidth: Double = ???, color: Double = ???, alpha: Double = ???): Graphics = js.native
 

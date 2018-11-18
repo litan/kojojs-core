@@ -58,33 +58,41 @@ sealed abstract class Color extends Product with Serializable {
     original.copy(h = original.h + angle.degrees)
   }
 
-  /** Saturate the color by the given amount. This is an absolute
+  /**
+    * Saturate the color by the given amount. This is an absolute
     * amount, not an amount relative to the Color's current
-    * saturation. Saturation is clipped at Normalized.MaxValue */
+    * saturation. Saturation is clipped at Normalized.MaxValue
+    */
   def saturate(saturation: Double) = {
     val original = this.toHSLA
     original.copy(s = Normalized.clip(original.s + saturation.normalized))
   }
 
-  /** Desaturate the color by the given amount. This is an absolute
+  /**
+    * Desaturate the color by the given amount. This is an absolute
     * amount, not an amount relative to the Color's current
-    * saturation. Saturation is clipped at Normalized.MaxValue */
+    * saturation. Saturation is clipped at Normalized.MaxValue
+    */
   def desaturate(desaturation: Double) = {
     val original = this.toHSLA
     original.copy(s = Normalized.clip(original.s - desaturation.normalized))
   }
 
-  /** Lighten the color by the given amount. This is an absolute
+  /**
+    * Lighten the color by the given amount. This is an absolute
     * amount, not an amount relative to the Color's current
-    * lightness. Lightness is clipped at Normalized.MaxValue */
+    * lightness. Lightness is clipped at Normalized.MaxValue
+    */
   def lighten(lightness: Double) = {
     val original = this.toHSLA
     original.copy(l = Normalized.clip(original.l + lightness.normalized))
   }
 
-  /** Darken the color by the given amount. This is an absolute
+  /**
+    * Darken the color by the given amount. This is an absolute
     * amount, not an amount relative to the Color's current
-    * lightness. Lightness is clipped at Normalized.MaxValue */
+    * lightness. Lightness is clipped at Normalized.MaxValue
+    */
   def darken(darkness: Double) = {
     val original = this.toHSLA
     original.copy(l = Normalized.clip(original.l - darkness.normalized))
@@ -102,7 +110,8 @@ sealed abstract class Color extends Product with Serializable {
     original.copy(a = Normalized.clip(original.a - opacity.normalized))
   }
 
-  /** Saturate the color by the given *relative* amount. For example, calling
+  /**
+    * Saturate the color by the given *relative* amount. For example, calling
     * `aColor.saturateBy(0.1.normalized` increases the saturation by 10% of the
     * current saturation.
     */
@@ -111,7 +120,8 @@ sealed abstract class Color extends Product with Serializable {
     original.copy(s = Normalized.clip(original.s.get * (1 + saturation)))
   }
 
-  /** Desaturate the color by the given *relative* amount. For example, calling
+  /**
+    * Desaturate the color by the given *relative* amount. For example, calling
     * `aColor.desaturateBy(0.1.normalized` decreases the saturation by 10% of the
     * current saturation.
     */
@@ -120,7 +130,8 @@ sealed abstract class Color extends Product with Serializable {
     original.copy(s = Normalized.clip(original.s.get * (1 - desaturation)))
   }
 
-  /** Lighten the color by the given *relative* amount. For example, calling
+  /**
+    * Lighten the color by the given *relative* amount. For example, calling
     * `aColor.lightenBy(0.1.normalized` increases the lightness by 10% of the
     * current lightness.
     */
@@ -129,7 +140,8 @@ sealed abstract class Color extends Product with Serializable {
     original.copy(l = Normalized.clip(original.l.get * (1 + lightness)))
   }
 
-  /** Darken the color by the given *relative* amount. For example, calling
+  /**
+    * Darken the color by the given *relative* amount. For example, calling
     * `aColor.darkenBy(0.1.normalized` decreases the lightness by 10% of the
     * current lightness.
     */
@@ -272,5 +284,21 @@ object Color extends CommonColors {
     hsla(h, s, l, 1.0)
 
   // Kojo backward compatibility
+  def apply(r: Int, g: Int, b: Int)               = rgb(r, g, b)
   def apply(r: Int, g: Int, b: Int, a: Int = 255) = rgba(r, g, b, a)
+  def apply(rgbHex: Long): Color                  = apply(rgbHex, false)
+  def apply(rgbHex: Long, hasAlpha: Boolean) = {
+    if (hasAlpha) {
+      val r = (rgbHex >> 24).toInt            //> r: Long = 170
+      val g = ((rgbHex >> 16) & 0x00FF).toInt //> g: Long = 187
+      val b = ((rgbHex >> 8) & 0x00FF).toInt  //> b: Long = 204
+      val a = (rgbHex & 0x000000FF).toInt     //> a: Long = 221
+      rgba(r, g, b, a)
+    } else {
+      val r = (rgbHex >> 16).toInt
+      val g = ((rgbHex >> 8) & 0x00FF).toInt
+      val b = (rgbHex & 0x0000FF).toInt
+      rgb(r, g, b)
+    }
+  }
 }

@@ -1,11 +1,15 @@
 package kojo
 
+import kojo.Speed._
+
 trait RichTurtleCommands {
   def turn(angle: Double): Unit
   def forward(n: Double): Unit
   def hop(n: Double): Unit
   def setAnimationDelay(i: Long)
   def arc2(r: Double, a: Double): Unit
+  def clear(): Unit
+  def invisible(): Unit
 
   def left(angle: Double): Unit = turn(angle)
   def right(angle: Double)      = turn(-angle)
@@ -16,12 +20,6 @@ trait RichTurtleCommands {
   def forward(): Unit = forward(25)
   def hop(): Unit     = hop(25)
   def back(): Unit    = back(25)
-
-  trait Speed
-  case object slow      extends Speed
-  case object medium    extends Speed
-  case object fast      extends Speed
-  case object superFast extends Speed
 
   def setSpeed(speed: Speed) = speed match {
     case `slow`      => setAnimationDelay(1000)
@@ -35,4 +33,8 @@ trait RichTurtleCommands {
   def turn(angle: Double, rad: Double): Unit  = if (angle < 0) right(-angle, rad) else left(angle, rad)
   def arc(r: Double, a: Double): Unit         = turn(a, r)
   def circle(r: Double)                       = left(360, r)
+  def cleari(): Unit = {
+    clear()
+    invisible()
+  }
 }
