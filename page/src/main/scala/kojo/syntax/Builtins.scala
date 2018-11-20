@@ -62,7 +62,7 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   val bounceVecOffStage = turtleWorld.bounceVecOffStage _
   def bouncePicVectorOffPic(pic: Picture, v: Vector2D, obstacle: Picture): Vector2D =
     turtleWorld.bouncePicVectorOffPic(pic, v, obstacle, Random)
-  def bouncePicVectorOffStage(p: Picture, v: Vector2D): Vector2D = bouncePicVectorOffPic(p, v, turtleWorld.stageArea)
+  def bouncePicVectorOffStage(p: Picture, v: Vector2D): Vector2D = bouncePicVectorOffPic(p, v, turtleWorld.stageBorder)
 
   val isKeyPressed     = turtleWorld.isKeyPressed _
   lazy val stageBorder = turtleWorld.stageBorder
@@ -118,6 +118,8 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   def activateCanvas(): Unit = {
     // Todo
   }
+  def switchToDefault2Perspective() {}
+
   val stopAnimation                       = turtleWorld.stopAnimation _
   def draw(pictures: Picture*)            = pictures.foreach { _ draw () }
   def draw(pictures: IndexedSeq[Picture]) = pictures.foreach { _ draw () }

@@ -187,18 +187,30 @@ class TurtleWorld {
   }
 
   def bounceVecOffStage(v: Vector2D, p: Picture): Vector2D = {
-    val stageparts = List(stageTop, stageBot, stageLeft, stageRight)
-    p.collision(stageparts)
-      .map {
-        _ match {
-          case p if p == stageTop   => Vector2D(v.x, -v.y)
-          case p if p == stageBot   => Vector2D(v.x, -v.y)
-          case p if p == stageLeft  => Vector2D(-v.x, v.y)
-          case p if p == stageRight => Vector2D(-v.x, v.y)
-          case _                    => v
-        }
-      }
-      .get
+    val topCollides   = p.collidesWith(stageTop)
+    val leftCollides  = p.collidesWith(stageLeft)
+    val botCollides   = p.collidesWith(stageBot)
+    val rightCollides = p.collidesWith(stageRight)
+
+    val c = v.magnitude / math.sqrt(2)
+    if (topCollides && leftCollides)
+      Vector2D(c, -c)
+    else if (topCollides && rightCollides)
+      Vector2D(-c, -c)
+    else if (botCollides && leftCollides)
+      Vector2D(c, c)
+    else if (botCollides && rightCollides)
+      Vector2D(-c, c)
+    else if (topCollides)
+      Vector2D(v.x, -v.y)
+    else if (botCollides)
+      Vector2D(v.x, -v.y)
+    else if (leftCollides)
+      Vector2D(-v.x, v.y)
+    else if (rightCollides)
+      Vector2D(-v.x, v.y)
+    else
+      v
   }
 
   def collidesWithStage(p: Picture): Boolean = {
@@ -207,6 +219,9 @@ class TurtleWorld {
   }
 
   def bouncePicVectorOffPic(pic: Picture, vel: Vector2D, obstacle: Picture, rg: Random): Vector2D = {
+    val pt      = pic.intersection(obstacle)
+    val iCoords = pt.getCoordinates
+
     // returns points on the obstacle that contain the given collision coordinate
     def obstacleCollPoints(c: Coordinate): Option[js.Array[Coordinate]] = {
       obstacle.picGeom.getCoordinates.sliding(2).find { cs =>
@@ -237,10 +252,6 @@ class TurtleWorld {
     }
 
     def collisionVector = {
-      val pt      = obstacle.intersection(pic)
-      val iCoords = pt.getCoordinates
-      //      println(s"***\nIntersection shape: ${pt}")
-      //      println(s"Intersection shape coords: ${iCoords.toVector}")
       if (iCoords.length == 0) {
         Vector2D(rg.nextDouble, rg.nextDouble).normalize
       } else {
@@ -248,39 +259,9 @@ class TurtleWorld {
           val cv1 = obstacleCollVector(iCoords(0))
           cv1.normalize
         } else {
-          val c1      = iCoords(0)
-          val c2      = iCoords(iCoords.length - 1)
-          val obsPts1 = obstacleCollPoints(c1)
-          val obsPts2 = obstacleCollPoints(c2)
-          if (obsPts1.isDefined && obsPts2.isDefined) {
-            //            println(s"Obstacle points #1: ${obsPts1.get.toVector}")
-            //            println(s"Obstacle points #2: ${obsPts2.get.toVector}")
-            val s1 = collection.mutable.HashSet.empty[Coordinate]
-            s1 += obsPts1.get(0); s1 += obsPts1.get(1)
-            val s2 = collection.mutable.HashSet.empty[Coordinate]
-            s2 += obsPts2.get(0); s2 += obsPts2.get(1)
-            val s1s2 = s1.intersect(s2)
-            if (s1s2.isEmpty) {
-              //              println("No common points in obstacle points #1 and #2")
-              val cv1 = makeVectorFromCollPoints(obsPts1)
-              val cv2 = makeVectorFromCollPoints(obsPts2)
-              //              println(s"cv1: $cv1")
-              //              println(s"cv2: $cv2")
-              cv1.normalize + cv2.normalize
-            } else {
-              val obsCommonPt = s1s2.head
-              //              println(s"Common point in obstacle points #1 and #2: ${obsCommonPt}")
-              s1 -= obsCommonPt
-              s2 -= obsCommonPt
-              val cv1 = makeVectorFromCollPoints(Some(js.Array(c1, obsCommonPt)))
-              val cv2 = makeVectorFromCollPoints(Some(js.Array(obsCommonPt, c2)))
-              //              println(s"cv1: $cv1")
-              //              println(s"cv2: $cv2")
-              (cv1 + cv2).normalize
-            }
-          } else {
-            Vector2D(rg.nextDouble, rg.nextDouble).normalize
-          }
+          val c1 = iCoords(0)
+          val c2 = iCoords(iCoords.length - 1)
+          makeVectorFromCollPoints(Some(js.Array(c1, c2))).normalize
         }
       }
     }
@@ -293,12 +274,11 @@ class TurtleWorld {
         pic.offset(v2)
         pulled += 1
       }
-      pic.offset(velNorm)
+      //      pic.offset(velNorm * 2)
     }
 
     pullbackCollision()
     val cv = collisionVector
-    //    println(s"cv: $cv\n***")
     vel.bounceOff(cv)
   }
 
