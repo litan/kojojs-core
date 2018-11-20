@@ -2,7 +2,7 @@ import sbt._
 import Keys._
 import Settings._
 
-scalafmtOnCompile in ThisBuild := true
+scalafmtOnCompile in ThisBuild := false
 scalafmtVersion in ThisBuild := "1.3.0"
 
 val commonSettings = Seq(
