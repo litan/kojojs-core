@@ -5,11 +5,13 @@ import org.scalajs.dom.window
 import kojo.FillColor
 import kojo.GlobalTurtleForPicture
 import kojo.KeyCodes
+import kojo.Offset
 import kojo.PenColor
 import kojo.PenThickness
 import kojo.Picture
 import kojo.Rotate
 import kojo.Scale
+import kojo.ScaleXY
 import kojo.SwedishTurtle
 import kojo.TextPic
 import kojo.Translate
@@ -128,7 +130,9 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   val GPics = kojo.GPics
   def rot(angle: Double) = Rotate(angle)
   def trans(x: Double, y: Double) = Translate(x, y)
+  def offset(x: Double, y: Double) = Offset(x, y)
   def scale(f: Double) = Scale(f)
+  def scale(fx: Double, fy: Double) = ScaleXY(fx, fy)
   def penColor(c: Color) = PenColor(c)
   def penWidth(t: Double) = PenThickness(t)
   def fillColor(c: Color) = FillColor(c)

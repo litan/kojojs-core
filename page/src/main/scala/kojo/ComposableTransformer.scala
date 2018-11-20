@@ -26,9 +26,23 @@ case class Translate(x: Double, y: Double) extends ComposableTransformer {
   }
 }
 
+case class Offset(x: Double, y: Double) extends ComposableTransformer {
+  def apply(p: Picture): Picture = {
+    p.offset(x, y)
+    p
+  }
+}
+
 case class Scale(f: Double) extends ComposableTransformer {
   def apply(p: Picture): Picture = {
     p.scale(f)
+    p
+  }
+}
+
+case class ScaleXY(fx: Double, fy: Double) extends ComposableTransformer {
+  def apply(p: Picture): Picture = {
+    p.scale(fx, fy)
     p
   }
 }
