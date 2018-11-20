@@ -5,7 +5,7 @@ import pixiscalajs.PIXI
 
 object GPics {
   def apply(pics: List[Picture])(implicit turtleWorld: TurtleWorld) = new GPics(pics)
-  def apply(pics: Picture*)(implicit turtleWorld: TurtleWorld)      = new GPics(pics)
+  def apply(pics: Picture*)(implicit turtleWorld: TurtleWorld) = new GPics(pics)
 }
 
 class GPics(pics: Seq[Picture])(implicit val turtleWorld: TurtleWorld) extends Picture {

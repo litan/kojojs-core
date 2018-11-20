@@ -24,7 +24,7 @@ class TurtleWorld {
   val (width, height) =
     (fiddleContainer.clientWidth, fiddleContainer.clientHeight)
   var renderer = PIXI.Pixi.autoDetectRenderer(width, height, rendererOptions())
-  val stage    = new PIXI.Container()
+  val stage = new PIXI.Container()
   init()
 
   def init() {
@@ -46,13 +46,14 @@ class TurtleWorld {
     stage.removeChild(layer)
   }
 
-  val MaxBurst   = 100
+  val MaxBurst = 100
   var burstCount = 0
   def scheduleLater(fn: () => Unit): Unit = {
     burstCount += 1
     if (burstCount < MaxBurst) {
       fn()
-    } else {
+    }
+    else {
       window.setTimeout(fn, 0)
       burstCount = 0
     }
@@ -76,10 +77,10 @@ class TurtleWorld {
   }
 
   def rendererOptions(
-      antialias: Boolean = true,
-      resolution: Double = 1,
-      backgroundColor: Int = 0xFFFFFF,
-      clearBeforeRender: Boolean = true
+    antialias:         Boolean = true,
+    resolution:        Double  = 1,
+    backgroundColor:   Int     = 0xFFFFFF,
+    clearBeforeRender: Boolean = true
   ): RendererOptions = {
     js.Dynamic
       .literal(
@@ -96,7 +97,7 @@ class TurtleWorld {
   }
 
   var animatiing = false
-  var timers     = Vector.empty[Int]
+  var timers = Vector.empty[Int]
 
   def animate(fn: => Unit): Unit = {
     animatiing = true
@@ -124,13 +125,13 @@ class TurtleWorld {
   }
 
   val noPic = TurtlePicture { t =>
-    }(this)
+  }(this)
   @volatile var stageBorder: Picture = _
-  @volatile var stageLeft: Picture   = _
-  @volatile var stageTop: Picture    = _
-  @volatile var stageRight: Picture  = _
-  @volatile var stageBot: Picture    = _
-  @volatile var stageArea: Picture   = _
+  @volatile var stageLeft: Picture = _
+  @volatile var stageTop: Picture = _
+  @volatile var stageRight: Picture = _
+  @volatile var stageBot: Picture = _
+  @volatile var stageArea: Picture = _
 
   def clearStage() {
     stageBorder = noPic
@@ -187,9 +188,9 @@ class TurtleWorld {
   }
 
   def bounceVecOffStage(v: Vector2D, p: Picture): Vector2D = {
-    val topCollides   = p.collidesWith(stageTop)
-    val leftCollides  = p.collidesWith(stageLeft)
-    val botCollides   = p.collidesWith(stageBot)
+    val topCollides = p.collidesWith(stageTop)
+    val leftCollides = p.collidesWith(stageLeft)
+    val botCollides = p.collidesWith(stageBot)
     val rightCollides = p.collidesWith(stageRight)
 
     val c = v.magnitude / math.sqrt(2)
@@ -219,7 +220,7 @@ class TurtleWorld {
   }
 
   def bouncePicVectorOffPic(pic: Picture, vel: Vector2D, obstacle: Picture, rg: Random): Vector2D = {
-    val pt      = pic.intersection(obstacle)
+    val pt = pic.intersection(obstacle)
     val iCoords = pt.getCoordinates
 
     // returns points on the obstacle that contain the given collision coordinate
@@ -254,11 +255,13 @@ class TurtleWorld {
     def collisionVector = {
       if (iCoords.length == 0) {
         Vector2D(rg.nextDouble, rg.nextDouble).normalize
-      } else {
+      }
+      else {
         if (iCoords.length == 1) {
           val cv1 = obstacleCollVector(iCoords(0))
           cv1.normalize
-        } else {
+        }
+        else {
           val c1 = iCoords(0)
           val c2 = iCoords(iCoords.length - 1)
           makeVectorFromCollPoints(Some(js.Array(c1, c2))).normalize
@@ -267,9 +270,9 @@ class TurtleWorld {
     }
     def pullbackCollision() = {
       val velNorm = vel.normalize
-      val v2      = velNorm.rotate(180)
-      val velMag  = vel.magnitude
-      var pulled  = 0
+      val v2 = velNorm.rotate(180)
+      val velMag = vel.magnitude
+      var pulled = 0
       while (pic.collidesWith(obstacle) && pulled < velMag) {
         pic.offset(v2)
         pulled += 1

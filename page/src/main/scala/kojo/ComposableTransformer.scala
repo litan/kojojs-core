@@ -4,7 +4,7 @@ import kojo.doodle.Color
 
 abstract class ComposableTransformer extends Function1[Picture, Picture] { outer =>
   def apply(p: Picture): Picture
-  def ->(p: Picture) = apply(p)
+  def -> (p: Picture) = apply(p)
   def *(other: ComposableTransformer) = new ComposableTransformer {
     def apply(p: Picture): Picture = {
       other.apply(outer.apply(p))

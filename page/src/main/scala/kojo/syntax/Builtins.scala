@@ -22,11 +22,11 @@ import pixiscalajs.PIXI.Rectangle
 
 class Builtins(implicit turtleWorld: TurtleWorld) {
   var turtle0 = new Turtle(0, 0)
-  val turtle  = new GlobalTurtleForPicture
+  val turtle = new GlobalTurtleForPicture
   turtle.globalTurtle = turtle0
   val svTurtle = new SwedishTurtle(turtle0)
-  val Color    = kojo.doodle.Color
-  val noColor  = Color(0, 0, 0, 0)
+  val Color = kojo.doodle.Color
+  val noColor = Color(0, 0, 0, 0)
 
   val Random = new java.util.Random
 
@@ -55,20 +55,20 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   def readDouble(prompt: String): Double = readln(prompt).toDouble
 
   val setBackground = turtleWorld.setBackground _
-  val animate       = turtleWorld.animate _
-  val timer         = turtleWorld.timer _
-  val drawStage     = turtleWorld.drawStage _
+  val animate = turtleWorld.animate _
+  val timer = turtleWorld.timer _
+  val drawStage = turtleWorld.drawStage _
 
   val bounceVecOffStage = turtleWorld.bounceVecOffStage _
   def bouncePicVectorOffPic(pic: Picture, v: Vector2D, obstacle: Picture): Vector2D =
     turtleWorld.bouncePicVectorOffPic(pic, v, obstacle, Random)
   def bouncePicVectorOffStage(p: Picture, v: Vector2D): Vector2D = bouncePicVectorOffPic(p, v, turtleWorld.stageBorder)
 
-  val isKeyPressed     = turtleWorld.isKeyPressed _
+  val isKeyPressed = turtleWorld.isKeyPressed _
   lazy val stageBorder = turtleWorld.stageBorder
-  lazy val stageTop    = turtleWorld.stageTop
-  lazy val stageBot    = turtleWorld.stageBot
-  val Kc               = new KeyCodes
+  lazy val stageTop = turtleWorld.stageTop
+  lazy val stageBot = turtleWorld.stageBot
+  val Kc = new KeyCodes
   val canvasBounds = {
     val pos = turtleWorld.stage.position
     new Rectangle(-pos.x, -pos.y, turtleWorld.width, turtleWorld.height)
@@ -92,16 +92,16 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   }
 
   def drawCenteredMessage(message: String, color: Color = Color.black, fontSize: Int = 15) {
-    val cb  = canvasBounds
-    val te  = textExtent(message, fontSize)
+    val cb = canvasBounds
+    val te = textExtent(message, fontSize)
     val pic = Picture.textu(message, fontSize, color)
     pic.translate(cb.x + (cb.width - te.width) / 2, 0)
     draw(pic)
   }
   def showGameTime(limitSecs: Int, endMsg: String, color: Color = Color.black, fontSize: Int = 15): Unit = {
-    val cb                 = canvasBounds
+    val cb = canvasBounds
     @volatile var gameTime = 0
-    val timeLabel          = Picture.textu(gameTime, fontSize, color)
+    val timeLabel = Picture.textu(gameTime, fontSize, color)
     draw(timeLabel)
     timeLabel.setPosition(cb.x + 10, cb.y + 50)
 
@@ -120,18 +120,18 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   }
   def switchToDefault2Perspective() {}
 
-  val stopAnimation                       = turtleWorld.stopAnimation _
-  def draw(pictures: Picture*)            = pictures.foreach { _ draw () }
+  val stopAnimation = turtleWorld.stopAnimation _
+  def draw(pictures: Picture*) = pictures.foreach { _ draw () }
   def draw(pictures: IndexedSeq[Picture]) = pictures.foreach { _ draw () }
-  def draw(pictures: List[Picture])       = pictures.foreach { _ draw () }
+  def draw(pictures: List[Picture]) = pictures.foreach { _ draw () }
 
-  val GPics                       = kojo.GPics
-  def rot(angle: Double)          = Rotate(angle)
+  val GPics = kojo.GPics
+  def rot(angle: Double) = Rotate(angle)
   def trans(x: Double, y: Double) = Translate(x, y)
-  def scale(f: Double)            = Scale(f)
-  def penColor(c: Color)          = PenColor(c)
-  def penWidth(t: Double)         = PenThickness(t)
-  def fillColor(c: Color)         = FillColor(c)
+  def scale(f: Double) = Scale(f)
+  def penColor(c: Color) = PenColor(c)
+  def penWidth(t: Double) = PenThickness(t)
+  def fillColor(c: Color) = FillColor(c)
 
   object Picture {
     def rect(h: Double, w: Double) = Picture {

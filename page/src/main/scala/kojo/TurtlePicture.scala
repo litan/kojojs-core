@@ -17,11 +17,11 @@ object TurtlePicture {
 }
 
 class TurtlePicture private[kojo] (implicit val turtleWorld: TurtleWorld) extends Picture {
-  val turtle   = new Turtle(0, 0, true)
+  val turtle = new Turtle(0, 0, true)
   val picLayer = turtle.turtleLayer
-  val tnode    = picLayer
-  var made     = false
-  val noColor  = Color(0, 0, 0, 0)
+  val tnode = picLayer
+  var made = false
+  val noColor = Color(0, 0, 0, 0)
 
   def make(fn: Turtle => Unit): Unit = {
     turtle.invisible()
@@ -49,7 +49,7 @@ class TurtlePicture private[kojo] (implicit val turtleWorld: TurtleWorld) extend
   }
 
   def initGeom(): Geometry = {
-    val cab    = new ArrayBuffer[Coordinate]
+    val cab = new ArrayBuffer[Coordinate]
     val points = turtle.turtlePathPoints
     if (points.size > 1) {
       points.foreach { pt =>

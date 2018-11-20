@@ -2,66 +2,66 @@ package kojo
 
 class KeyCodes {
 
-  val VK_ENTER      = '\n';
+  val VK_ENTER = '\n';
   val VK_BACK_SPACE = '\b';
-  val VK_TAB        = '\t';
-  val VK_CANCEL     = 0x03;
-  val VK_CLEAR      = 0x0C;
-  val VK_SHIFT      = 0x10;
-  val VK_CONTROL    = 0x11;
-  val VK_ALT        = 0x12;
-  val VK_PAUSE      = 0x13;
-  val VK_CAPS_LOCK  = 0x14;
-  val VK_ESCAPE     = 0x1B;
-  val VK_SPACE      = 0x20;
-  val VK_PAGE_UP    = 0x21;
-  val VK_PAGE_DOWN  = 0x22;
-  val VK_END        = 0x23;
-  val VK_HOME       = 0x24;
+  val VK_TAB = '\t';
+  val VK_CANCEL = 0x03;
+  val VK_CLEAR = 0x0C;
+  val VK_SHIFT = 0x10;
+  val VK_CONTROL = 0x11;
+  val VK_ALT = 0x12;
+  val VK_PAUSE = 0x13;
+  val VK_CAPS_LOCK = 0x14;
+  val VK_ESCAPE = 0x1B;
+  val VK_SPACE = 0x20;
+  val VK_PAGE_UP = 0x21;
+  val VK_PAGE_DOWN = 0x22;
+  val VK_END = 0x23;
+  val VK_HOME = 0x24;
 
   /**
-    * Constant for the non-numpad <b>left</b> arrow key.
-    * @see #VK_KP_LEFT
-    */
+   * Constant for the non-numpad <b>left</b> arrow key.
+   * @see #VK_KP_LEFT
+   */
   val VK_LEFT = 0x25;
 
   /**
-    * Constant for the non-numpad <b>up</b> arrow key.
-    * @see #VK_KP_UP
-    */
+   * Constant for the non-numpad <b>up</b> arrow key.
+   * @see #VK_KP_UP
+   */
   val VK_UP = 0x26;
 
   /**
-    * Constant for the non-numpad <b>right</b> arrow key.
-    * @see #VK_KP_RIGHT
-    */
+   * Constant for the non-numpad <b>right</b> arrow key.
+   * @see #VK_KP_RIGHT
+   */
   val VK_RIGHT = 0x27;
 
   /**
-    * Constant for the non-numpad <b>down</b> arrow key.
-    * @see #VK_KP_DOWN
-    */
+   * Constant for the non-numpad <b>down</b> arrow key.
+   * @see #VK_KP_DOWN
+   */
   val VK_DOWN = 0x28;
 
   /**
-    * Constant for the comma key, ","
-    */
+   * Constant for the comma key, ","
+   */
   val VK_COMMA = 0x2C;
 
   /**
-    * Constant for the minus key, "-"
-    * @since 1.2
-    */
+   * Constant for the minus key, "-"
+   * @since 1.2
+   */
   val VK_MINUS = 0x2D;
 
   /**
-    * Constant for the period key, "."
-    */
+   * Constant for the period key, "."
+   */
   val VK_PERIOD = 0x2E;
 
   /**
-    * Constant for the forward slash key, "/"
-    */
+   * Constant for the forward slash key, "/"
+   */
   val VK_SLASH = 0x2F;
 
   /** VK_0 thru VK_9 are the same as ASCII '0' thru '9' (0x30 - 0x39) */
@@ -77,13 +77,13 @@ class KeyCodes {
   val VK_9 = 0x39;
 
   /**
-    * Constant for the semicolon key, ";"
-    */
+   * Constant for the semicolon key, ";"
+   */
   val VK_SEMICOLON = 0x3B;
 
   /**
-    * Constant for the equals key, "="
-    */
+   * Constant for the equals key, "="
+   */
   val VK_EQUALS = 0x3D;
 
   /** VK_A thru VK_Z are the same as ASCII 'A' thru 'Z' (0x41 - 0x5A) */

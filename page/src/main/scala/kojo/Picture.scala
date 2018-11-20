@@ -27,11 +27,11 @@ trait Picture {
   private def t2t(t: Matrix): AffineTransformation = {
     import scala.scalajs.js.JSConverters._
     val ms2 = Array.fill(6)(0.0).toJSArray
-    ms2(0) = t.a  // m00
-    ms2(1) = t.c  // m01
+    ms2(0) = t.a // m00
+    ms2(1) = t.c // m01
     ms2(2) = t.tx // m02
-    ms2(3) = t.b  // m10
-    ms2(4) = t.d  // m11
+    ms2(3) = t.b // m10
+    ms2(4) = t.d // m11
     ms2(5) = t.ty // m12
     new AffineTransformation(ms2)
   }
@@ -68,9 +68,9 @@ trait Picture {
   }
 
   def translate(dx: Double, dy: Double): Unit = {
-    val pos       = tnode.position
+    val pos = tnode.position
     val transform = tnode.localTransform
-    val localPos  = transform.applyInverse(pos)
+    val localPos = transform.applyInverse(pos)
     localPos.set(localPos.x + dx, localPos.y + dy)
     val globalPos = transform.apply(localPos)
     pos.set(globalPos.x, globalPos.y)
@@ -107,7 +107,8 @@ trait Picture {
     if (_picGeom == null) {
       try {
         _picGeom = initGeom()
-      } catch {
+      }
+      catch {
         case ise: IllegalStateException =>
           throw ise
         case t: Throwable =>
@@ -121,11 +122,12 @@ trait Picture {
   def collidesWith(other: Picture): Boolean = {
     if (picGeom == null || other.picGeom == null) {
       false
-    } else {
+    }
+    else {
       val str1 = LineString.asString(picGeom.asInstanceOf[LineString])
       val str2 = LineString.asString(other.picGeom.asInstanceOf[LineString])
       val str3 = LineString.asString(other._picGeom.asInstanceOf[LineString])
-      val ret  = picGeom.intersects(other.picGeom)
+      val ret = picGeom.intersects(other.picGeom)
       ret
     }
   }

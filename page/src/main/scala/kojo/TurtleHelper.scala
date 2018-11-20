@@ -10,16 +10,18 @@ object TurtleHelper {
 
   def thetaTowards(px: Double, py: Double, x: Double, y: Double, oldTheta: Double): Double = {
     val (x0, y0) = (px, py)
-    val delX     = x - x0
-    val delY     = y - y0
+    val delX = x - x0
+    val delY = y - y0
     if (Utils.doublesEqual(delX, 0, 0.001)) {
       if (Utils.doublesEqual(delY, 0, 0.001)) oldTheta
       else if (delY > 0) math.Pi / 2
       else 3 * math.Pi / 2
-    } else if (Utils.doublesEqual(delY, 0, 0.001)) {
+    }
+    else if (Utils.doublesEqual(delY, 0, 0.001)) {
       if (delX > 0) 0
       else math.Pi
-    } else {
+    }
+    else {
       var nt2 = math.atan(delY / delX)
       if (delX < 0 && delY > 0) nt2 += math.Pi
       else if (delX < 0 && delY < 0) nt2 += math.Pi
