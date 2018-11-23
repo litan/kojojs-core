@@ -118,7 +118,10 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
     }
   }
   def activateCanvas(): Unit = {
-    // Todo
+    // Does not work yet! Needs further research/experimentation
+    turtleWorld.runLater(1000) { () =>
+      turtleWorld.canvas_holder.click()
+    }
   }
   def switchToDefault2Perspective() {}
 
