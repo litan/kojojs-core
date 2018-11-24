@@ -81,6 +81,7 @@ class TurtlePicture private[kojo] (implicit val turtleWorld: TurtleWorld) extend
       val gds = turtle.turtlePath.graphicsData
       gds.foreach { gd =>
         gd.lineColor = c.toRGBDouble
+        gd.lineAlpha = c.alpha.get
       }
       turtle.turtlePath.dirty += 1
       turtle.turtlePath.clearDirty += 1
