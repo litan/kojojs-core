@@ -142,27 +142,40 @@ class TurtleWorld {
   }
 
   def drawStage(fillc: Color)(implicit turtleWorld: TurtleWorld) {
-    def border(size: Double) = TurtlePicture { t =>
+    def left(size: Double) = TurtlePicture { t =>
       t.setPenThickness(0)
+      t.forward(size)
+    }
+    def top(size: Double) = TurtlePicture { t =>
+      t.setPenThickness(0)
+      t.right()
+      t.forward(size)
+    }
+    def right(size: Double) = TurtlePicture { t =>
+      t.setPenThickness(0)
+      t.right(180)
+      t.forward(size)
+    }
+    def bottom(size: Double) = TurtlePicture { t =>
+      t.setPenThickness(0)
+      t.left()
       t.forward(size)
     }
 
     val xmax = stage.position.x.abs
     val ymax = stage.position.y.abs
 
-    stageLeft = border(height)
+    stageLeft = left(height)
     stageLeft.translate(-xmax, -ymax)
 
-    stageTop = border(width)
+    stageTop = top(width)
     stageTop.translate(-xmax, ymax)
-    stageTop.rotate(-90)
 
-    stageRight = border(height)
-    stageRight.translate(xmax, -ymax)
+    stageRight = right(height)
+    stageRight.translate(xmax, ymax)
 
-    stageBot = border(width)
-    stageBot.translate(-xmax, -ymax)
-    stageBot.rotate(-90)
+    stageBot = bottom(width)
+    stageBot.translate(xmax, -ymax)
 
     stageArea = TurtlePicture { t =>
       t.setFillColor(fillc)
