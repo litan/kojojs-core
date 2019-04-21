@@ -178,4 +178,13 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
       new ImagePic(url)
     }
   }
+
+  def url(s: String) = s
+  type MMap[K, V] = collection.mutable.Map[K, V]
+  type MSet[V] = collection.mutable.Set[V]
+  type MSeq[V] = collection.mutable.Seq[V]
+
+  val HashMap = collection.mutable.HashMap
+  val HashSet = collection.mutable.HashSet
+  val ArrayBuffer = collection.mutable.ArrayBuffer
 }
