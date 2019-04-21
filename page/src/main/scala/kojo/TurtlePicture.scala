@@ -24,7 +24,6 @@ class TurtlePicture private[kojo] (implicit val turtleWorld: TurtleWorld) extend
   val noColor = Color(0, 0, 0, 0)
 
   def make(fn: Turtle => Unit): Unit = {
-    turtle.invisible()
     turtle.setAnimationDelay(0)
     turtle.setFillColor(noColor)
     fn(turtle)

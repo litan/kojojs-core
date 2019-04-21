@@ -124,9 +124,6 @@ trait Picture {
       false
     }
     else {
-      val str1 = LineString.asString(picGeom.asInstanceOf[LineString])
-      val str2 = LineString.asString(other.picGeom.asInstanceOf[LineString])
-      val str3 = LineString.asString(other._picGeom.asInstanceOf[LineString])
       val ret = picGeom.intersects(other.picGeom)
       ret
     }

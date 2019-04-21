@@ -7,17 +7,49 @@ import org.scalajs.dom.window
 
 import kojo.doodle.Color
 import pixiscalajs.PIXI
+import pixiscalajs.PIXI
 import pixiscalajs.PIXI.Pixi
 import pixiscalajs.PIXI.Point
 
 object TurtleImageHelper {
-  val loader = Pixi.loader.add("turtle32", "assets/images/turtle32.png")
+  private val loader = Pixi.loader
+
+  case class QEntry(name: String, url: String, doneFn: (PIXI.loaders.Loader, Any) => Unit)
+
+  val queue = mutable.Queue.empty[QEntry]
+
+  def addAndLoad(name: String, url: String, doneFn: (PIXI.loaders.Loader, Any) => Unit): Unit = {
+
+    def checkQ(): Unit = {
+      if (queue.nonEmpty) {
+        val qe = queue.dequeue()
+        addAndLoad(qe.name, qe.url, qe.doneFn)
+      }
+    }
+
+    if (!loader.loading) {
+      val resVal = loader.resources(name)
+      if (resVal == ()) {
+        loader.add(name, url)
+        loader.load { (loader, any) =>
+          doneFn(loader, any)
+          checkQ()
+        }
+      }
+      else {
+        doneFn(loader, resVal)
+        checkQ()
+      }
+    }
+    else {
+      queue.enqueue(QEntry(name, url, doneFn))
+    }
+  }
 }
 
 class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld: TurtleWorld)
   extends TurtleAPI
   with RichTurtleCommands {
-
   private[kojo] val turtleLayer = new PIXI.Container()
   private var turtleImage: PIXI.Container = _
   private[kojo] val turtlePath = new PIXI.Graphics()
@@ -44,7 +76,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
 
   var commandQs = mutable.Queue.empty[Command] :: Nil
 
-  TurtleImageHelper.loader.load(init)
+  TurtleImageHelper.addAndLoad("turtle32", "assets/images/turtle32.png", init)
 
   private def init(loader: PIXI.loaders.Loader, any: Any) {
     turtleLayer.name = "Turtle Layer"
@@ -56,7 +88,9 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
 
     turtlePath.name = "Turtle Path"
     turtleLayer.addChild(turtlePath)
-    turtleLayer.addChild(turtleImage)
+    if (!forPic) {
+      turtleLayer.addChild(turtleImage)
+    }
     initTurtleLayer()
     turtleWorld.scheduleLater(queueHandler)
   }

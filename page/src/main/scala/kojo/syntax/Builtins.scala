@@ -4,6 +4,7 @@ import org.scalajs.dom.window
 
 import kojo.FillColor
 import kojo.GlobalTurtleForPicture
+import kojo.ImagePic
 import kojo.KeyCodes
 import kojo.Offset
 import kojo.PenColor
@@ -70,6 +71,8 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   lazy val stageBorder = turtleWorld.stageBorder
   lazy val stageTop = turtleWorld.stageTop
   lazy val stageBot = turtleWorld.stageBot
+  lazy val stageLeft = turtleWorld.stageLeft
+  lazy val stageRight = turtleWorld.stageRight
   val Kc = new KeyCodes
   val canvasBounds = {
     val pos = turtleWorld.stage.position
@@ -169,6 +172,10 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
 
     def textu(text: Any, fontSize: Int, color: Color = Color.black)(implicit turtleWorld: TurtleWorld): TextPic = {
       new TextPic(text, fontSize, color)
+    }
+
+    def image(url: String)(implicit turtleWorld: TurtleWorld): ImagePic = {
+      new ImagePic(url)
     }
   }
 }
