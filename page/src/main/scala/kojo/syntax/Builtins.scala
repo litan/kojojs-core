@@ -187,4 +187,22 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   val HashMap = collection.mutable.HashMap
   val HashSet = collection.mutable.HashSet
   val ArrayBuffer = collection.mutable.ArrayBuffer
+
+  def showFps(color: Color = Color.black, fontSize: Int = 15)(implicit turtleWorld: TurtleWorld) {
+    val cb = canvasBounds
+    var frameCnt = 0
+    val fpsLabel = Picture.textu("Fps: ", fontSize, color)
+    fpsLabel.setPosition(cb.x + 10, cb.y + cb.height - 10)
+    draw(fpsLabel)
+    //    fpsLabel.forwardInputTo(TSCanvas.stageArea)
+
+    timer(1000) {
+      fpsLabel.update(s"Fps: $frameCnt")
+      frameCnt = 0
+    }
+    animate {
+      frameCnt += 1
+    }
+  }
+
 }
