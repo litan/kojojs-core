@@ -96,25 +96,24 @@ class TurtleWorld {
     renderer.backgroundColor = color.toRGBDouble
   }
 
-  var animations = Vector.empty[Int]
+  var animating = false
   var timers = Vector.empty[Int]
 
   def animate(fn: => Unit): Unit = {
-    val handle = window.requestAnimationFrame { t =>
+    animating = true
+    window.requestAnimationFrame { t =>
       fn
-      animate(fn)
+      if (animating) {
+        animate(fn)
+      }
     }
-    animations = animations :+ handle
   }
 
   def stopAnimation(): Unit = {
-    animations foreach { h =>
-      window.cancelAnimationFrame(h)
-    }
+    animating = false
     timers foreach { t =>
       window.clearInterval(t)
     }
-    animations = Vector.empty[Int]
     timers = Vector.empty[Int]
   }
 
