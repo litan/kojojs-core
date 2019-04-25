@@ -92,7 +92,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
       turtleLayer.addChild(turtleImage)
     }
     initTurtleLayer()
-    turtleWorld.scheduleLater(queueHandler)
+    turtleWorld.runLater(0)(queueHandler)
   }
 
   private def initTurtleLayer(): Unit = {

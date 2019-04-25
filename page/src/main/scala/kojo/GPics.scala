@@ -27,7 +27,6 @@ class GPics(pics: Seq[Picture])(implicit val turtleWorld: TurtleWorld) extends P
 
   def realDraw(): Unit = {
     turtleWorld.addTurtleLayer(tnode)
-    turtleWorld.render()
     pics.foreach { p =>
       p.updateGeomTransform()
     }

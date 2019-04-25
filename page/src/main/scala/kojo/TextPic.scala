@@ -22,12 +22,10 @@ class TextPic(text: Any, fontSize: Int, color: Color)(implicit val turtleWorld: 
 
   override def realDraw(): Unit = {
     turtleWorld.addTurtleLayer(textLayer)
-    turtleWorld.render()
   }
 
   def erase(): Unit = {
     turtleWorld.removeTurtleLayer(textLayer)
-    turtleWorld.render()
   }
 
   override def setFillColor(c: Color): Unit = {

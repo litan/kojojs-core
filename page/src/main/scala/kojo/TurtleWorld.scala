@@ -40,10 +40,12 @@ class TurtleWorld {
 
   def addTurtleLayer(layer: PIXI.Container): Unit = {
     stage.addChild(layer)
+    render()
   }
 
   def removeTurtleLayer(layer: PIXI.Container): Unit = {
     stage.removeChild(layer)
+    render()
   }
 
   val MaxBurst = 100
@@ -63,17 +65,20 @@ class TurtleWorld {
     window.setTimeout(fn, ms)
   }
 
-  def addSprite(sprite: PIXI.Sprite): Unit = {
-    def endFrame(): Unit = {
-      stage.addChild(sprite)
-      render()
-    }
-
-    scheduleLater(endFrame)
-  }
-
   def render(): Unit = {
     renderer.render(stage)
+  }
+
+  def moveToFront(obj: PIXI.DisplayObject): Unit = {
+    val c = stage.removeChild(obj)
+    stage.addChild(c)
+    render()
+  }
+
+  def moveToBack(obj: PIXI.DisplayObject): Unit = {
+    val c = stage.removeChild(obj)
+    stage.addChildAt(c, 0)
+    render()
   }
 
   def rendererOptions(

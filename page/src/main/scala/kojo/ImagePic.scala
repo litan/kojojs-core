@@ -4,8 +4,8 @@ import scala.collection.mutable.ArrayBuffer
 
 import com.vividsolutions.jts.geom.Coordinate
 import com.vividsolutions.jts.geom.Geometry
-import com.vividsolutions.jts.geom.PrecisionModel
 
+import kojo.Utils.newCoordinate
 import kojo.doodle.Color
 import pixiscalajs.PIXI
 class ImagePic(url: String)(implicit val turtleWorld: TurtleWorld) extends Picture {
@@ -26,12 +26,10 @@ class ImagePic(url: String)(implicit val turtleWorld: TurtleWorld) extends Pictu
 
   override def realDraw(): Unit = {
     turtleWorld.addTurtleLayer(imgLayer)
-    turtleWorld.render()
   }
 
   def erase(): Unit = {
     turtleWorld.removeTurtleLayer(imgLayer)
-    turtleWorld.render()
   }
 
   override def setFillColor(c: Color): Unit = {
@@ -43,13 +41,6 @@ class ImagePic(url: String)(implicit val turtleWorld: TurtleWorld) extends Pictu
   override def setPenThickness(t: Double): Unit = {
   }
 
-  lazy val pmodel = new PrecisionModel(14)
-  def newCoordinate(x: Double, y: Double) = {
-    val coord = new Coordinate(x, y)
-    pmodel.makePrecise(coord)
-    coord
-  }
-
   override def initGeom(): Geometry = {
     val cab = new ArrayBuffer[Coordinate]
     val bounds = sprite.getLocalBounds()
@@ -59,7 +50,7 @@ class ImagePic(url: String)(implicit val turtleWorld: TurtleWorld) extends Pictu
     cab += newCoordinate(bounds.x + bounds.width, bounds.y)
     cab += newCoordinate(bounds.x, bounds.y)
     import scala.scalajs.js.JSConverters._
-//    pgTransform.getInverse().transform(Gf.createLineString(cab.toJSArray))
+    //    pgTransform.getInverse().transform(Gf.createLineString(cab.toJSArray))
     Gf.createLineString(cab.toJSArray)
   }
 }

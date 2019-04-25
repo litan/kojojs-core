@@ -4,8 +4,8 @@ import scala.collection.mutable.ArrayBuffer
 
 import com.vividsolutions.jts.geom.Coordinate
 import com.vividsolutions.jts.geom.Geometry
-import com.vividsolutions.jts.geom.PrecisionModel
 
+import kojo.Utils.newCoordinate
 import kojo.doodle.Color
 
 object TurtlePicture {
@@ -33,18 +33,9 @@ class TurtlePicture private[kojo] (implicit val turtleWorld: TurtleWorld) extend
   }
   def realDraw(): Unit = {
     turtleWorld.addTurtleLayer(picLayer)
-    turtleWorld.render()
   }
   def erase(): Unit = {
     turtleWorld.removeTurtleLayer(picLayer)
-    turtleWorld.render()
-  }
-
-  lazy val pmodel = new PrecisionModel(14)
-  def newCoordinate(x: Double, y: Double) = {
-    val coord = new Coordinate(x, y)
-    pmodel.makePrecise(coord)
-    coord
   }
 
   def initGeom(): Geometry = {

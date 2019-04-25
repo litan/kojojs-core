@@ -1,11 +1,14 @@
 package kojo.syntax
 
+import scala.scalajs.js.Date
+
 import org.scalajs.dom.window
 
 import kojo.FillColor
 import kojo.GlobalTurtleForPicture
 import kojo.ImagePic
 import kojo.KeyCodes
+import kojo.Mp3Player
 import kojo.Offset
 import kojo.PenColor
 import kojo.PenThickness
@@ -29,6 +32,7 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   turtle.globalTurtle = turtle0
   val svTurtle = new SwedishTurtle(turtle0)
   val Color = kojo.doodle.Color
+  val cm = kojo.doodle.Color
   val noColor = Color(0, 0, 0, 0)
 
   val Random = new java.util.Random
@@ -36,6 +40,8 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   def random(upperBound: Int) = Random.nextInt(upperBound)
 
   def randomDouble(upperBound: Int) = Random.nextDouble * upperBound
+
+  def randomNormalDouble = Random.nextGaussian
 
   def randomBoolean = Random.nextBoolean
 
@@ -73,6 +79,7 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   lazy val stageBot = turtleWorld.stageBot
   lazy val stageLeft = turtleWorld.stageLeft
   lazy val stageRight = turtleWorld.stageRight
+  lazy val stageArea = turtleWorld.stageArea
   val Kc = new KeyCodes
   val canvasBounds = {
     val pos = turtleWorld.stage.position
@@ -132,6 +139,7 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   def draw(pictures: Picture*) = pictures.foreach { _ draw () }
   def draw(pictures: IndexedSeq[Picture]) = pictures.foreach { _ draw () }
   def draw(pictures: List[Picture]) = pictures.foreach { _ draw () }
+  def drawAndHide(pictures: Picture*) = pictures.foreach { p => p.draw(); p.invisible() }
 
   val GPics = kojo.GPics
   def rot(angle: Double) = Rotate(angle)
@@ -177,6 +185,10 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
     def image(url: String)(implicit turtleWorld: TurtleWorld): ImagePic = {
       new ImagePic(url)
     }
+
+    def image(url: String, envelope: Picture)(implicit turtleWorld: TurtleWorld): ImagePic = {
+      new ImagePic(url)
+    }
   }
 
   def url(s: String) = s
@@ -205,4 +217,22 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
     }
   }
 
+  def newMp3Player = new Mp3Player
+  val mp3player = newMp3Player
+  def playMp3(mp3File: String) {
+    mp3player.playMp3(mp3File)
+  }
+
+  def playMp3Sound(mp3File: String) {
+    mp3player.playMp3Sound(mp3File)
+  }
+
+  def playMp3Loop(mp3File: String) {
+    mp3player.playMp3Loop(mp3File)
+  }
+  def isMp3Playing = mp3player.isMp3Playing
+  def stopMp3() = mp3player.stopMp3()
+  def stopMp3Loop() = mp3player.stopMp3Loop()
+
+  def epochTimeMillis = new Date().getTime()
 }

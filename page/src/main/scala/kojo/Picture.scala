@@ -20,7 +20,23 @@ trait Picture {
     realDraw()
     updateGeomTransform()
   }
+  def invisible(): Unit = {
+    tnode.visible = false
+    turtleWorld.render()
+  }
   def erase(): Unit
+  def moveToFront() = turtleWorld.moveToFront(tnode)
+  def moveToBack() = turtleWorld.moveToBack(tnode)
+  def position = tnode.position
+  def setOpacity(opac: Double) {
+    tnode.alpha = opac
+    turtleWorld.render()
+  }
+
+  def forwardInputTo(other: Picture): Unit = {
+
+  }
+
   var pgTransform = new AffineTransformation
   def turtleWorld: TurtleWorld
 
