@@ -134,6 +134,7 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
     }
   }
   def switchToDefault2Perspective() {}
+  def toggleFullScreenCanvas() {}
 
   val stopAnimation = turtleWorld.stopAnimation _
   def draw(pictures: Picture*) = pictures.foreach { _ draw () }
@@ -181,6 +182,7 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
     def textu(text: Any, fontSize: Int, color: Color = Color.black)(implicit turtleWorld: TurtleWorld): TextPic = {
       new TextPic(text, fontSize, color)
     }
+    def text(s0: Any, fontSize: Int = 15) = textu(s0, fontSize)
 
     def image(url: String)(implicit turtleWorld: TurtleWorld): ImagePic = {
       new ImagePic(url)
@@ -190,6 +192,7 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
       new ImagePic(url)
     }
   }
+  val PicShape = Picture
 
   def url(s: String) = s
   type MMap[K, V] = collection.mutable.Map[K, V]
@@ -235,4 +238,8 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   def stopMp3Loop() = mp3player.stopMp3Loop()
 
   def epochTimeMillis = new Date().getTime()
+
+  def schedule(seconds: Double)(code: => Unit) = turtleWorld.runLater(seconds * 1000) { () =>
+    code
+  }
 }

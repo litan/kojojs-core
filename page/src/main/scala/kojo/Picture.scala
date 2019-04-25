@@ -20,10 +20,17 @@ trait Picture {
     realDraw()
     updateGeomTransform()
   }
+
   def invisible(): Unit = {
     tnode.visible = false
     turtleWorld.render()
   }
+  def visible(): Unit = {
+    tnode.visible = true
+    turtleWorld.render()
+  }
+  def isVisible = tnode.visible
+
   def erase(): Unit
   def moveToFront() = turtleWorld.moveToFront(tnode)
   def moveToBack() = turtleWorld.moveToBack(tnode)
