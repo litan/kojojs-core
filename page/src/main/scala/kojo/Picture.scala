@@ -8,6 +8,7 @@ import kojo.doodle.Color
 import pixiscalajs.PIXI
 import pixiscalajs.PIXI.Matrix
 import pixiscalajs.PIXI.Point
+import pixiscalajs.PIXI.interaction.InteractionEvent
 
 trait Picture {
   def tnode: PIXI.DisplayObject
@@ -159,4 +160,38 @@ trait Picture {
   def intersection(other: Picture): Geometry = {
     picGeom.intersection(other.picGeom)
   }
+
+  def handlerWrapper(fn: (Double, Double) => Unit)(event: InteractionEvent): Unit = {
+    val pos = event.data.getLocalPosition(turtleWorld.stage)
+    fn(pos.x, pos.y)
+  }
+
+  def onMousePress(fn: (Double, Double) => Unit): Unit = {
+    tnode.interactive = true
+    tnode.on("mousedown", handlerWrapper(fn) _)
+  }
+
+  def onMouseRelease(fn: (Double, Double) => Unit): Unit = {
+    tnode.interactive = true
+    tnode.on("mouseup", handlerWrapper(fn) _)
+  }
+
+//  def onMouseClick(fn: (Double, Double) => Unit): Unit = {
+//    tnode.interactive = true
+//    tnode.on("mouseclick", handlerWrapper(fn) _)
+//  }
+//
+//  def onMouseMove(fn: (Double, Double) => Unit): Unit = {
+//    tnode.interactive = true
+//    tnode.on("mousemove", handlerWrapper(fn) _)
+//  }
+//
+//  def onMouseEnter(fn: (Double, Double) => Unit): Unit = {
+//    tnode.interactive = true
+//    tnode.on("mouseenter", handlerWrapper(fn) _)
+//  }
+//  def onMouseExit(fn: (Double, Double) => Unit): Unit = {
+//    tnode.interactive = true
+//    tnode.on("mouseleave", handlerWrapper(fn) _)
+//  }
 }
