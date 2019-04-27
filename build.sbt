@@ -7,7 +7,7 @@ scalafmtVersion in ThisBuild := "1.3.0"
 
 val commonSettings = Seq(
   scalacOptions := scalacArgs,
-  scalaVersion := "2.12.4",
+  scalaVersion := "2.12.8",
   version := versions.fiddle,
   libraryDependencies ++= Seq(
     )
