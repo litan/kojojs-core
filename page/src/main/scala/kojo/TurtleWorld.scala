@@ -102,14 +102,25 @@ class TurtleWorld {
   }
 
   var animating = false
+  var loaded = false
   var timers = Vector.empty[Int]
 
   def animate(fn: => Unit): Unit = {
     animating = true
+    animateHelper(fn)
+  }
+
+  def animateHelper(fn: => Unit): Unit = {
+    if (!loaded && TurtleImageHelper.queue.isEmpty) {
+      loaded = true
+    }
+
     window.requestAnimationFrame { t =>
-      fn
+      if (loaded) {
+        fn
+      }
       if (animating) {
-        animate(fn)
+        animateHelper(fn)
       }
     }
   }
@@ -124,7 +135,9 @@ class TurtleWorld {
 
   def timer(ms: Long)(fn: => Unit): Unit = {
     val handle = window.setInterval({ () =>
-      fn
+      if (loaded) {
+        fn
+      }
     }, ms)
     timers = timers :+ handle
   }
