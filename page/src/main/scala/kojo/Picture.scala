@@ -163,17 +163,22 @@ trait Picture {
 
   def handlerWrapper(fn: (Double, Double) => Unit)(event: InteractionEvent): Unit = {
     val pos = event.data.getLocalPosition(turtleWorld.stage)
+    event.stopPropagation()
     fn(pos.x, pos.y)
   }
 
   def onMousePress(fn: (Double, Double) => Unit): Unit = {
     tnode.interactive = true
-    tnode.on("mousedown", handlerWrapper(fn) _)
+    val handler = handlerWrapper(fn)(_)
+    tnode.on("mousedown", handler)
+    tnode.on("touchstart", handler)
   }
 
   def onMouseRelease(fn: (Double, Double) => Unit): Unit = {
     tnode.interactive = true
-    tnode.on("mouseup", handlerWrapper(fn) _)
+    val handler = handlerWrapper(fn)(_)
+    tnode.on("mouseup", handler)
+    tnode.on("touchend", handler)
   }
 
 //  def onMouseClick(fn: (Double, Double) => Unit): Unit = {
