@@ -128,9 +128,8 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
     }
   }
   def activateCanvas(): Unit = {
-    // Does not work yet! Needs further research/experimentation
-    turtleWorld.runLater(1000) { () =>
-      turtleWorld.canvas_holder.click()
+    turtleWorld.runLater(0) { () =>
+      window.focus()
     }
   }
   def switchToDefault2Perspective() {}
