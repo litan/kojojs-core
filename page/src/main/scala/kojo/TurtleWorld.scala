@@ -14,17 +14,19 @@ import com.vividsolutions.jts.geom.Coordinate
 import kojo.doodle.Color
 import pixiscalajs.PIXI
 import pixiscalajs.PIXI.RendererOptions
+import pixiscalajs.PIXI.interaction.InteractionData
 
 class TurtleWorld {
   PIXI.Pixi
-  val fiddleContainer =
+  private val fiddleContainer =
     document.getElementById("fiddle-container").asInstanceOf[html.Div]
-  val canvas_holder =
+  private val canvas_holder =
     document.getElementById("canvas-holder").asInstanceOf[html.Div]
   val (width, height) =
     (fiddleContainer.clientWidth, fiddleContainer.clientHeight)
-  val renderer = PIXI.Pixi.autoDetectRenderer(width, height, rendererOptions(), noWebGL = true)
-  val stage = new PIXI.Container()
+  private val renderer = PIXI.Pixi.autoDetectRenderer(width, height, rendererOptions(), noWebGL = true)
+  private val interaction = renderer.plugins.interaction
+  private val stage = new PIXI.Container()
   init()
 
   def init() {
@@ -35,6 +37,7 @@ class TurtleWorld {
     stage.height = height
     stage.interactive = true
     stage.setTransform(width / 2, height / 2, 1, -1, 0, 0, 0, 0, 0)
+    mouseMoveOnlyWhenInside(true)
     initEvents()
   }
 
@@ -330,4 +333,10 @@ class TurtleWorld {
   }
 
   def isKeyPressed(keyCode: Int) = pressedKeys.contains(keyCode)
+  def stagePosition = stage.position
+  def positionOnStage(data: InteractionData) = data.getLocalPosition(stage)
+  def isAMouseButtonPressed = interaction.mouse.buttons > 0
+  def mouseMoveOnlyWhenInside(on: Boolean): Unit = {
+    interaction.moveWhenInside = on
+  }
 }

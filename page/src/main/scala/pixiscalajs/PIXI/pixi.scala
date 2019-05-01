@@ -7,76 +7,78 @@ import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation.{JSGlobal, JSName, ScalaJSDefined}
 import scala.scalajs.js.typedarray.Uint16Array
 import scala.scalajs.js.|
+import interaction.InteractionManager
+
 @js.native
 @JSGlobal("PIXI.RENDERER_TYPE")
 object RENDERER_TYPE extends js.Object {
   var UNKNOWN: Double = js.native
-  var WEBGL: Double   = js.native
-  var CANVAS: Double  = js.native
+  var WEBGL: Double = js.native
+  var CANVAS: Double = js.native
 }
 
 @js.native
 @JSGlobal("PIXI.BLEND_MODES")
 object BLEND_MODES extends js.Object {
-  var NORMAL: Double      = js.native
-  var ADD: Double         = js.native
-  var MULTIPLY: Double    = js.native
-  var SCREEN: Double      = js.native
-  var OVERLAY: Double     = js.native
-  var DARKEN: Double      = js.native
-  var LIGHTEN: Double     = js.native
+  var NORMAL: Double = js.native
+  var ADD: Double = js.native
+  var MULTIPLY: Double = js.native
+  var SCREEN: Double = js.native
+  var OVERLAY: Double = js.native
+  var DARKEN: Double = js.native
+  var LIGHTEN: Double = js.native
   var COLOR_DODGE: Double = js.native
-  var COLOR_BURN: Double  = js.native
-  var HARD_LIGHT: Double  = js.native
-  var SOFT_LIGHT: Double  = js.native
-  var DIFFERENCE: Double  = js.native
-  var EXCLUSION: Double   = js.native
-  var HUE: Double         = js.native
-  var SATURATION: Double  = js.native
-  var COLOR: Double       = js.native
-  var LUMINOSITY: Double  = js.native
+  var COLOR_BURN: Double = js.native
+  var HARD_LIGHT: Double = js.native
+  var SOFT_LIGHT: Double = js.native
+  var DIFFERENCE: Double = js.native
+  var EXCLUSION: Double = js.native
+  var HUE: Double = js.native
+  var SATURATION: Double = js.native
+  var COLOR: Double = js.native
+  var LUMINOSITY: Double = js.native
 }
 
 @js.native
 @JSGlobal("PIXI.DRAW_MODES")
 object DRAW_MODES extends js.Object {
-  var POINTS: Double         = js.native
-  var LINES: Double          = js.native
-  var LINE_LOOP: Double      = js.native
-  var LINE_STRIP: Double     = js.native
-  var TRIANGLES: Double      = js.native
+  var POINTS: Double = js.native
+  var LINES: Double = js.native
+  var LINE_LOOP: Double = js.native
+  var LINE_STRIP: Double = js.native
+  var TRIANGLES: Double = js.native
   var TRIANGLE_STRIP: Double = js.native
-  var TRIANGLE_FAN: Double   = js.native
+  var TRIANGLE_FAN: Double = js.native
 }
 
 @js.native
 @JSGlobal("PIXI.SCALE_MODES")
 object SCALE_MODES extends js.Object {
   var DEFAULT: Double = js.native
-  var LINEAR: Double  = js.native
+  var LINEAR: Double = js.native
   var NEAREST: Double = js.native
 }
 
 @js.native
 @JSGlobal("PIXI.TRANSFORM_MODE")
 object TRANSFORM_MODE extends js.Object {
-  var STATIC: Int  = js.native
+  var STATIC: Int = js.native
   var Dynamic: Int = js.native
 }
 
 @js.native
 @JSGlobal("PIXI.DEFAULT_RENDER_OPTIONS")
 object DEFAULT_RENDER_OPTIONS extends js.Object {
-  var view: HTMLCanvasElement        = js.native
-  var resolution: Double             = js.native
-  var antialias: Boolean             = js.native
-  var forceFXAA: Boolean             = js.native
-  var autoResize: Boolean            = js.native
-  var transparent: Boolean           = js.native
-  var backgroundColor: Double        = js.native
-  var clearBeforeRender: Boolean     = js.native
+  var view: HTMLCanvasElement = js.native
+  var resolution: Double = js.native
+  var antialias: Boolean = js.native
+  var forceFXAA: Boolean = js.native
+  var autoResize: Boolean = js.native
+  var transparent: Boolean = js.native
+  var backgroundColor: Double = js.native
+  var clearBeforeRender: Boolean = js.native
   var preserveDrawingBuffer: Boolean = js.native
-  var roundPixels: Boolean           = js.native
+  var roundPixels: Boolean = js.native
 }
 
 @js.native
@@ -94,13 +96,13 @@ object SHAPES extends js.Object {
 class AccessibilityManager protected () extends js.Object {
   def this(renderer: SystemRenderer) = this()
 
-  var div: HTMLElement                  = js.native
-  var pool: js.Array[HTMLElement]       = js.native
-  var renderId: Double                  = js.native
+  var div: HTMLElement = js.native
+  var pool: js.Array[HTMLElement] = js.native
+  var renderId: Double = js.native
   var children: js.Array[DisplayObject] = js.native
-  var isActive: Boolean                 = js.native
-  var debug: Boolean                    = js.native
-  var renderer: SystemRenderer          = js.native
+  var isActive: Boolean = js.native
+  var debug: Boolean = js.native
+  var renderer: SystemRenderer = js.native
 
   def activate(): Unit = js.native
 
@@ -119,16 +121,17 @@ class AccessibilityManager protected () extends js.Object {
 
 @js.native
 trait AccessibleTarget extends js.Object {
-  var accessible: Boolean     = js.native
+  var accessible: Boolean = js.native
   var accessibleTitle: String = js.native
-  var accessibleHint: String  = js.native
-  var tabIndex: Double        = js.native
+  var accessibleHint: String = js.native
+  var tabIndex: Double = js.native
 }
+
 @js.native
 @JSGlobal("PIXI.TransformBase")
 class TransformBase extends js.Object {
-  var _parentID: Int               = js.native
-  def updateTransform(): Unit      = js.native
+  var _parentID: Int = js.native
+  def updateTransform(): Unit = js.native
   def updateLocalTransform(): Unit = js.native
 }
 
@@ -141,13 +144,13 @@ class TransformStatic extends TransformBase {
 @js.native
 @JSGlobal("PIXI.DisplayObject")
 class DisplayObject extends utils.EventEmitter with interaction.InteractiveTarget {
-  var _originalRenderWebGL: WebGLRenderer   = js.native
+  var _originalRenderWebGL: WebGLRenderer = js.native
   var _originalRenderCanvas: CanvasRenderer = js.native
-  var _originalUpdateTransform: Boolean     = js.native
-  var _originalHitTest: js.Any              = js.native
-  var _cachedSprite: js.Any                 = js.native
-  var _originalDestroy: js.Any              = js.native
-  var cacheAsBitmap: Boolean                = js.native
+  var _originalUpdateTransform: Boolean = js.native
+  var _originalHitTest: js.Any = js.native
+  var _cachedSprite: js.Any = js.native
+  var _originalDestroy: js.Any = js.native
+  var cacheAsBitmap: Boolean = js.native
 
   def _renderCachedWebGL(renderer: WebGLRenderer): Unit = js.native
 
@@ -163,35 +166,35 @@ class DisplayObject extends utils.EventEmitter with interaction.InteractiveTarge
 
   def _cacheAsBitmapDestroy(): Unit = js.native
 
-  var _sr: Double               = js.native
-  var _cr: Double               = js.native
-  var _bounds: Rectangle        = js.native
+  var _sr: Double = js.native
+  var _cr: Double = js.native
+  var _bounds: Rectangle = js.native
   var _currentBounds: Rectangle = js.native
-  var _mask: Rectangle          = js.native
-  var _cachedObject: js.Any     = js.native
+  var _mask: Rectangle = js.native
+  var _cachedObject: js.Any = js.native
 
   def updateTransform(): Unit = js.native
 
-  var position: Point                   = js.native
-  var scale: Point                      = js.native
-  var pivot: Point                      = js.native
-  var rotation: Double                  = js.native
-  var renderable: Boolean               = js.native
-  var skew: Point                       = js.native
-  var alpha: Double                     = js.native
-  var visible: Boolean                  = js.native
-  var parent: Container                 = js.native
-  var worldAlpha: Double                = js.native
-  var worldTransform: Matrix            = js.native
-  var localTransform: Matrix            = js.native
-  var transform: TransformStatic        = js.native
-  var filterArea: Rectangle             = js.native
-  var x: Double                         = js.native
-  var y: Double                         = js.native
-  var worldVisible: Boolean             = js.native
-  var mask: Graphics | Sprite           = js.native
+  var position: Point = js.native
+  var scale: Point = js.native
+  var pivot: Point = js.native
+  var rotation: Double = js.native
+  var renderable: Boolean = js.native
+  var skew: Point = js.native
+  var alpha: Double = js.native
+  var visible: Boolean = js.native
+  var parent: Container = js.native
+  var worldAlpha: Double = js.native
+  var worldTransform: Matrix = js.native
+  var localTransform: Matrix = js.native
+  var transform: TransformStatic = js.native
+  var filterArea: Rectangle = js.native
+  var x: Double = js.native
+  var y: Double = js.native
+  var worldVisible: Boolean = js.native
+  var mask: Graphics | Sprite = js.native
   var filters: js.Array[AbstractFilter] = js.native
-  var name: String                      = js.native
+  var name: String = js.native
 
   def getBounds(): Rectangle = js.native
 
@@ -205,23 +208,25 @@ class DisplayObject extends utils.EventEmitter with interaction.InteractiveTarge
 
   def setParent(container: Container): Container = js.native
 
-  def setTransform(x: Double = ???,
-                   y: Double = ???,
-                   scaleX: Double = ???,
-                   scaleY: Double = ???,
-                   rotation: Double = ???,
-                   skewX: Double = ???,
-                   skewY: Double = ???,
-                   pivotX: Double = ???,
-                   pivotY: Double = ???): DisplayObject = js.native
+  def setTransform(
+    x:        Double = ???,
+    y:        Double = ???,
+    scaleX:   Double = ???,
+    scaleY:   Double = ???,
+    rotation: Double = ???,
+    skewX:    Double = ???,
+    skewY:    Double = ???,
+    pivotX:   Double = ???,
+    pivotY:   Double = ???
+  ): DisplayObject = js.native
 
   def destroy(): Unit = js.native
 
   def getGlobalPosition(point: Point): Point = js.native
 
-  var accessible: Boolean     = js.native
+  var accessible: Boolean = js.native
   var accessibleTitle: String = js.native
-  var tabIndex: Double        = js.native
+  var tabIndex: Double = js.native
 }
 
 @js.native
@@ -232,9 +237,9 @@ class Container extends DisplayObject {
   def _renderCanvas(renderer: CanvasRenderer): Unit = js.native
 
   var onChildrenChange: js.Function0[Unit] = js.native
-  var children: js.Array[DisplayObject]    = js.native
-  var width: Double                        = js.native
-  var height: Double                       = js.native
+  var children: js.Array[DisplayObject] = js.native
+  var width: Double = js.native
+  var height: Double = js.native
 
   def addChild(child: DisplayObject*): DisplayObject = js.native
 
@@ -267,22 +272,24 @@ class Container extends DisplayObject {
 @js.native
 @JSGlobal("PIXI.GraphicsData")
 class GraphicsData protected () extends js.Object {
-  def this(lineWidth: Double,
-           lineColor: Double,
-           lineAlpha: Double,
-           fillColor: Double,
-           fillAlpha: Double,
-           fill: Boolean,
-           shape: Circle | Rectangle | Ellipse | Polygon) = this()
+  def this(
+    lineWidth: Double,
+    lineColor: Double,
+    lineAlpha: Double,
+    fillColor: Double,
+    fillAlpha: Double,
+    fill:      Boolean,
+    shape:     Circle | Rectangle | Ellipse | Polygon
+  ) = this()
 
-  var lineWidth: Double                             = js.native
-  var lineColor: Double                             = js.native
-  var lineAlpha: Double                             = js.native
-  var fillColor: Double                             = js.native
-  var fillAlpha: Double                             = js.native
-  var fill: Boolean                                 = js.native
+  var lineWidth: Double = js.native
+  var lineColor: Double = js.native
+  var lineAlpha: Double = js.native
+  var fillColor: Double = js.native
+  var fillAlpha: Double = js.native
+  var fill: Boolean = js.native
   var shape: Circle | Rectangle | Ellipse | Polygon = js.native
-  var `type`: Double                                = js.native
+  var `type`: Double = js.native
 
   var _lineTint: Double = js.native
   var _fillTint: Double = js.native
@@ -291,17 +298,17 @@ class GraphicsData protected () extends js.Object {
 @js.native
 @JSGlobal("PIXI.Graphics")
 class Graphics extends Container {
-  var boundsDirty: Boolean                 = js.native
-  var dirty: Int                           = js.native
-  var clearDirty: Int                      = js.native
-  var glDirty: Boolean                     = js.native
-  var fillAlpha: Double                    = js.native
-  var lineWidth: Double                    = js.native
-  var lineColor: Double                    = js.native
-  var tint: Double                         = js.native
-  var blendMode: Double                    = js.native
-  var isMask: Boolean                      = js.native
-  var boundsPadding: Double                = js.native
+  var boundsDirty: Boolean = js.native
+  var dirty: Int = js.native
+  var clearDirty: Int = js.native
+  var glDirty: Boolean = js.native
+  var fillAlpha: Double = js.native
+  var lineWidth: Double = js.native
+  var lineColor: Double = js.native
+  var tint: Double = js.native
+  var blendMode: Double = js.native
+  var isMask: Boolean = js.native
+  var boundsPadding: Double = js.native
   var graphicsData: js.Array[GraphicsData] = js.native
 
   def lineStyle(lineWidth: Double = ???, color: Double = ???, alpha: Double = ???): Graphics = js.native
@@ -316,12 +323,14 @@ class Graphics extends Container {
 
   def arcTo(x1: Double, y1: Double, x2: Double, y2: Double, radius: Double): Graphics = js.native
 
-  def arc(cx: Double,
-          cy: Double,
-          radius: Double,
-          startAngle: Double,
-          endAngle: Double,
-          anticlockwise: Boolean = ???): Graphics = js.native
+  def arc(
+    cx:            Double,
+    cy:            Double,
+    radius:        Double,
+    startAngle:    Double,
+    endAngle:      Double,
+    anticlockwise: Boolean = ???
+  ): Graphics = js.native
 
   def beginFill(color: Double, alpha: Double = ???): Graphics = js.native
 
@@ -355,12 +364,12 @@ class Graphics extends Container {
 class GraphicsRenderer protected () extends ObjectRenderer {
   def this(renderer: WebGLRenderer) = this()
 
-  var buildCircle: js.Function2[Graphics, Object, Unit]           = js.native
-  var buildPoly: js.Function2[Graphics, Object, Boolean]          = js.native
-  var buildRectangle: js.Function2[Graphics, Object, Unit]        = js.native
-  var buildComplexPoly: js.Function2[Graphics, Object, Unit]      = js.native
-  var buildLine: js.Function2[Graphics, Object, Unit]             = js.native
-  var updateGraphics: js.Function1[Graphics, Unit]                = js.native
+  var buildCircle: js.Function2[Graphics, Object, Unit] = js.native
+  var buildPoly: js.Function2[Graphics, Object, Boolean] = js.native
+  var buildRectangle: js.Function2[Graphics, Object, Unit] = js.native
+  var buildComplexPoly: js.Function2[Graphics, Object, Unit] = js.native
+  var buildLine: js.Function2[Graphics, Object, Unit] = js.native
+  var updateGraphics: js.Function1[Graphics, Unit] = js.native
   var buildRoundedRectangle: js.Function2[Graphics, Object, Unit] = js.native
   var quadraticBezierCurve: js.Function7[Double, Double, Double, Double, Double, Double, js.Any, js.Array[Double]] =
     js.native
@@ -372,8 +381,8 @@ class GraphicsRenderer protected () extends ObjectRenderer {
 class WebGLGraphicsData protected () extends js.Object {
   def this(gl: WebGLRenderingContext) = this()
 
-  var upload: js.Function0[Unit]  = js.native
-  var reset: js.Function0[Unit]   = js.native
+  var upload: js.Function0[Unit] = js.native
+  var reset: js.Function0[Unit] = js.native
   var destroy: js.Function0[Unit] = js.native
 }
 
@@ -404,16 +413,16 @@ package GroupD8 {
 
     def vY(ind: Double): Double = js.native
 
-    var E: Double                 = js.native
+    var E: Double = js.native
     var MIRROR_HORIZONTAL: Double = js.native
-    var MIRROR_VERTICAL: Double   = js.native
-    var N: Double                 = js.native
-    var NE: Double                = js.native
-    var NW: Double                = js.native
-    var S: Double                 = js.native
-    var SE: Double                = js.native
-    var SW: Double                = js.native
-    var W: Double                 = js.native
+    var MIRROR_VERTICAL: Double = js.native
+    var N: Double = js.native
+    var NE: Double = js.native
+    var NW: Double = js.native
+    var S: Double = js.native
+    var SE: Double = js.native
+    var SW: Double = js.native
+    var W: Double = js.native
   }
 
 }
@@ -441,10 +450,10 @@ object Point {
 @js.native
 @JSGlobal("PIXI.Matrix")
 class Matrix extends js.Object {
-  var a: Double  = js.native
-  var b: Double  = js.native
-  var c: Double  = js.native
-  var d: Double  = js.native
+  var a: Double = js.native
+  var b: Double = js.native
+  var c: Double = js.native
+  var d: Double = js.native
   var tx: Double = js.native
   var ty: Double = js.native
 
@@ -475,22 +484,24 @@ class Matrix extends js.Object {
 
   def set(a: Double, b: Double, c: Double, d: Double, tx: Double, ty: Double): Matrix = js.native
 
-  def setTransform(a: Double,
-                   b: Double,
-                   c: Double,
-                   d: Double,
-                   sr: Double,
-                   cr: Double,
-                   cy: Double,
-                   sy: Double,
-                   nsx: Double,
-                   cs: Double): Matrix = js.native
+  def setTransform(
+    a:   Double,
+    b:   Double,
+    c:   Double,
+    d:   Double,
+    sr:  Double,
+    cr:  Double,
+    cy:  Double,
+    sy:  Double,
+    nsx: Double,
+    cs:  Double
+  ): Matrix = js.native
 }
 
 @js.native
 @JSGlobal("PIXI.Matrix")
 object Matrix extends js.Object {
-  var IDENTITY: Matrix    = js.native
+  var IDENTITY: Matrix = js.native
   var TEMP_MATRIX: Matrix = js.native
 }
 
@@ -504,8 +515,8 @@ trait HitArea extends js.Object {
 class Circle protected () extends HitArea {
   def this(x: Double = ???, y: Double = ???, radius: Double = ???) = this()
 
-  var x: Double      = js.native
-  var y: Double      = js.native
+  var x: Double = js.native
+  var y: Double = js.native
   var radius: Double = js.native
   var `type`: Double = js.native
 
@@ -517,9 +528,9 @@ class Circle protected () extends HitArea {
 class Ellipse protected () extends HitArea {
   def this(x: Double = ???, y: Double = ???, width: Double = ???, height: Double = ???) = this()
 
-  var x: Double      = js.native
-  var y: Double      = js.native
-  var width: Double  = js.native
+  var x: Double = js.native
+  var y: Double = js.native
+  var width: Double = js.native
   var height: Double = js.native
   var `type`: Double = js.native
 
@@ -533,9 +544,9 @@ class Polygon protected () extends HitArea {
 
   //def this(points: Double*) = this()
 
-  var closed: Boolean          = js.native
+  var closed: Boolean = js.native
   var points: js.Array[Double] = js.native
-  var `type`: Double           = js.native
+  var `type`: Double = js.native
 
 }
 
@@ -544,9 +555,9 @@ class Polygon protected () extends HitArea {
 class Rectangle protected () extends HitArea {
   def this(x: Double = ???, y: Double = ???, width: Double = ???, height: Double = ???) = this()
 
-  var x: Double      = js.native
-  var y: Double      = js.native
-  var width: Double  = js.native
+  var x: Double = js.native
+  var y: Double = js.native
+  var width: Double = js.native
   var height: Double = js.native
   var `type`: Double = js.native
 
@@ -563,9 +574,9 @@ object Rectangle extends js.Object {
 class RoundedRectangle protected () extends HitArea {
   def this(x: Double = ???, y: Double = ???, width: Double = ???, height: Double = ???, radius: Double = ???) = this()
 
-  var x: Double      = js.native
-  var y: Double      = js.native
-  var width: Double  = js.native
+  var x: Double = js.native
+  var y: Double = js.native
+  var width: Double = js.native
   var height: Double = js.native
   var radius: Double = js.native
   var `type`: Double = js.native
@@ -574,11 +585,11 @@ class RoundedRectangle protected () extends HitArea {
 
 @js.native
 trait ParticleContainerProperties extends js.Object {
-  var scale: Boolean    = js.native
+  var scale: Boolean = js.native
   var position: Boolean = js.native
   var rotation: Boolean = js.native
-  var uvs: Boolean      = js.native
-  var alpha: Boolean    = js.native
+  var uvs: Boolean = js.native
+  var alpha: Boolean = js.native
 }
 
 @js.native
@@ -586,31 +597,31 @@ trait ParticleContainerProperties extends js.Object {
 class ParticleContainer protected () extends Container {
   def this(size: Double = ???, properties: ParticleContainerProperties = ???, batchSize: Double = ???) = this()
 
-  var _maxSize: Double                = js.native
-  var _batchSize: Double              = js.native
-  var _properties: js.Array[Boolean]  = js.native
+  var _maxSize: Double = js.native
+  var _batchSize: Double = js.native
+  var _properties: js.Array[Boolean] = js.native
   var _buffers: js.Array[WebGLBuffer] = js.native
-  var _bufferToUpdate: Double         = js.native
-  var blendMode: Double               = js.native
-  var roundPixels: Boolean            = js.native
+  var _bufferToUpdate: Double = js.native
+  var blendMode: Double = js.native
+  var roundPixels: Boolean = js.native
 
   def setProperties(properties: ParticleContainerProperties): Unit = js.native
 }
 
 @js.native
 trait ParticleBuffer extends js.Object {
-  var gl: WebGLRenderingContext           = js.native
-  var vertSize: Double                    = js.native
-  var vertByteSize: Double                = js.native
-  var size: Double                        = js.native
+  var gl: WebGLRenderingContext = js.native
+  var vertSize: Double = js.native
+  var vertByteSize: Double = js.native
+  var size: Double = js.native
   var dynamicProperties: js.Array[js.Any] = js.native
-  var staticProperties: js.Array[js.Any]  = js.native
-  var staticStride: Double                = js.native
-  var staticBuffer: js.Any                = js.native
-  var staticData: js.Any                  = js.native
-  var dynamicStride: Double               = js.native
-  var dynamicBuffer: js.Any               = js.native
-  var dynamicData: js.Any                 = js.native
+  var staticProperties: js.Array[js.Any] = js.native
+  var staticStride: Double = js.native
+  var staticBuffer: js.Any = js.native
+  var staticData: js.Any = js.native
+  var dynamicStride: Double = js.native
+  var dynamicBuffer: js.Any = js.native
+  var dynamicData: js.Any = js.native
 
   def initBuffers(): Unit = js.native
 
@@ -622,7 +633,7 @@ trait ParticleBuffer extends js.Object {
 @js.native
 trait IParticleRendererProperty extends js.Object {
   var attribute: Double = js.native
-  var size: Double      = js.native
+  var size: Double = js.native
   var uploadFunction: js.Function6[js.Array[DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] =
     js.native
   var offset: Double = js.native
@@ -633,12 +644,12 @@ trait IParticleRendererProperty extends js.Object {
 class ParticleRenderer protected () extends ObjectRenderer {
   def this(renderer: WebGLRenderer) = this()
 
-  var generateBuffers: js.Function1[ParticleContainer, js.Array[ParticleBuffer]]                                 = js.native
-  var indexBuffer: WebGLBuffer                                                                                   = js.native
-  var indices: Uint16Array                                                                                       = js.native
-  var properties: js.Array[IParticleRendererProperty]                                                            = js.native
-  var shader: Shader                                                                                             = js.native
-  var tempMatrix: Matrix                                                                                         = js.native
+  var generateBuffers: js.Function1[ParticleContainer, js.Array[ParticleBuffer]] = js.native
+  var indexBuffer: WebGLBuffer = js.native
+  var indices: Uint16Array = js.native
+  var properties: js.Array[IParticleRendererProperty] = js.native
+  var shader: Shader = js.native
+  var tempMatrix: Matrix = js.native
   var uploadAlpha: js.Function6[js.Array[DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] = js.native
   var uploadPosition: js.Function6[js.Array[DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] =
     js.native
@@ -654,15 +665,15 @@ trait ParticleShader extends js.Object {}
 
 @js.native
 trait RendererOptions extends js.Object {
-  var view: HTMLCanvasElement        = js.native
-  var transparent: Boolean           = js.native
-  var antialias: Boolean             = js.native
-  var resolution: Double             = js.native
-  var clearBeforeRendering: Boolean  = js.native
+  var view: HTMLCanvasElement = js.native
+  var transparent: Boolean = js.native
+  var antialias: Boolean = js.native
+  var resolution: Double = js.native
+  var clearBeforeRendering: Boolean = js.native
   var preserveDrawingBuffer: Boolean = js.native
-  var forceFXAA: Boolean             = js.native
-  var roundPixels: Boolean           = js.native
-  var backgroundColor: Double        = js.native
+  var forceFXAA: Boolean = js.native
+  var roundPixels: Boolean = js.native
+  var backgroundColor: Double = js.native
 }
 
 object RendererOptions {
@@ -672,27 +683,34 @@ object RendererOptions {
 }
 
 @js.native
+@JSGlobal
+class Plugins extends js.Object {
+  def interaction: InteractionManager = js.native
+}
+
+@js.native
 @JSGlobal("PIXI.SystemRenderer")
 class SystemRenderer protected () extends utils.EventEmitter {
   def this(system: String, width: Double = ???, height: Double = ???, options: RendererOptions = ???) = this()
 
-  var _backgroundColor: Double              = js.native
+  var _backgroundColor: Double = js.native
   var _backgroundColorRgb: js.Array[Double] = js.native
-  var _backgroundColorString: String        = js.native
-  var _tempDisplayObjectParent: js.Any      = js.native
-  var _lastObjectRendered: DisplayObject    = js.native
-  var `type`: Double                        = js.native
-  var width: Double                         = js.native
-  var height: Double                        = js.native
-  var view: HTMLCanvasElement               = js.native
-  var resolution: Double                    = js.native
-  var transparent: Boolean                  = js.native
-  var autoResize: Boolean                   = js.native
-  var blendModes: js.Any                    = js.native
-  var preserveDrawingBuffer: Boolean        = js.native
-  var clearBeforeRender: Boolean            = js.native
-  var roundPixels: Boolean                  = js.native
-  var backgroundColor: Double               = js.native
+  var _backgroundColorString: String = js.native
+  var _tempDisplayObjectParent: js.Any = js.native
+  var _lastObjectRendered: DisplayObject = js.native
+  var `type`: Double = js.native
+  var width: Double = js.native
+  var height: Double = js.native
+  var view: HTMLCanvasElement = js.native
+  var resolution: Double = js.native
+  var transparent: Boolean = js.native
+  var autoResize: Boolean = js.native
+  var blendModes: js.Any = js.native
+  var preserveDrawingBuffer: Boolean = js.native
+  var clearBeforeRender: Boolean = js.native
+  var roundPixels: Boolean = js.native
+  var backgroundColor: Double = js.native
+  var plugins: Plugins = js.native
 
   def render(`object`: DisplayObject): Unit = js.native
 
@@ -711,9 +729,9 @@ class CanvasRenderer protected () extends SystemRenderer {
   def _mapBlendModes(): Unit = js.native
 
   var context: CanvasRenderingContext2D = js.native
-  var refresh: Boolean                  = js.native
-  var maskManager: CanvasMaskManager    = js.native
-  var smoothProperty: String            = js.native
+  var refresh: Boolean = js.native
+  var maskManager: CanvasMaskManager = js.native
+  var smoothProperty: String = js.native
 
 }
 
@@ -724,10 +742,10 @@ class CanvasBuffer protected () extends js.Object {
 
   def clear(): Unit = js.native
 
-  var canvas: HTMLCanvasElement         = js.native
+  var canvas: HTMLCanvasElement = js.native
   var context: CanvasRenderingContext2D = js.native
-  var width: Double                     = js.native
-  var height: Double                    = js.native
+  var width: Double = js.native
+  var height: Double = js.native
 
   def resize(width: Double, height: Double): Unit = js.native
 
@@ -774,9 +792,9 @@ package CanvasTinter {
     def roundColor(color: Double): Double = js.native
 
     var cacheStepsPerColorChannel: Double = js.native
-    var convertTintToImage: Boolean       = js.native
-    var vanUseMultiply: Boolean           = js.native
-    var tintMethod: js.Function           = js.native
+    var convertTintToImage: Boolean = js.native
+    var vanUseMultiply: Boolean = js.native
+    var tintMethod: js.Function = js.native
   }
 
 }
@@ -786,9 +804,9 @@ package CanvasTinter {
 class WebGLRenderer protected () extends SystemRenderer {
   def this(width: Double = ???, height: Double = ???, options: RendererOptions = ???) = this()
 
-  var _useFXAA: Boolean                          = js.native
-  var _FXAAFilter: FXAAFilter                    = js.native
-  var _contextOptions: js.Any                    = js.native
+  var _useFXAA: Boolean = js.native
+  var _FXAAFilter: FXAAFilter = js.native
+  var _contextOptions: js.Any = js.native
   var _renderTargetStack: js.Array[RenderTarget] = js.native
 
   def _initContext(): Unit = js.native
@@ -800,14 +818,14 @@ class WebGLRenderer protected () extends SystemRenderer {
   def _mapGlModes(): Unit = js.native
 
   var _managedTextures: js.Array[Texture] = js.native
-  var drawCount: Double                   = js.native
-  var shaderManager: ShaderManager        = js.native
-  var maskManager: MaskManager            = js.native
-  var stencilManager: StencilManager      = js.native
-  var filterManager: FilterManager        = js.native
-  var blendModeManager: BlendModeManager  = js.native
-  var currentRenderTarget: RenderTarget   = js.native
-  var currentRenderer: ObjectRenderer     = js.native
+  var drawCount: Double = js.native
+  var shaderManager: ShaderManager = js.native
+  var maskManager: MaskManager = js.native
+  var stencilManager: StencilManager = js.native
+  var filterManager: FilterManager = js.native
+  var blendModeManager: BlendModeManager = js.native
+  var currentRenderTarget: RenderTarget = js.native
+  var currentRenderer: ObjectRenderer = js.native
 
   def renderDisplayObject(displayObject: DisplayObject, renderTarget: RenderTarget, clear: Boolean): Unit = js.native
 
@@ -823,14 +841,16 @@ class WebGLRenderer protected () extends SystemRenderer {
 @js.native
 @JSGlobal("PIXI.AbstractFilter")
 class AbstractFilter protected () extends js.Object {
-  def this(vertexSrc: String | js.Array[String] = ???,
-           fragmentSrc: String | js.Array[String] = ???,
-           uniforms: js.Any = ???) = this()
+  def this(
+    vertexSrc:   String | js.Array[String] = ???,
+    fragmentSrc: String | js.Array[String] = ???,
+    uniforms:    js.Any                    = ???
+  ) = this()
 
-  var vertexSrc: js.Array[String]   = js.native
+  var vertexSrc: js.Array[String] = js.native
   var fragmentSrc: js.Array[String] = js.native
-  var uniforms: js.Any              = js.native
-  var padding: Double               = js.native
+  var uniforms: js.Any = js.native
+  var padding: Double = js.native
 
   def getShader(renderer: WebGLRenderer): Shader = js.native
 
@@ -849,7 +869,7 @@ class SpriteMaskFilter protected () extends AbstractFilter {
 
   def applyFilter(renderer: WebGLRenderbuffer, input: RenderTarget, output: RenderTarget): Unit = js.native
 
-  var map: Texture  = js.native
+  var map: Texture = js.native
   var offset: Point = js.native
 }
 
@@ -885,10 +905,12 @@ class FilterManager protected () extends WebGLManager {
 
   def returnRenderTarget(renderTarget: RenderTarget): Unit = js.native
 
-  def applyFilter(shader: Shader | AbstractFilter,
-                  inputTarget: RenderTarget,
-                  outputTarget: RenderTarget,
-                  clear: Boolean = ???): Unit = js.native
+  def applyFilter(
+    shader:       Shader | AbstractFilter,
+    inputTarget:  RenderTarget,
+    outputTarget: RenderTarget,
+    clear:        Boolean                 = ???
+  ): Unit = js.native
 
   def calculateMappedMatrix(filterArea: Rectangle, sprite: Sprite, outputMatrix: Matrix = ???): Matrix = js.native
 
@@ -900,9 +922,9 @@ class FilterManager protected () extends WebGLManager {
 @js.native
 @JSGlobal("PIXI.MaskManager")
 class MaskManager extends WebGLManager {
-  var stencilStack: StencilMaskStack  = js.native
-  var reverse: Boolean                = js.native
-  var count: Double                   = js.native
+  var stencilStack: StencilMaskStack = js.native
+  var reverse: Boolean = js.native
+  var count: Double = js.native
   var alphaMaskPool: js.Array[js.Any] = js.native
 
   def pushMask(target: RenderTarget, maskData: js.Any): Unit = js.native
@@ -923,12 +945,12 @@ class MaskManager extends WebGLManager {
 class ShaderManager protected () extends WebGLManager {
   def this(renderer: WebGLRenderer) = this()
 
-  var _currentId: Double                = js.native
-  var currentShader: Shader             = js.native
-  var maxAttibs: Double                 = js.native
-  var attribState: js.Array[js.Any]     = js.native
+  var _currentId: Double = js.native
+  var currentShader: Shader = js.native
+  var maxAttibs: Double = js.native
+  var attribState: js.Array[js.Any] = js.native
   var tempAttribState: js.Array[js.Any] = js.native
-  var stack: js.Array[js.Any]           = js.native
+  var stack: js.Array[js.Any] = js.native
 
   def setAttribs(attribs: js.Array[js.Any]): Unit = js.native
 
@@ -959,7 +981,7 @@ class WebGLManager protected () extends js.Object {
   def this(renderer: WebGLRenderer) = this()
 
   var onContextChange: js.Function0[Unit] = js.native
-  var renderer: WebGLRenderer             = js.native
+  var renderer: WebGLRenderer = js.native
 
   def destroy(): Unit = js.native
 }
@@ -970,18 +992,18 @@ class Shader protected () extends js.Object {
   def this(shaderManager: ShaderManager, vertexSrc: String, fragmentSrc: String, uniforms: js.Any, attributes: js.Any) =
     this()
 
-  var attributes: js.Any   = js.native
+  var attributes: js.Any = js.native
   var textureCount: Double = js.native
-  var uniforms: js.Any     = js.native
+  var uniforms: js.Any = js.native
 
   def _glCompile(`type`: js.Any, src: js.Any): Shader = js.native
 
-  var uid: Double                  = js.native
-  var gl: WebGLRenderingContext    = js.native
+  var uid: Double = js.native
+  var gl: WebGLRenderingContext = js.native
   var shaderManager: ShaderManager = js.native
-  var program: WebGLProgram        = js.native
-  var vertexSrc: String            = js.native
-  var fragmentSrc: String          = js.native
+  var program: WebGLProgram = js.native
+  var vertexSrc: String = js.native
+  var fragmentSrc: String = js.native
 
   def init(): Unit = js.native
 
@@ -1015,18 +1037,20 @@ class PrimitiveShader protected () extends Shader {
 @js.native
 @JSGlobal("PIXI.TextureShader")
 class TextureShader protected () extends Shader {
-  def this(shaderManager: ShaderManager,
-           vertexSrc: String = ???,
-           fragmentSrc: String = ???,
-           customUniforms: js.Any = ???,
-           customAttributes: js.Any = ???) = this()
+  def this(
+    shaderManager:    ShaderManager,
+    vertexSrc:        String        = ???,
+    fragmentSrc:      String        = ???,
+    customUniforms:   js.Any        = ???,
+    customAttributes: js.Any        = ???
+  ) = this()
 }
 
 @js.native
 trait StencilMaskStack extends js.Object {
   var stencilStack: js.Array[js.Any] = js.native
-  var reverse: Boolean               = js.native
-  var count: Double                  = js.native
+  var reverse: Boolean = js.native
+  var count: Double = js.native
 }
 
 @js.native
@@ -1047,19 +1071,19 @@ class RenderTarget protected () extends js.Object {
   def this(gl: WebGLRenderingContext, width: Double, height: Double, scaleMode: Double, resolution: Double, root: Boolean) =
     this()
 
-  var gl: WebGLRenderingContext          = js.native
-  var frameBuffer: WebGLFramebuffer      = js.native
-  var texture: Texture                   = js.native
-  var size: Rectangle                    = js.native
-  var resolution: Double                 = js.native
-  var projectionMatrix: Matrix           = js.native
-  var transform: Matrix                  = js.native
-  var frame: Rectangle                   = js.native
-  var stencilBuffer: WebGLRenderbuffer   = js.native
+  var gl: WebGLRenderingContext = js.native
+  var frameBuffer: WebGLFramebuffer = js.native
+  var texture: Texture = js.native
+  var size: Rectangle = js.native
+  var resolution: Double = js.native
+  var projectionMatrix: Matrix = js.native
+  var transform: Matrix = js.native
+  var frame: Rectangle = js.native
+  var stencilBuffer: WebGLRenderbuffer = js.native
   var stencilMaskStack: StencilMaskStack = js.native
-  var filterStack: js.Array[js.Any]      = js.native
-  var scaleMode: Double                  = js.native
-  var root: Boolean                      = js.native
+  var filterStack: js.Array[js.Any] = js.native
+  var scaleMode: Double = js.native
+  var root: Boolean = js.native
 
   def clear(bind: Boolean = ???): Unit = js.native
 
@@ -1076,13 +1100,13 @@ class RenderTarget protected () extends js.Object {
 
 @js.native
 trait Quad extends js.Object {
-  var gl: WebGLRenderingContext  = js.native
+  var gl: WebGLRenderingContext = js.native
   var vertices: js.Array[Double] = js.native
-  var uvs: js.Array[Double]      = js.native
-  var colors: js.Array[Double]   = js.native
-  var indices: js.Array[Double]  = js.native
-  var vertexBuffer: WebGLBuffer  = js.native
-  var indexBuffer: WebGLBuffer   = js.native
+  var uvs: js.Array[Double] = js.native
+  var colors: js.Array[Double] = js.native
+  var indices: js.Array[Double] = js.native
+  var vertexBuffer: WebGLBuffer = js.native
+  var indexBuffer: WebGLBuffer = js.native
 
   def map(rect: Rectangle, rect2: Rectangle): Unit = js.native
 
@@ -1096,18 +1120,18 @@ trait Quad extends js.Object {
 class Sprite protected () extends Container {
   def this(texture: Texture = ???) = this()
 
-  var _texture: Texture  = js.native
-  var _width: Double     = js.native
-  var _height: Double    = js.native
+  var _texture: Texture = js.native
+  var _width: Double = js.native
+  var _height: Double = js.native
   var cachedTint: Double = js.native
 
   def _onTextureUpdate(): Unit = js.native
 
-  var anchor: Point                   = js.native
-  var tint: Double                    = js.native
-  var blendMode: Double               = js.native
+  var anchor: Point = js.native
+  var tint: Double = js.native
+  var blendMode: Double = js.native
   var shader: Shader | AbstractFilter = js.native
-  var texture: Texture                = js.native
+  var texture: Texture = js.native
 
   def getBounds(matrix: Matrix = ???): Rectangle = js.native
 
@@ -1129,15 +1153,15 @@ object Sprite extends js.Object {
 class SpriteRenderer extends ObjectRenderer {
   def renderBatch(texture: Texture, size: Double, startIndex: Double): Unit = js.native
 
-  var vertSize: Double                = js.native
-  var vertByteSize: Double            = js.native
-  var size: Double                    = js.native
-  var vertices: js.Array[Double]      = js.native
-  var positions: js.Array[Double]     = js.native
-  var colors: js.Array[Double]        = js.native
-  var indices: js.Array[Double]       = js.native
-  var currentBatchSize: Double        = js.native
-  var sprites: js.Array[Sprite]       = js.native
+  var vertSize: Double = js.native
+  var vertByteSize: Double = js.native
+  var size: Double = js.native
+  var vertices: js.Array[Double] = js.native
+  var positions: js.Array[Double] = js.native
+  var colors: js.Array[Double] = js.native
+  var indices: js.Array[Double] = js.native
+  var currentBatchSize: Double = js.native
+  var sprites: js.Array[Sprite] = js.native
   var shader: Shader | AbstractFilter = js.native
 
   def render(sprite: Sprite): Unit = js.native
@@ -1145,26 +1169,26 @@ class SpriteRenderer extends ObjectRenderer {
 
 @js.native
 trait TextStyle extends js.Object {
-  var font: String                                           = js.native
+  var font: String = js.native
   var fill: String | Double | CanvasGradient | CanvasPattern = js.native
-  var align: String                                          = js.native
-  var stroke: String | Double                                = js.native
-  var strokeThickness: Double                                = js.native
-  var wordWrap: Boolean                                      = js.native
-  var wordWrapWidth: Double                                  = js.native
-  var letterSpacing: Double                                  = js.native
-  var breakWords: Boolean                                    = js.native
-  var lineHeight: Double                                     = js.native
-  var dropShadow: Boolean                                    = js.native
-  var dropShadowColor: String | Double                       = js.native
-  var dropShadowAngle: Double                                = js.native
-  var dropShadowDistance: Double                             = js.native
-  var dropShadowBlur: Double                                 = js.native
-  var padding: Double                                        = js.native
-  var textBaseline: String                                   = js.native
-  var lineJoin: String                                       = js.native
-  var miterLimit: Double                                     = js.native
-  var fontSize: String | Double                              = js.native
+  var align: String = js.native
+  var stroke: String | Double = js.native
+  var strokeThickness: Double = js.native
+  var wordWrap: Boolean = js.native
+  var wordWrapWidth: Double = js.native
+  var letterSpacing: Double = js.native
+  var breakWords: Boolean = js.native
+  var lineHeight: Double = js.native
+  var dropShadow: Boolean = js.native
+  var dropShadowColor: String | Double = js.native
+  var dropShadowAngle: Double = js.native
+  var dropShadowDistance: Double = js.native
+  var dropShadowBlur: Double = js.native
+  var padding: Double = js.native
+  var textBaseline: String = js.native
+  var lineJoin: String = js.native
+  var miterLimit: Double = js.native
+  var fontSize: String | Double = js.native
 }
 
 object TextStyle {
@@ -1178,7 +1202,7 @@ object TextStyle {
 class Text protected () extends Sprite {
   def this(text: String = "", style: TextStyle = ???, resolution: Double = ???) = this()
 
-  var _text: String     = js.native
+  var _text: String = js.native
   var _style: TextStyle = js.native
 
   def updateText(): Unit = js.native
@@ -1191,19 +1215,19 @@ class Text protected () extends Sprite {
 
   def wordWrap(text: String): Boolean = js.native
 
-  var canvas: HTMLCanvasElement         = js.native
+  var canvas: HTMLCanvasElement = js.native
   var context: CanvasRenderingContext2D = js.native
-  var dirty: Boolean                    = js.native
-  var resolution: Double                = js.native
-  var text: String                      = js.native
-  var style: TextStyle                  = js.native
+  var dirty: Boolean = js.native
+  var resolution: Double = js.native
+  var text: String = js.native
+  var style: TextStyle = js.native
 }
 
 @js.native
 @JSGlobal("PIXI.Text")
 object Text extends js.Object {
-  var fontPropertiesCache: js.Any                     = js.native
-  var fontPropertiesCanvas: HTMLCanvasElement         = js.native
+  var fontPropertiesCache: js.Any = js.native
+  var fontPropertiesCanvas: HTMLCanvasElement = js.native
   var fontPropertiesContext: CanvasRenderingContext2D = js.native
 }
 
@@ -1216,20 +1240,20 @@ class BaseTexture protected () extends utils.EventEmitter {
 
   def _sourceLoaded(): Unit = js.native
 
-  var uuid: Double                                                    = js.native
-  var resolution: Double                                              = js.native
-  var width: Double                                                   = js.native
-  var height: Double                                                  = js.native
-  var realWidth: Double                                               = js.native
-  var realHeight: Double                                              = js.native
-  var scaleMode: Double                                               = js.native
-  var hasLoaded: Boolean                                              = js.native
-  var isLoading: Boolean                                              = js.native
+  var uuid: Double = js.native
+  var resolution: Double = js.native
+  var width: Double = js.native
+  var height: Double = js.native
+  var realWidth: Double = js.native
+  var realHeight: Double = js.native
+  var scaleMode: Double = js.native
+  var hasLoaded: Boolean = js.native
+  var isLoading: Boolean = js.native
   var source: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement = js.native
-  var premultipliedAlpha: Boolean                                     = js.native
-  var imageUrl: String                                                = js.native
-  var isPowerOfTwo: Boolean                                           = js.native
-  var mipmap: Boolean                                                 = js.native
+  var premultipliedAlpha: Boolean = js.native
+  var imageUrl: String = js.native
+  var isPowerOfTwo: Boolean = js.native
+  var mipmap: Boolean = js.native
 
   def update(): Unit = js.native
 
@@ -1254,29 +1278,37 @@ object BaseTexture extends js.Object {
 @js.native
 @JSGlobal("PIXI.RenderTexture")
 class RenderTexture protected () extends Texture {
-  def this(renderer: CanvasRenderer | WebGLRenderer,
-           width: Double = ???,
-           height: Double = ???,
-           scaleMode: Double = ???,
-           resolution: Double = ???) = this()
+  def this(
+    renderer:   CanvasRenderer | WebGLRenderer,
+    width:      Double                         = ???,
+    height:     Double                         = ???,
+    scaleMode:  Double                         = ???,
+    resolution: Double                         = ???
+  ) = this()
 
-  def renderWebGL(displayObject: DisplayObject,
-                  matrix: Matrix = ???,
-                  clear: Boolean = ???,
-                  updateTransform: Boolean = ???): Unit = js.native
+  def renderWebGL(
+    displayObject:   DisplayObject,
+    matrix:          Matrix        = ???,
+    clear:           Boolean       = ???,
+    updateTransform: Boolean       = ???
+  ): Unit = js.native
 
-  def renderCanvas(displayObject: DisplayObject,
-                   matrix: Matrix = ???,
-                   clear: Boolean = ???,
-                   updateTransform: Boolean = ???): Unit = js.native
+  def renderCanvas(
+    displayObject:   DisplayObject,
+    matrix:          Matrix        = ???,
+    clear:           Boolean       = ???,
+    updateTransform: Boolean       = ???
+  ): Unit = js.native
 
-  var resolution: Double                       = js.native
+  var resolution: Double = js.native
   var renderer: CanvasRenderer | WebGLRenderer = js.native
 
-  def render(displayObject: DisplayObject,
-             matrix: Matrix = ???,
-             clear: Boolean = ???,
-             updateTransform: Boolean = ???): Unit = js.native
+  def render(
+    displayObject:   DisplayObject,
+    matrix:          Matrix        = ???,
+    clear:           Boolean       = ???,
+    updateTransform: Boolean       = ???
+  ): Unit = js.native
 
   def resize(width: Double, height: Double, updateBase: Boolean = ???): Unit = js.native
 
@@ -1298,14 +1330,16 @@ class RenderTexture protected () extends Texture {
 @js.native
 @JSGlobal("PIXI.Texture")
 class Texture protected () extends utils.EventEmitter {
-  def this(baseTexture: BaseTexture,
-           frame: Rectangle = ???,
-           crop: Rectangle = ???,
-           trim: Rectangle = ???,
-           rotate: Double = ???) = this()
+  def this(
+    baseTexture: BaseTexture,
+    frame:       Rectangle   = ???,
+    crop:        Rectangle   = ???,
+    trim:        Rectangle   = ???,
+    rotate:      Double      = ???
+  ) = this()
 
   var _frame: Rectangle = js.native
-  var _uvs: TextureUvs  = js.native
+  var _uvs: TextureUvs = js.native
 
   def onBaseTextureUpdated(baseTexture: BaseTexture): Unit = js.native
 
@@ -1313,16 +1347,16 @@ class Texture protected () extends utils.EventEmitter {
 
   def _updateUvs(): Unit = js.native
 
-  var noFrame: Boolean         = js.native
+  var noFrame: Boolean = js.native
   var baseTexture: BaseTexture = js.native
-  var trim: Rectangle          = js.native
-  var valid: Boolean           = js.native
-  var requiresUpdate: Boolean  = js.native
-  var width: Double            = js.native
-  var height: Double           = js.native
-  var crop: Rectangle          = js.native
-  var rotate: Double           = js.native
-  var frame: Rectangle         = js.native
+  var trim: Rectangle = js.native
+  var valid: Boolean = js.native
+  var requiresUpdate: Boolean = js.native
+  var width: Double = js.native
+  var height: Double = js.native
+  var crop: Rectangle = js.native
+  var rotate: Double = js.native
+  var frame: Rectangle = js.native
 
   def update(): Unit = js.native
 
@@ -1441,7 +1475,7 @@ package utils {
 
     def removeItems[T](arr: js.Array[T], startIdx: Double, removeCount: Double): Unit = js.native
 
-    var TextureCache: js.Any     = js.native
+    var TextureCache: js.Any = js.native
     var BaseTextureCache: js.Any = js.native
   }
 
@@ -1452,8 +1486,8 @@ package extras {
   @js.native
   trait BitmapTextStyle extends js.Object {
     var font: String | js.Any = js.native
-    var align: String         = js.native
-    var tint: Double          = js.native
+    var align: String = js.native
+    var tint: Double = js.native
   }
 
   @js.native
@@ -1462,20 +1496,20 @@ package extras {
     def this(text: String, style: BitmapTextStyle = ???) = this()
 
     var _glyphs: js.Array[Sprite] = js.native
-    var _font: String | js.Any    = js.native
-    var _text: String             = js.native
+    var _font: String | js.Any = js.native
+    var _text: String = js.native
 
     def updateText(): Unit = js.native
 
-    var textWidth: Double     = js.native
-    var textHeight: Double    = js.native
-    var maxWidth: Double      = js.native
+    var textWidth: Double = js.native
+    var textHeight: Double = js.native
+    var maxWidth: Double = js.native
     var maxLineHeight: Double = js.native
-    var dirty: Boolean        = js.native
-    var tint: Double          = js.native
-    var align: String         = js.native
+    var dirty: Boolean = js.native
+    var tint: Double = js.native
+    var align: String = js.native
     var font: String | js.Any = js.native
-    var text: String          = js.native
+    var text: String = js.native
   }
 
   @js.native
@@ -1491,16 +1525,16 @@ package extras {
 
     var _textures: js.Array[Texture] = js.native
     var _durations: js.Array[Double] = js.native
-    var _currentTime: Double         = js.native
+    var _currentTime: Double = js.native
 
     def update(deltaTime: Double): Unit = js.native
 
-    var animationSpeed: Double                         = js.native
-    var loop: Boolean                                  = js.native
-    var onComplete: js.Function0[Unit]                 = js.native
-    var currentFrame: Double                           = js.native
-    var playing: Boolean                               = js.native
-    var totalFrames: Double                            = js.native
+    var animationSpeed: Double = js.native
+    var loop: Boolean = js.native
+    var onComplete: js.Function0[Unit] = js.native
+    var currentFrame: Double = js.native
+    var playing: Boolean = js.native
+    var totalFrames: Double = js.native
     var textures: js.Array[Texture] | js.Array[js.Any] = js.native
 
     def stop(): Unit = js.native
@@ -1526,17 +1560,19 @@ package extras {
   class TilingSprite protected () extends Sprite {
     def this(texture: Texture, width: Double, height: Double) = this()
 
-    var _tileScaleOffset: Point    = js.native
-    var _tilingTexture: Boolean    = js.native
-    var _refreshTexture: Boolean   = js.native
+    var _tileScaleOffset: Point = js.native
+    var _tilingTexture: Boolean = js.native
+    var _refreshTexture: Boolean = js.native
     var _uvs: js.Array[TextureUvs] = js.native
-    var tileScale: Point           = js.native
-    var tilePosition: Point        = js.native
-    var originalTexture: Texture   = js.native
+    var tileScale: Point = js.native
+    var tilePosition: Point = js.native
+    var originalTexture: Texture = js.native
 
-    def generateTilingTexture(renderer: WebGLRenderer | CanvasRenderer,
-                              texture: Texture,
-                              forcePowerOfTwo: Boolean = ???): Texture = js.native
+    def generateTilingTexture(
+      renderer:        WebGLRenderer | CanvasRenderer,
+      texture:         Texture,
+      forcePowerOfTwo: Boolean                        = ???
+    ): Texture = js.native
 
   }
 
@@ -1566,7 +1602,7 @@ package filters {
   @js.native
   @JSGlobal("PIXI.filters.BloomFilter")
   class BloomFilter extends AbstractFilter {
-    var blur: Double  = js.native
+    var blur: Double = js.native
     var blurX: Double = js.native
     var blurY: Double = js.native
   }
@@ -1576,26 +1612,26 @@ package filters {
   class BlurFilter extends AbstractFilter {
     var blurXFilter: BlurXFilter = js.native
     var blurYFilter: BlurYFilter = js.native
-    var blur: Double             = js.native
-    var passes: Double           = js.native
-    var blurX: Double            = js.native
-    var blurY: Double            = js.native
+    var blur: Double = js.native
+    var passes: Double = js.native
+    var blurX: Double = js.native
+    var blurY: Double = js.native
   }
 
   @js.native
   @JSGlobal("PIXI.filters.BlurXFilter")
   class BlurXFilter extends AbstractFilter {
-    var passes: Double   = js.native
+    var passes: Double = js.native
     var strength: Double = js.native
-    var blur: Double     = js.native
+    var blur: Double = js.native
   }
 
   @js.native
   @JSGlobal("PIXI.filters.BlurYFilter")
   class BlurYFilter extends AbstractFilter {
-    var passes: Double   = js.native
+    var passes: Double = js.native
     var strength: Double = js.native
-    var blur: Double     = js.native
+    var blur: Double = js.native
   }
 
   @js.native
@@ -1643,11 +1679,13 @@ package filters {
 
     def vintage(multiply: Boolean = ???): Unit = js.native
 
-    def colorTone(desaturation: Double,
-                  toned: Double,
-                  lightColor: String,
-                  darkColor: String,
-                  multiply: Boolean = ???): Unit = js.native
+    def colorTone(
+      desaturation: Double,
+      toned:        Double,
+      lightColor:   String,
+      darkColor:    String,
+      multiply:     Boolean = ???
+    ): Unit = js.native
 
     def night(intensity: Double, multiply: Boolean = ???): Unit = js.native
 
@@ -1670,8 +1708,8 @@ package filters {
     def this(matrix: js.Array[Double], width: Double, height: Double) = this()
 
     var matrix: js.Array[Double] = js.native
-    var width: Double            = js.native
-    var height: Double           = js.native
+    var width: Double = js.native
+    var height: Double = js.native
   }
 
   @js.native
@@ -1703,13 +1741,13 @@ package filters {
   @js.native
   @JSGlobal("PIXI.filters.DropShadowFilter")
   class DropShadowFilter extends AbstractFilter {
-    var blur: Double     = js.native
-    var blurX: Double    = js.native
-    var blurY: Double    = js.native
-    var color: Double    = js.native
-    var alpha: Double    = js.native
+    var blur: Double = js.native
+    var blurX: Double = js.native
+    var blurY: Double = js.native
+    var color: Double = js.native
+    var alpha: Double = js.native
     var distance: Double = js.native
-    var angle: Double    = js.native
+    var angle: Double = js.native
   }
 
   @js.native
@@ -1739,9 +1777,9 @@ package filters {
   @js.native
   @JSGlobal("PIXI.filters.RGBSplitFilter")
   class RGBSplitFilter extends AbstractFilter {
-    var red: Point   = js.native
+    var red: Point = js.native
     var green: Point = js.native
-    var blue: Point  = js.native
+    var blue: Point = js.native
   }
 
   @js.native
@@ -1754,17 +1792,17 @@ package filters {
   @JSGlobal("PIXI.filters.ShockwaveFilter")
   class ShockwaveFilter extends AbstractFilter {
     var center: js.Array[Double] = js.native
-    var params: js.Any           = js.native
-    var time: Double             = js.native
+    var params: js.Any = js.native
+    var time: Double = js.native
   }
 
   @js.native
   @JSGlobal("PIXI.filters.TiltShiftAxisFilter")
   class TiltShiftAxisFilter extends AbstractFilter {
-    var blur: Double         = js.native
+    var blur: Double = js.native
     var gradientBlur: Double = js.native
-    var start: Double        = js.native
-    var end: Double          = js.native
+    var start: Double = js.native
+    var end: Double = js.native
 
     def updateDelta(): Unit = js.native
   }
@@ -1772,10 +1810,10 @@ package filters {
   @js.native
   @JSGlobal("PIXI.filters.TiltShiftFilter")
   class TiltShiftFilter extends AbstractFilter {
-    var blur: Double         = js.native
+    var blur: Double = js.native
     var gradientBlur: Double = js.native
-    var start: Double        = js.native
-    var end: Double          = js.native
+    var start: Double = js.native
+    var end: Double = js.native
   }
 
   @js.native
@@ -1793,9 +1831,9 @@ package filters {
   @js.native
   @JSGlobal("PIXI.filters.TwistFilter")
   class TwistFilter extends AbstractFilter {
-    var offset: Point  = js.native
+    var offset: Point = js.native
     var radius: Double = js.native
-    var angle: Double  = js.native
+    var angle: Double = js.native
   }
 
 }
@@ -1804,9 +1842,9 @@ package interaction {
 
   @js.native
   trait InteractionEvent extends js.Object {
-    var stopped: Boolean      = js.native
-    var target: js.Any        = js.native
-    var `type`: String        = js.native
+    var stopped: Boolean = js.native
+    var target: js.Any = js.native
+    var `type`: String = js.native
     var data: InteractionData = js.native
 
     def stopPropagation(): Unit = js.native
@@ -1815,9 +1853,10 @@ package interaction {
   @js.native
   @JSGlobal("PIXI.interaction.InteractionData")
   class InteractionData extends js.Object {
-    var global: Point         = js.native
+    var global: Point = js.native
     var target: DisplayObject = js.native
-    var originalEvent: Event  = js.native
+    var originalEvent: Event = js.native
+    var buttons: Int = js.native
 
     def getLocalPosition(displayObject: DisplayObject, point: Point = ???, globalPos: Point = ???): Point = js.native
   }
@@ -1828,9 +1867,9 @@ package interaction {
     def this(renderer: SystemRenderer, options: js.Any = ???) = this()
 
     var interactionDOMElement: HTMLElement = js.native
-    var eventsAdded: Boolean               = js.native
-    var moveWhenInside: Boolean            = js.native
-    var _tempPoint: Point                  = js.native
+    var eventsAdded: Boolean = js.native
+    var moveWhenInside: Boolean = js.native
+    var _tempPoint: Point = js.native
 
     def setTargetElement(element: HTMLElement, resolution: Double): Unit = js.native
 
@@ -1840,55 +1879,57 @@ package interaction {
 
     def dispatchEvent(displayObject: DisplayObject, eventString: String, eventData: js.Any): Unit = js.native
 
-    var onMouseDown: js.Function1[Event, Unit]                          = js.native
-    var processMouseDown: js.Function2[DisplayObject, Boolean, Unit]    = js.native
-    var onMouseUp: js.Function1[Event, Unit]                            = js.native
-    var processMouseUp: js.Function2[DisplayObject, Boolean, Unit]      = js.native
-    var onMouseMove: js.Function1[Event, Unit]                          = js.native
-    var processMouseMove: js.Function2[DisplayObject, Boolean, Unit]    = js.native
-    var onMouseOut: js.Function1[Event, Unit]                           = js.native
+    var onMouseDown: js.Function1[Event, Unit] = js.native
+    var processMouseDown: js.Function2[DisplayObject, Boolean, Unit] = js.native
+    var onMouseUp: js.Function1[Event, Unit] = js.native
+    var processMouseUp: js.Function2[DisplayObject, Boolean, Unit] = js.native
+    var onMouseMove: js.Function1[Event, Unit] = js.native
+    var processMouseMove: js.Function2[DisplayObject, Boolean, Unit] = js.native
+    var onMouseOut: js.Function1[Event, Unit] = js.native
     var processMouseOverOut: js.Function2[DisplayObject, Boolean, Unit] = js.native
-    var onTouchStart: js.Function1[Event, Unit]                         = js.native
-    var processTouchStart: js.Function2[DisplayObject, Boolean, Unit]   = js.native
-    var onTouchEnd: js.Function1[Event, Unit]                           = js.native
-    var processTouchEnd: js.Function2[DisplayObject, Boolean, Unit]     = js.native
-    var onTouchMove: js.Function1[Event, Unit]                          = js.native
-    var processTouchMove: js.Function2[DisplayObject, Boolean, Unit]    = js.native
+    var onTouchStart: js.Function1[Event, Unit] = js.native
+    var processTouchStart: js.Function2[DisplayObject, Boolean, Unit] = js.native
+    var onTouchEnd: js.Function1[Event, Unit] = js.native
+    var processTouchEnd: js.Function2[DisplayObject, Boolean, Unit] = js.native
+    var onTouchMove: js.Function1[Event, Unit] = js.native
+    var processTouchMove: js.Function2[DisplayObject, Boolean, Unit] = js.native
 
     def getTouchData(touchEvent: InteractionData): InteractionData = js.native
 
     def returnTouchData(touchData: InteractionData): Unit = js.native
 
-    var renderer: CanvasRenderer | WebGLRenderer       = js.native
-    var autoPreventDefault: Boolean                    = js.native
-    var interactionFrequency: Double                   = js.native
-    var mouse: InteractionData                         = js.native
-    var eventData: js.Any                              = js.native
+    var renderer: CanvasRenderer | WebGLRenderer = js.native
+    var autoPreventDefault: Boolean = js.native
+    var interactionFrequency: Double = js.native
+    var mouse: InteractionData = js.native
+    var eventData: js.Any = js.native
     var interactiveDataPool: js.Array[InteractionData] = js.native
-    var last: Double                                   = js.native
-    var currentCursorStyle: String                     = js.native
-    var resolution: Double                             = js.native
+    var last: Double = js.native
+    var currentCursorStyle: String = js.native
+    var resolution: Double = js.native
 
     def update(deltaTime: Double): Unit = js.native
 
     def mapPositionToPoint(point: Point, x: Double, y: Double): Unit = js.native
 
-    def processInteractive(point: Point,
-                           displayObject: DisplayObject,
-                           func: js.Function2[DisplayObject, Boolean, Unit],
-                           hitTest: Boolean,
-                           interactive: Boolean): Boolean = js.native
+    def processInteractive(
+      point:         Point,
+      displayObject: DisplayObject,
+      func:          js.Function2[DisplayObject, Boolean, Unit],
+      hitTest:       Boolean,
+      interactive:   Boolean
+    ): Boolean = js.native
 
     def destroy(): Unit = js.native
   }
 
   @js.native
   trait InteractiveTarget extends js.Object {
-    var interactive: Boolean         = js.native
-    var buttonMode: Boolean          = js.native
+    var interactive: Boolean = js.native
+    var buttonMode: Boolean = js.native
     var interactiveChildren: Boolean = js.native
-    var defaultCursor: String        = js.native
-    var hitArea: HitArea             = js.native
+    var defaultCursor: String = js.native
+    var hitArea: HitArea = js.native
   }
 
 }
@@ -1900,9 +1941,9 @@ package loaders {
   @js.native
   trait LoaderOptions extends js.Object {
     var crossOrigin: Boolean | String = js.native
-    var loadType: Double              = js.native
-    var xhrType: String               = js.native
-    var metaData: js.Any              = js.native
+    var loadType: Double = js.native
+    var xhrType: String = js.native
+    var metaData: js.Any = js.native
   }
 
   @js.native
@@ -1919,9 +1960,9 @@ package loaders {
   class Loader protected () extends utils.EventEmitter {
     def this(baseUrl: String, concurrency: Double) = this()
 
-    var baseUrl: String               = js.native
-    var progress: Double              = js.native
-    var loading: Boolean              = js.native
+    var baseUrl: String = js.native
+    var progress: Double = js.native
+    var loading: Boolean = js.native
     var resources: ResourceDictionary = js.native
 
     def add(name: String, url: String, options: LoaderOptions, cb: js.Function0[Unit]): Loader = js.native
@@ -1967,17 +2008,17 @@ package loaders {
   class Resource protected () extends utils.EventEmitter {
     def this(name: String = ???, url: String | js.Array[String] = ???, options: LoaderOptions = ???) = this()
 
-    var name: String                  = js.native
-    var texture: Texture              = js.native
-    var textures: TextureDictionary   = js.native
-    var url: String                   = js.native
-    var data: js.Any                  = js.native
+    var name: String = js.native
+    var texture: Texture = js.native
+    var textures: TextureDictionary = js.native
+    var url: String = js.native
+    var data: js.Any = js.native
     var crossOrigin: Boolean | String = js.native
-    var loadType: Double              = js.native
-    var xhrType: String               = js.native
-    var error: Error                  = js.native
-    var xhr: XMLHttpRequest           = js.native
-    var SVGMetadataElement: js.Any    = js.native
+    var loadType: Double = js.native
+    var xhrType: String = js.native
+    var error: Error = js.native
+    var xhr: XMLHttpRequest = js.native
+    var SVGMetadataElement: js.Any = js.native
 
     def complete(): Unit = js.native
 
@@ -1987,8 +2028,8 @@ package loaders {
   @js.native
   @JSGlobal("PIXI.loaders.Resource")
   object Resource extends js.Object {
-    var LOAD_TYPE: js.Any         = js.native
-    var XHR_READ_STATE: js.Any    = js.native
+    var LOAD_TYPE: js.Any = js.native
+    var XHR_READ_STATE: js.Any = js.native
     var XHR_RESPONSE_TYPE: js.Any = js.native
   }
 
@@ -1999,20 +2040,22 @@ package mesh {
   @js.native
   @JSGlobal("PIXI.mesh.Mesh")
   class Mesh protected () extends Container {
-    def this(texture: Texture,
-             vertices: js.Array[Double] = ???,
-             uvs: js.Array[Double] = ???,
-             indices: js.Array[Double] = ???,
-             drawMode: Double = ???) = this()
+    def this(
+      texture:  Texture,
+      vertices: js.Array[Double] = ???,
+      uvs:      js.Array[Double] = ???,
+      indices:  js.Array[Double] = ???,
+      drawMode: Double           = ???
+    ) = this()
 
-    var texture: Texture                = js.native
-    var uvs: js.Array[Double]           = js.native
-    var vertices: js.Array[Double]      = js.native
-    var indices: js.Array[Double]       = js.native
-    var dirty: Boolean                  = js.native
-    var blendMode: Double               = js.native
-    var canvasPadding: Double           = js.native
-    var drawMode: Double                = js.native
+    var texture: Texture = js.native
+    var uvs: js.Array[Double] = js.native
+    var vertices: js.Array[Double] = js.native
+    var indices: js.Array[Double] = js.native
+    var dirty: Boolean = js.native
+    var blendMode: Double = js.native
+    var canvasPadding: Double = js.native
+    var drawMode: Double = js.native
     var shader: Shader | AbstractFilter = js.native
 
     def getBounds(matrix: Matrix = ???): Rectangle = js.native
@@ -2025,12 +2068,14 @@ package mesh {
 
     def _renderCanvasTriangles(context: CanvasRenderingContext2D): Unit = js.native
 
-    def _renderCanvasDrawTriangle(context: CanvasRenderingContext2D,
-                                  vertices: Double,
-                                  uvs: Double,
-                                  index0: Double,
-                                  index1: Double,
-                                  index2: Double): Unit = js.native
+    def _renderCanvasDrawTriangle(
+      context:  CanvasRenderingContext2D,
+      vertices: Double,
+      uvs:      Double,
+      index0:   Double,
+      index1:   Double,
+      index2:   Double
+    ): Unit = js.native
 
     def renderMeshFlat(Mesh: Mesh): Unit = js.native
 
@@ -2052,7 +2097,7 @@ package mesh {
 
     def getTextureUvs(): TextureUvs = js.native
 
-    var points: js.Array[Point]  = js.native
+    var points: js.Array[Point] = js.native
     var colors: js.Array[Double] = js.native
 
     def refresh(): Unit = js.native
@@ -2093,8 +2138,8 @@ package ticker {
     def _tick(time: Double): Unit = js.native
 
     var _emitter: utils.EventEmitter = js.native
-    var _requestId: Double           = js.native
-    var _maxElapsedMS: Double        = js.native
+    var _requestId: Double = js.native
+    var _maxElapsedMS: Double = js.native
 
     def _requestIfNeeded(): Unit = js.native
 
@@ -2103,13 +2148,13 @@ package ticker {
     def _startIfPossible(): Unit = js.native
 
     var autoStart: Boolean = js.native
-    var deltaTime: Double  = js.native
-    var elapsedMS: Double  = js.native
-    var lastTime: Double   = js.native
-    var speed: Double      = js.native
-    var started: Boolean   = js.native
-    var FPS: Double        = js.native
-    var minFPS: Double     = js.native
+    var deltaTime: Double = js.native
+    var elapsedMS: Double = js.native
+    var lastTime: Double = js.native
+    var speed: Double = js.native
+    var started: Boolean = js.native
+    var FPS: Double = js.native
+    var minFPS: Double = js.native
 
     def add(fn: js.Function1[Double, Unit], context: js.Any = ???): Ticker = js.native
 
@@ -2135,20 +2180,22 @@ package ticker {
 @JSGlobal("PIXI")
 @js.native
 object Pixi extends js.Object {
-  var VERSION: String           = js.native
-  var PI_2: Double              = js.native
-  var RAD_TO_DEG: Double        = js.native
-  var DEG_TO_RAD: Double        = js.native
-  var TARGET_FPMS: Double       = js.native
-  var RETINA_PREFIX: String     = js.native
-  var RESOLUTION: Double        = js.native
+  var VERSION: String = js.native
+  var PI_2: Double = js.native
+  var RAD_TO_DEG: Double = js.native
+  var DEG_TO_RAD: Double = js.native
+  var TARGET_FPMS: Double = js.native
+  var RETINA_PREFIX: String = js.native
+  var RESOLUTION: Double = js.native
   var FILTER_RESOLUTION: Double = js.native
   var SPRITE_BATCH_SIZE: Double = js.native
 
-  def autoDetectRenderer(width: Double,
-                         height: Double,
-                         options: RendererOptions = null,
-                         noWebGL: Boolean = false): SystemRenderer = js.native
+  def autoDetectRenderer(
+    width:   Double,
+    height:  Double,
+    options: RendererOptions = null,
+    noWebGL: Boolean         = false
+  ): SystemRenderer = js.native
 
   var loader: loaders.Loader = js.native
 

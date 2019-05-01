@@ -82,7 +82,7 @@ class Builtins(implicit turtleWorld: TurtleWorld) {
   lazy val stageArea = turtleWorld.stageArea
   val Kc = new KeyCodes
   val canvasBounds = {
-    val pos = turtleWorld.stage.position
+    val pos = turtleWorld.stagePosition
     new Rectangle(-pos.x, -pos.y, turtleWorld.width, turtleWorld.height)
   }
   def PictureT(fn: Turtle => Unit)(implicit turtleWorld: TurtleWorld): TurtlePicture = {

@@ -162,7 +162,7 @@ trait Picture {
   }
 
   def handlerWrapper(fn: (Double, Double) => Unit)(event: InteractionEvent): Unit = {
-    val pos = event.data.getLocalPosition(turtleWorld.stage)
+    val pos = turtleWorld.positionOnStage(event.data)
     event.stopPropagation()
     fn(pos.x, pos.y)
   }
@@ -181,22 +181,45 @@ trait Picture {
     tnode.on("touchend", handler)
   }
 
-//  def onMouseClick(fn: (Double, Double) => Unit): Unit = {
-//    tnode.interactive = true
-//    tnode.on("mouseclick", handlerWrapper(fn) _)
-//  }
-//
-//  def onMouseMove(fn: (Double, Double) => Unit): Unit = {
-//    tnode.interactive = true
-//    tnode.on("mousemove", handlerWrapper(fn) _)
-//  }
-//
-//  def onMouseEnter(fn: (Double, Double) => Unit): Unit = {
-//    tnode.interactive = true
-//    tnode.on("mouseenter", handlerWrapper(fn) _)
-//  }
-//  def onMouseExit(fn: (Double, Double) => Unit): Unit = {
-//    tnode.interactive = true
-//    tnode.on("mouseleave", handlerWrapper(fn) _)
-//  }
+  def onMouseClick(fn: (Double, Double) => Unit): Unit = {
+    tnode.interactive = true
+    val handler = handlerWrapper(fn)(_)
+    tnode.on("click", handler)
+  }
+
+  def onMouseMove(fn: (Double, Double) => Unit): Unit = {
+    tnode.interactive = true
+    val moveWrapper: (Double, Double) => Unit = { (x, y) =>
+      if (!turtleWorld.isAMouseButtonPressed) {
+        fn(x, y)
+      }
+    }
+    val handler = handlerWrapper(moveWrapper)(_)
+    tnode.on("mousemove", handler)
+  }
+
+  def onMouseDrag(fn: (Double, Double) => Unit): Unit = {
+    tnode.interactive = true
+    val dragWrapper: (Double, Double) => Unit = { (x, y) =>
+      if (turtleWorld.isAMouseButtonPressed) {
+        turtleWorld.mouseMoveOnlyWhenInside(false)
+        fn(x, y)
+      }
+      else {
+        turtleWorld.mouseMoveOnlyWhenInside(true)
+      }
+    }
+    val handler = handlerWrapper(dragWrapper)(_)
+    tnode.on("mousemove", handler)
+  }
+
+  //
+  //  def onMouseEnter(fn: (Double, Double) => Unit): Unit = {
+  //    tnode.interactive = true
+  //    tnode.on("mouseenter", handlerWrapper(fn) _)
+  //  }
+  //  def onMouseExit(fn: (Double, Double) => Unit): Unit = {
+  //    tnode.interactive = true
+  //    tnode.on("mouseleave", handlerWrapper(fn) _)
+  //  }
 }
