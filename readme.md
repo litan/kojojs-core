@@ -1,18 +1,8 @@
-# Scala Fiddle Core
+This repo contains the router and compiler services for KojoJS.
 
-Scala Fiddle provides an embeddable web component where the user can edit and run Scala code. The source code is
-compiled to JavaScript on the server and then run in the browser.
-
-To develop, run:
-
-```
-sbt "~; compilerServer/reStart"
-```
-
-You can package as a Docker image with
-
-```
-sbt docker
-```
-
-Access the fiddle via browser at http://localhost:8080/embed
+### Instructions for using with IntelliJ Idea:
+* Import sbt project
+* Open sbt shell
+* Run `router/reStart` to get the router going. The kojojs-editor web-server should be running at this point.
+* Run `compilerServer/reStart` to get the compiler service going
+* Navigate to localhost:9000 to start using KojoJS
