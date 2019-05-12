@@ -1,8 +1,10 @@
 package kojo
 
+import scala.concurrent.Future
+import scala.concurrent.Promise
+
 import com.vividsolutions.jts.geom.AffineTransformation
 import com.vividsolutions.jts.geom.Geometry
-import com.vividsolutions.jts.geom.LineString
 
 import kojo.doodle.Color
 import pixiscalajs.PIXI
@@ -11,8 +13,12 @@ import pixiscalajs.PIXI.Point
 import pixiscalajs.PIXI.interaction.InteractionEvent
 
 trait Picture {
-  def tnode: PIXI.DisplayObject
   def made: Boolean
+  def ready: Future[Unit]
+
+  def tnode: PIXI.DisplayObject
+  def bounds = Utils.transformRectangle(tnode.getLocalBounds(), tnode.localTransform)
+
   def updateGeomTransform(): Unit = {
     pgTransform = t2t(tnode.localTransform)
   }
@@ -24,21 +30,22 @@ trait Picture {
 
   def invisible(): Unit = {
     tnode.visible = false
-    turtleWorld.render()
+    kojoWorld.render()
   }
   def visible(): Unit = {
     tnode.visible = true
-    turtleWorld.render()
+    kojoWorld.render()
   }
   def isVisible = tnode.visible
 
   def erase(): Unit
-  def moveToFront() = turtleWorld.moveToFront(tnode)
-  def moveToBack() = turtleWorld.moveToBack(tnode)
+  def moveToFront() = kojoWorld.moveToFront(tnode)
+  def moveToBack() = kojoWorld.moveToBack(tnode)
   def position = tnode.position
+  def heading = tnode.rotation.toDegrees
   def setOpacity(opac: Double) {
     tnode.alpha = opac
-    turtleWorld.render()
+    kojoWorld.render()
   }
 
   def forwardInputTo(other: Picture): Unit = {
@@ -46,7 +53,7 @@ trait Picture {
   }
 
   var pgTransform = new AffineTransformation
-  def turtleWorld: TurtleWorld
+  def kojoWorld: KojoWorld
 
   private def t2t(t: Matrix): AffineTransformation = {
     import scala.scalajs.js.JSConverters._
@@ -62,7 +69,7 @@ trait Picture {
 
   private def transformDone() = {
     preDrawHook()
-    turtleWorld.render()
+    kojoWorld.render()
     updateGeomTransform()
   }
 
@@ -88,16 +95,22 @@ trait Picture {
   def rotate(angle: Double): Unit = {
     val angleRads = Utils.deg2radians(angle)
     tnode.rotation += angleRads
+    tnode.rotation = tnode.rotation % (math.Pi * 2)
+    transformDone()
+  }
+
+  def setHeading(angle: Double): Unit = {
+    val angleRads = Utils.deg2radians(angle)
+    tnode.rotation = angleRads
+    tnode.rotation = tnode.rotation % (math.Pi * 2)
     transformDone()
   }
 
   def translate(dx: Double, dy: Double): Unit = {
-    val pos = tnode.position
     val transform = tnode.localTransform
-    val localPos = transform.applyInverse(pos)
-    localPos.set(localPos.x + dx, localPos.y + dy)
-    val globalPos = transform.apply(localPos)
-    pos.set(globalPos.x, globalPos.y)
+    val localPos = Point(dx, dy)
+    val parentPos = transform.apply(localPos)
+    tnode.position.set(parentPos.x, parentPos.y)
     transformDone()
   }
 
@@ -121,7 +134,7 @@ trait Picture {
   def setPenColor(c: Color): Unit
   def setPenThickness(t: Double): Unit
 
-  var _picGeom: Geometry = _
+  private var _picGeom: Geometry = _
   def initGeom(): Geometry
   def picGeom: Geometry = {
     if (!made) {
@@ -139,7 +152,6 @@ trait Picture {
           throw new IllegalStateException("Unable to create geometry for picture - " + t.getMessage, t)
       }
     }
-    // TODO: next step is to support pgTransform
     pgTransform.transform(_picGeom)
   }
 
@@ -157,13 +169,19 @@ trait Picture {
     others.find { this collidesWith _ }
   }
 
+  def collisions(others: Set[Picture]): Set[Picture] = {
+    others.filter { this collidesWith _ }
+  }
+
   def intersection(other: Picture): Geometry = {
     picGeom.intersection(other.picGeom)
   }
 
-  def handlerWrapper(fn: (Double, Double) => Unit)(event: InteractionEvent): Unit = {
-    val pos = turtleWorld.positionOnStage(event.data)
-    event.stopPropagation()
+  def handlerWrapper(fn: (Double, Double) => Unit, stop: Boolean = true)(event: InteractionEvent): Unit = {
+    val pos = kojoWorld.positionOnStage(event.data)
+    if (stop) {
+      event.stopPropagation()
+    }
     fn(pos.x, pos.y)
   }
 
@@ -190,7 +208,7 @@ trait Picture {
   def onMouseMove(fn: (Double, Double) => Unit): Unit = {
     tnode.interactive = true
     val moveWrapper: (Double, Double) => Unit = { (x, y) =>
-      if (!turtleWorld.isAMouseButtonPressed) {
+      if (!kojoWorld.isAMouseButtonPressed) {
         fn(x, y)
       }
     }
@@ -198,18 +216,38 @@ trait Picture {
     tnode.on("mousemove", handler)
   }
 
+  private var dragMouseMonitored = false
+  private var mousePressed = false
   def onMouseDrag(fn: (Double, Double) => Unit): Unit = {
     tnode.interactive = true
-    val dragWrapper: (Double, Double) => Unit = { (x, y) =>
-      if (turtleWorld.isAMouseButtonPressed) {
-        turtleWorld.mouseMoveOnlyWhenInside(false)
-        fn(x, y)
+
+    if (!dragMouseMonitored) {
+      dragMouseMonitored = true
+
+      onMousePress { (x, y) =>
+        mousePressed = true
       }
-      else {
-        turtleWorld.mouseMoveOnlyWhenInside(true)
+
+      onMouseRelease { (x, y) =>
+        mousePressed = false
       }
     }
-    val handler = handlerWrapper(dragWrapper)(_)
+
+    val moveWrapper: (Double, Double) => Unit = { (x, y) =>
+      if (kojoWorld.isAMouseButtonPressed) {
+        kojoWorld.mouseMoveOnlyWhenInside(false)
+        if (mousePressed) {
+          fn(x, y)
+        }
+      }
+      else {
+        mousePressed = false
+        kojoWorld.runLater(0) {
+          kojoWorld.mouseMoveOnlyWhenInside(true)
+        }
+      }
+    }
+    val handler = handlerWrapper(moveWrapper, false)(_)
     tnode.on("mousemove", handler)
   }
 
@@ -222,4 +260,18 @@ trait Picture {
   //    tnode.interactive = true
   //    tnode.on("mouseleave", handlerWrapper(fn) _)
   //  }
+}
+
+trait ReadyPromise { self: Picture =>
+  def made: Boolean = _made
+
+  private var _made = false
+  private val readyPromise = Promise[Unit]()
+  def ready: Future[Unit] = {
+    readyPromise.future
+  }
+  protected def makeDone(): Unit = {
+    _made = true
+    readyPromise.success(())
+  }
 }

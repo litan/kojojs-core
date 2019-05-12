@@ -8,8 +8,7 @@ import com.vividsolutions.jts.geom.Geometry
 import kojo.Utils.newCoordinate
 import kojo.doodle.Color
 import pixiscalajs.PIXI
-class ImagePic(url: String)(implicit val turtleWorld: TurtleWorld) extends Picture {
-  var made = false
+class ImagePic(url: String)(implicit val kojoWorld: KojoWorld) extends Picture with ReadyPromise {
   val imgLayer = new PIXI.Container
   var sprite: PIXI.Sprite = _
   val tnode = imgLayer
@@ -20,16 +19,16 @@ class ImagePic(url: String)(implicit val turtleWorld: TurtleWorld) extends Pictu
     sprite = new PIXI.Sprite(loader.resources(url).texture)
     sprite.setTransform(0, sprite.height, 1, -1, 0, 0, 0, 0, 0)
     imgLayer.addChild(sprite)
-    made = true
-    turtleWorld.render()
+    makeDone()
+    kojoWorld.render()
   }
 
   override def realDraw(): Unit = {
-    turtleWorld.addTurtleLayer(imgLayer)
+    kojoWorld.addLayer(imgLayer)
   }
 
   def erase(): Unit = {
-    turtleWorld.removeTurtleLayer(imgLayer)
+    kojoWorld.removeLayer(imgLayer)
   }
 
   override def setFillColor(c: Color): Unit = {
@@ -51,6 +50,6 @@ class ImagePic(url: String)(implicit val turtleWorld: TurtleWorld) extends Pictu
     cab += newCoordinate(bounds.x, bounds.y)
     import scala.scalajs.js.JSConverters._
     //    pgTransform.getInverse().transform(Gf.createLineString(cab.toJSArray))
-    Gf.createLineString(cab.toJSArray)
+    Utils.Gf.createLineString(cab.toJSArray)
   }
 }

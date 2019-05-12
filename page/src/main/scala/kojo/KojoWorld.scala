@@ -13,10 +13,44 @@ import com.vividsolutions.jts.geom.Coordinate
 
 import kojo.doodle.Color
 import pixiscalajs.PIXI
+import pixiscalajs.PIXI.Point
 import pixiscalajs.PIXI.RendererOptions
 import pixiscalajs.PIXI.interaction.InteractionData
 
-class TurtleWorld {
+trait KojoWorld {
+  def width: Int
+  def height: Int
+  def addLayer(layer: PIXI.Container): Unit
+  def removeLayer(layer: PIXI.Container): Unit
+  def scheduleLater(fn: => Unit): Unit
+  def runLater(ms: Double)(fn: => Unit): Unit
+  def render(): Unit
+  def moveToFront(obj: PIXI.DisplayObject): Unit
+  def moveToBack(obj: PIXI.DisplayObject): Unit
+
+  def setBackground(color: Color): Unit
+  def animate(fn: => Unit): Unit
+  def timer(ms: Long)(fn: => Unit): Unit
+  def stopAnimation(): Unit
+
+  def drawStage(fillc: Color)(implicit kojoWorld: KojoWorld)
+  def bounceVecOffStage(v: Vector2D, p: Picture): Vector2D
+  def bouncePicVectorOffPic(pic: Picture, vel: Vector2D, obstacle: Picture, rg: Random): Vector2D
+  def stageBorder: Picture
+  def stageLeft: Picture
+  def stageTop: Picture
+  def stageRight: Picture
+  def stageBot: Picture
+  def stageArea: Picture
+
+  def isKeyPressed(keyCode: Int): Boolean
+  def stagePosition: Point
+  def positionOnStage(data: InteractionData): Point
+  def isAMouseButtonPressed: Boolean
+  def mouseMoveOnlyWhenInside(on: Boolean): Unit
+}
+
+class KojoWorldImpl extends KojoWorld {
   PIXI.Pixi
   private val fiddleContainer =
     document.getElementById("fiddle-container").asInstanceOf[html.Div]
@@ -41,31 +75,31 @@ class TurtleWorld {
     initEvents()
   }
 
-  def addTurtleLayer(layer: PIXI.Container): Unit = {
+  def addLayer(layer: PIXI.Container): Unit = {
     stage.addChild(layer)
     render()
   }
 
-  def removeTurtleLayer(layer: PIXI.Container): Unit = {
+  def removeLayer(layer: PIXI.Container): Unit = {
     stage.removeChild(layer)
     render()
   }
 
   val MaxBurst = 100
   var burstCount = 0
-  def scheduleLater(fn: () => Unit): Unit = {
+  def scheduleLater(fn: => Unit): Unit = {
     burstCount += 1
     if (burstCount < MaxBurst) {
-      fn()
+      fn
     }
     else {
-      window.setTimeout(fn, 0)
+      window.setTimeout(() => fn, 0)
       burstCount = 0
     }
   }
 
-  def runLater(ms: Double)(fn: () => Unit): Unit = {
-    window.setTimeout(fn, ms)
+  def runLater(ms: Double)(fn: => Unit): Unit = {
+    window.setTimeout(() => fn, ms)
   }
 
   def render(): Unit = {
@@ -108,16 +142,19 @@ class TurtleWorld {
   var loaded = false
   var timers = Vector.empty[Int]
 
+  def loadCheck(): Unit = {
+    if (!loaded && TurtleImageHelper.queue.isEmpty) {
+      loaded = true
+    }
+  }
+
   def animate(fn: => Unit): Unit = {
     animating = true
     animateHelper(fn)
   }
 
   def animateHelper(fn: => Unit): Unit = {
-    if (!loaded && TurtleImageHelper.queue.isEmpty) {
-      loaded = true
-    }
-
+    loadCheck()
     window.requestAnimationFrame { t =>
       if (loaded) {
         fn
@@ -138,6 +175,7 @@ class TurtleWorld {
 
   def timer(ms: Long)(fn: => Unit): Unit = {
     val handle = window.setInterval({ () =>
+      loadCheck()
       if (loaded) {
         fn
       }
@@ -162,7 +200,7 @@ class TurtleWorld {
     stageBot = noPic
   }
 
-  def drawStage(fillc: Color)(implicit turtleWorld: TurtleWorld) {
+  def drawStage(fillc: Color)(implicit kojoWorld: KojoWorld) {
     def left(size: Double) = TurtlePicture { t =>
       t.setPenThickness(0)
       t.forward(size)

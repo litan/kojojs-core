@@ -47,19 +47,26 @@ object TurtleImageHelper {
   }
 }
 
-class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld: TurtleWorld)
+class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: KojoWorld)
   extends TurtleAPI
   with RichTurtleCommands {
   private[kojo] val turtleLayer = new PIXI.Container()
   private var turtleImage: PIXI.Container = _
   private[kojo] val turtlePath = new PIXI.Graphics()
   private[kojo] val turtlePathPoints = ArrayBuffer[(Double, Double)]()
+  var prevMoveTo: Option[Point] = None
   private def turtlePathMoveTo(x: Double, y: Double): Unit = {
     turtlePath.moveTo(x, y)
-    turtlePathPoints += ((x, y))
+    prevMoveTo = Some(Point(x, y))
+    //    turtlePathPoints += ((x, y))
   }
 
   private def turtlePathLineTo(x: Double, y: Double): Unit = {
+    prevMoveTo.foreach { pt =>
+      turtlePathPoints += ((pt.x, pt.y))
+      prevMoveTo = None
+    }
+
     turtlePath.lineTo(x, y)
     turtlePathPoints += ((x, y))
   }
@@ -81,7 +88,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
   private def init(loader: PIXI.loaders.Loader, any: Any) {
     turtleLayer.name = "Turtle Layer"
     if (!forPic) {
-      turtleWorld.addTurtleLayer(turtleLayer)
+      kojoWorld.addLayer(turtleLayer)
     }
     turtleImage = loadTurtle(x, y, loader)
     turtleImage.name = "Turtle Icon"
@@ -92,7 +99,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
       turtleLayer.addChild(turtleImage)
     }
     initTurtleLayer()
-    turtleWorld.runLater(0)(queueHandler)
+    kojoWorld.runLater(0)(queueHandler)
   }
 
   private def initTurtleLayer(): Unit = {
@@ -215,7 +222,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
         case Hop(n)      => realForward(n, true)
         case Turn(angle) => realLeft(angle)
         case SetAnimationDelay(delay) =>
-          animationDelay = delay; turtleWorld.scheduleLater(queueHandler)
+          animationDelay = delay; kojoWorld.scheduleLater(queueHandler)
         case SetPenThickness(t) => realSetPenThickness(t)
         case SetPenColor(c)     => realSetPenColor(c)
         case SetFillColor(c)    => realSetFillColor(c)
@@ -242,18 +249,18 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
   private def realSetPenThickness(t: Double): Unit = {
     penWidth = t
     turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realSetPenColor(color: Color): Unit = {
     penColor = color
     turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realSetPenFontSize(n: Int): Unit = {
     penFontSize = n
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realSetFillColor(color: Color): Unit = {
@@ -262,21 +269,21 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
     // set new fill
     fillColor = color
     turtlePath.beginFill(fillColor.toRGBDouble, fillColor.alpha.get)
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realSetPosition(x: Double, y: Double): Unit = {
     turtleImage.position.x = x
     turtleImage.position.y = y
     turtlePathMoveTo(x, y)
-    turtleWorld.render()
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.render()
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realSetHeading(theta: Double): Unit = {
     turtleImage.rotation = theta
-    turtleWorld.render()
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.render()
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realForwardNoAnim(n: Double, hop: Boolean): Unit = {
@@ -292,8 +299,8 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
     turtlePath.clearDirty += 1
     turtleImage.position.x = pfx
     turtleImage.position.y = pfy
-    turtleWorld.render()
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.render()
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realForward(n: Double, hop: Boolean): Unit = {
@@ -303,7 +310,6 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
     }
 
     turtleLayer.addChild(tempForwardPath)
-    var len = 0
     val p0x = position.x
     val p0y = position.y
     val (pfx, pfy) = TurtleHelper.posAfterForward(p0x, p0y, headingRadians, n)
@@ -328,8 +334,8 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
         turtlePath.clearDirty += 1
         turtleImage.position.x = pfx
         turtleImage.position.y = pfy
-        turtleWorld.render()
-        turtleWorld.scheduleLater(queueHandler)
+        kojoWorld.render()
+        kojoWorld.scheduleLater(queueHandler)
       }
       else {
         val currX = p0x * (1 - frac) + pfx * frac
@@ -345,7 +351,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
         turtleImage.position.y = currY
         window.requestAnimationFrame(forwardFrame)
       }
-      turtleWorld.render()
+      kojoWorld.render()
     }
 
     window.requestAnimationFrame(forwardFrame)
@@ -356,8 +362,8 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
     def leftFrame(): Unit = {
       val angleRads = Utils.deg2radians(angle)
       turtleImage.rotation += angleRads
-      turtleWorld.render()
-      turtleWorld.scheduleLater(queueHandler)
+      kojoWorld.render()
+      kojoWorld.scheduleLater(queueHandler)
     }
 
     leftFrame()
@@ -411,7 +417,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
 
     makeArc()
     popQ()
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realMoveTo(x: Double, y: Double) {
@@ -421,7 +427,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
     val d = distanceTo(x, y)
     forward(d)
     popQ()
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realWriteText(text: String): Unit = {
@@ -432,15 +438,15 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
       pixiText.rotation = (heading - 90).toRadians
       pixiText.style.fontSize = penFontSize
       turtleLayer.addChild(pixiText)
-      turtleWorld.render()
+      kojoWorld.render()
     }
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realSavePosHe(): Unit = {
     val pos = position
     savedPosHe.push((PIXI.Point(pos.x, pos.y), heading))
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realRestorePosHe(): Unit = {
@@ -449,22 +455,22 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
     setPosition(newPosition.x, newPosition.y)
     setHeading(newHeading)
     popQ()
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realClear(): Unit = {
     turtlePath.clear()
     turtlePathPoints.clear()
     initTurtleLayer()
-    turtleWorld.render()
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.render()
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realPause(seconds: Double): Unit = {
     val t0 = window.performance.now()
     def pump(frameTime: Double): Unit = {
       if (frameTime - t0 > seconds * 1000) {
-        turtleWorld.scheduleLater(queueHandler)
+        kojoWorld.scheduleLater(queueHandler)
       }
       else {
         window.requestAnimationFrame(pump)
@@ -480,19 +486,19 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
     else {
       penIsUp = false
     }
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realInvisible(): Unit = {
     turtleImage.visible = false
-    turtleWorld.render()
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.render()
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realVisible(): Unit = {
     turtleImage.visible = true
-    turtleWorld.render()
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.render()
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def distanceTo(x: Double, y: Double): Double = {
@@ -516,11 +522,11 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit turtleWorld
   private def realPopQ(): Unit = {
     assert(commandQ.size == 0)
     commandQs = commandQs.tail
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realSync(fn: () => Unit) = {
     fn()
-    turtleWorld.scheduleLater(queueHandler)
+    kojoWorld.scheduleLater(queueHandler)
   }
 }

@@ -9,18 +9,18 @@ import kojo.Utils.newCoordinate
 import kojo.doodle.Color
 
 object TurtlePicture {
-  def apply(fn: Turtle => Unit)(implicit turtleWorld: TurtleWorld): TurtlePicture = {
+  def apply(fn: Turtle => Unit)(implicit kojoWorld: KojoWorld): TurtlePicture = {
     val tp = new TurtlePicture
     tp.make(fn)
     tp
   }
 }
 
-class TurtlePicture private[kojo] (implicit val turtleWorld: TurtleWorld) extends Picture {
+class TurtlePicture private[kojo] (implicit val kojoWorld: KojoWorld)
+  extends Picture with ReadyPromise {
   val turtle = new Turtle(0, 0, true)
   val picLayer = turtle.turtleLayer
   val tnode = picLayer
-  var made = false
   val noColor = Color(0, 0, 0, 0)
 
   def make(fn: Turtle => Unit): Unit = {
@@ -28,14 +28,20 @@ class TurtlePicture private[kojo] (implicit val turtleWorld: TurtleWorld) extend
     turtle.setFillColor(noColor)
     fn(turtle)
     turtle.sync { () =>
-      made = true
+      makeDone()
     }
   }
+
   def realDraw(): Unit = {
-    turtleWorld.addTurtleLayer(picLayer)
+    kojoWorld.addLayer(picLayer)
   }
+
+  import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
   def erase(): Unit = {
-    turtleWorld.removeTurtleLayer(picLayer)
+    ready.foreach { _ =>
+      kojoWorld.removeLayer(picLayer)
+      //      turtle.turtlePath.destroy()
+    }
   }
 
   def initGeom(): Geometry = {
@@ -50,11 +56,11 @@ class TurtlePicture private[kojo] (implicit val turtleWorld: TurtleWorld) extend
       cab += cab(0)
     }
     import scala.scalajs.js.JSConverters._
-    Gf.createLineString(cab.toJSArray)
+    Utils.Gf.createLineString(cab.toJSArray)
   }
 
   def setFillColor(c: Color): Unit = {
-    turtle.sync { () =>
+    ready.foreach { u =>
       val gds = turtle.turtlePath.graphicsData
       gds.foreach { gd =>
         gd.fillColor = c.toRGBDouble
@@ -62,12 +68,12 @@ class TurtlePicture private[kojo] (implicit val turtleWorld: TurtleWorld) extend
       }
       turtle.turtlePath.dirty += 1
       turtle.turtlePath.clearDirty += 1
-      turtleWorld.render()
+      kojoWorld.render()
     }
   }
 
   def setPenColor(c: Color): Unit = {
-    turtle.sync { () =>
+    ready.foreach { u =>
       val gds = turtle.turtlePath.graphicsData
       gds.foreach { gd =>
         gd.lineColor = c.toRGBDouble
@@ -75,19 +81,19 @@ class TurtlePicture private[kojo] (implicit val turtleWorld: TurtleWorld) extend
       }
       turtle.turtlePath.dirty += 1
       turtle.turtlePath.clearDirty += 1
-      turtleWorld.render()
+      kojoWorld.render()
     }
   }
 
   def setPenThickness(t: Double): Unit = {
-    turtle.sync { () =>
+    ready.foreach { u =>
       val gds = turtle.turtlePath.graphicsData
       gds.foreach { gd =>
         gd.lineWidth = t
       }
       turtle.turtlePath.dirty += 1
       turtle.turtlePath.clearDirty += 1
-      turtleWorld.render()
+      kojoWorld.render()
     }
   }
 }

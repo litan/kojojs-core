@@ -1,14 +1,16 @@
 package kojo
 
+import scala.concurrent.Future
+
 import kojo.doodle.Color
 import pixiscalajs.PIXI
 
 object GPics {
-  def apply(pics: List[Picture])(implicit turtleWorld: TurtleWorld) = new GPics(pics)
-  def apply(pics: Picture*)(implicit turtleWorld: TurtleWorld) = new GPics(pics)
+  def apply(pics: List[Picture])(implicit kojoWorld: KojoWorld) = new GPics(pics)
+  def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new GPics(pics)
 }
 
-class GPics(pics: Seq[Picture])(implicit val turtleWorld: TurtleWorld) extends Picture {
+class GPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends Picture {
   val tnode = new PIXI.Container()
 
   pics.foreach { p =>
@@ -25,8 +27,14 @@ class GPics(pics: Seq[Picture])(implicit val turtleWorld: TurtleWorld) extends P
     }
   }
 
+  def ready: Future[Unit] = {
+    val futures = pics map (_.ready)
+    val unitVal = ()
+    futures.reduce { (unitVal, e) => unitVal }
+  }
+
   def realDraw(): Unit = {
-    turtleWorld.addTurtleLayer(tnode)
+    kojoWorld.addLayer(tnode)
     pics.foreach { p =>
       p.updateGeomTransform()
     }
@@ -59,8 +67,9 @@ class GPics(pics: Seq[Picture])(implicit val turtleWorld: TurtleWorld) extends P
   }
 
   def erase(): Unit = {
-    pics.foreach { p =>
-      p.erase()
-    }
+    kojoWorld.removeLayer(tnode)
+    //    pics.foreach { p =>
+    //      p.erase()
+    //    }
   }
 }
