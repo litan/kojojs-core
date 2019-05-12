@@ -9,8 +9,10 @@ import kojo.FillColor
 import kojo.GlobalTurtleForPicture
 import kojo.ImagePic
 import kojo.KeyCodes
+import kojo.KojoWorld
 import kojo.Mp3Player
 import kojo.Offset
+import kojo.PathPic
 import kojo.PenColor
 import kojo.PenThickness
 import kojo.Picture
@@ -22,10 +24,7 @@ import kojo.TextPic
 import kojo.Translate
 import kojo.Turtle
 import kojo.TurtlePicture
-import kojo.KojoWorld
-import kojo.PathPic
 import kojo.Vector2D
-import kojo.doodle.Color
 import pixiscalajs.PIXI.Graphics
 import pixiscalajs.PIXI.Rectangle
 
@@ -34,7 +33,10 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   val turtle = new GlobalTurtleForPicture
   turtle.globalTurtle = turtle0
   val svTurtle = new SwedishTurtle(turtle0)
+
   val Color = kojo.doodle.Color
+  type Color = kojo.doodle.Color
+
   val ColorMaker = kojo.doodle.Color
   val cm = kojo.doodle.Color
   val noColor = Color(0, 0, 0, 0)
