@@ -219,8 +219,19 @@ trait Picture {
 
   private var dragMouseMonitored = false
   private var mousePressed = false
+  private var dragEnd: Option[(Double, Double) => Unit] = None
   def onMouseDrag(fn: (Double, Double) => Unit): Unit = {
     tnode.interactive = true
+
+    def mouseReleased(x: Double, y: Double): Unit = {
+      mousePressed = false
+      dragEnd.foreach {
+        _(x, y)
+      }
+      kojoWorld.runLater(0) {
+        kojoWorld.mouseMoveOnlyWhenInside(true)
+      }
+    }
 
     if (!dragMouseMonitored) {
       dragMouseMonitored = true
@@ -230,26 +241,31 @@ trait Picture {
       }
 
       onMouseRelease { (x, y) =>
-        mousePressed = false
+        // catch mouse release inside component
+        mouseReleased(x, y)
       }
     }
 
     val moveWrapper: (Double, Double) => Unit = { (x, y) =>
       if (kojoWorld.isAMouseButtonPressed) {
-        kojoWorld.mouseMoveOnlyWhenInside(false)
         if (mousePressed) {
+          kojoWorld.mouseMoveOnlyWhenInside(false)
           fn(x, y)
         }
       }
       else {
-        mousePressed = false
-        kojoWorld.runLater(0) {
-          kojoWorld.mouseMoveOnlyWhenInside(true)
+        if (mousePressed) {
+          // catch mouse release outside component
+          mouseReleased(x, y)
         }
       }
     }
     val handler = handlerWrapper(moveWrapper, false)(_)
     tnode.on("mousemove", handler)
+  }
+
+  def onMouseDragEnd(fn: (Double, Double) => Unit): Unit = {
+    dragEnd = Some(fn)
   }
 
   //
