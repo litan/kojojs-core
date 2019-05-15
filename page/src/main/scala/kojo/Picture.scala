@@ -121,7 +121,8 @@ trait Picture {
   }
 
   def scale(fx: Double, fy: Double): Unit = {
-    tnode.scale = Point(fx, fy)
+    val scale = tnode.scale
+    scale.set(scale.x * fx, scale.y * fy)
     transformDone()
   }
 
