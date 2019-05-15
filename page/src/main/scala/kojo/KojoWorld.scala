@@ -64,8 +64,8 @@ class KojoWorldImpl extends KojoWorld {
   init()
 
   def init() {
-    render()
     canvas_holder.appendChild(renderer.view)
+    render()
     stage.name = "Stage"
     stage.width = width
     stage.height = height
