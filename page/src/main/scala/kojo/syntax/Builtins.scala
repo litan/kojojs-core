@@ -194,11 +194,11 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     def text(s0: Any, fontSize: Int = 15) = textu(s0, fontSize)
 
     def image(url: String)(implicit kojoWorld: KojoWorld): ImagePic = {
-      new ImagePic(url)
+      new ImagePic(url, None)
     }
 
     def image(url: String, envelope: Picture)(implicit kojoWorld: KojoWorld): ImagePic = {
-      new ImagePic(url)
+      new ImagePic(url, Some(envelope))
     }
 
     def fromPath(fn: Graphics => Unit) = { val path = new Graphics(); new PathPic(path, fn) }
