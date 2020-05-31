@@ -99,6 +99,12 @@ trait Picture {
     transformDone()
   }
 
+  def rotateAboutPoint(angle: Double, x: Double, y: Double): Unit = {
+    translate(x, y)
+    rotate(angle)
+    translate(-x, -y)
+  }
+
   def setHeading(angle: Double): Unit = {
     val angleRads = Utils.deg2radians(angle)
     tnode.rotation = angleRads
