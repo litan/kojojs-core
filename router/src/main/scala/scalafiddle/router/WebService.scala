@@ -54,7 +54,7 @@ class WebService(system: ActorSystem, cache: Cache, compilerManager: ActorRef) {
   val log                   = LoggerFactory.getLogger(getClass)
 
   val corsSettings =
-    CorsSettings.defaultSettings.copy(allowedOrigins = HttpOriginRange(Config.corsOrigins.map(HttpOrigin(_)): _*))
+    CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginRange(Config.corsOrigins.map(HttpOrigin(_)): _*))
 
   type ParamValidator = Map[String, Validator]
   val embedValidator: ParamValidator = Map(

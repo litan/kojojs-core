@@ -18,16 +18,16 @@ object Settings {
   object versions {
     val fiddle        = "1.1.1"
     val scalatest     = "3.0.3"
-    val macroParadise = "2.1.0"
-    val kindProjector = "0.9.5"
-    val akka          = "2.5.6"
-    val akkaHttp      = "10.0.11"
+    val macroParadise = "2.1.1"
+    val kindProjector = "0.9.6"
+    val akka          = "2.5.31"
+    val akkaHttp      = "10.1.12"
     val upickle       = "0.4.4"
     val ace           = "1.2.2"
-    val dom           = "0.9.4"
+    val dom           = "0.9.8"
     val scalatags     = "0.6.7"
     val async         = "0.9.7"
-    val coursier      = "1.0.0-RC11"
+    val coursier      = "1.0.3"
     val kamon         = "0.6.7"
     val base64        = "0.2.4"
   }
@@ -45,7 +45,7 @@ object Settings {
   )
 
   val logging = Seq(
-    "net.logstash.logback" % "logstash-logback-encoder" % "4.11",
+    "net.logstash.logback" % "logstash-logback-encoder" % "5.0",
     "ch.qos.logback"       % "logback-classic"          % "1.2.3"
   )
 }

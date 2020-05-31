@@ -7,7 +7,7 @@ scalafmtVersion in ThisBuild := "1.3.0"
 
 val commonSettings = Seq(
   scalacOptions := scalacArgs,
-  scalaVersion := "2.12.8",
+  scalaVersion := "2.12.11",
   version := versions.fiddle,
   libraryDependencies ++= Seq(
     )
@@ -145,7 +145,7 @@ lazy val router = (project in file("router"))
       "org.webjars.npm"       % "js-sha1"         % "0.4.0",
       "com.lihaoyi"           %% "upickle"        % versions.upickle,
       "com.github.marklister" %% "base64"         % versions.base64,
-      "ch.megard"             %% "akka-http-cors" % "0.2.1"
+      "ch.megard"             %% "akka-http-cors" % "0.3.0"
     ) ++ kamon ++ akka ++ logging,
     javaOptions in reStart ++= Seq("-Xmx1g"),
     scriptClasspath := Seq("../config/") ++ scriptClasspath.value,

@@ -366,8 +366,8 @@ class KojoWorldImpl extends KojoWorld {
     def keyUp(e: KeyboardEvent): Unit = {
       pressedKeys.remove(e.keyCode)
     }
-    window.addEventListener("keydown", keyDown, false)
-    window.addEventListener("keyup", keyUp, false)
+    window.addEventListener("keydown", keyDown(_), false)
+    window.addEventListener("keyup", keyUp(_), false)
   }
 
   def isKeyPressed(keyCode: Int) = pressedKeys.contains(keyCode)
