@@ -18,10 +18,10 @@ object Settings {
   object versions {
     val fiddle        = "1.1.1"
     val scalatest     = "3.0.3"
-    val macroParadise = "2.1.1"
+    val macroParadise = "2.1.0"
     val kindProjector = "0.9.6"
-    val akka          = "2.5.31"
-    val akkaHttp      = "10.1.12"
+    val akka          = "2.5.12"
+    val akkaHttp      = "10.1.1"
     val upickle       = "0.4.4"
     val ace           = "1.2.2"
     val dom           = "0.9.8"
