@@ -8,8 +8,23 @@
         </encoder>
     </appender>
 
-    <root level="DEBUG">
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${application.home:-.}/logs/application.log</file>
+        <encoder>
+            <pattern>%date [%level] from %logger in %thread - %message%n%xException</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE" />
+    </appender>
+
+    <appender name="ASYNCCONSOLE" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="CONSOLE" />
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="ASYNCFILE" />
     </root>
 
     <logger name="akka" level="INFO" />
