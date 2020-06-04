@@ -139,6 +139,7 @@ class CompilerManager extends Actor with ActorLogging {
             compilers.update(compilerInfo.id, compilerInfo.copy(state = CompilerState.Compiling))
             compilationPending += compilerInfo.id -> sourceActor
             // add default libs
+            log.debug(s"Sending compiler request to ${compilerInfo.id}")
             compilerInfo.compilerService ! req.updated(src => src + defaultLibs(compilerInfo.scalaVersion))
             // process next in queue
             processQueue()
