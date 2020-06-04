@@ -4,12 +4,16 @@
     <jmxConfigurator />
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5p [%c:%L] %m%n</pattern>
+            <pattern>%d{dd-MM-yyyy} | %d{HH:mm:ss.SSS} | %-25.25logger{25} | %-5p | %m%n</pattern>
         </encoder>
     </appender>
 
-    <root level="DEBUG">
+    <appender name="ASYNCCONSOLE" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="CONSOLE" />
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="ASYNCCONSOLE" />
     </root>
 
     <logger name="akka" level="INFO" />
