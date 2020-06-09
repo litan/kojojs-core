@@ -76,7 +76,7 @@ class Compiler(libManager: LibraryManager, code: String) { self =>
 
     val endTime = System.nanoTime()
     log.debug(s"AutoCompletion time: ${(endTime - startTime) / 1000} us")
-    log.debug(s"AutoCompletion results: ${results.take(20)}")
+    // log.debug(s"AutoCompletion results: ${results.take(20)}")
 
     results.map(r => (r.sym.signatureString, r.symNameDropLocal.decoded)).distinct
   }
