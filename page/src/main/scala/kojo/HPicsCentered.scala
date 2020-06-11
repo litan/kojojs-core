@@ -1,20 +1,39 @@
 package kojo
 
-import scala.concurrent.Future
-
 import kojo.doodle.Color
 import pixiscalajs.PIXI
 
-object GPics {
-  def apply(pics: List[Picture])(implicit kojoWorld: KojoWorld) = new GPics(pics)
-  def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new GPics(pics)
+import scala.concurrent.Future
+
+object HPicsHPicsCentered {
+  def apply(pics: List[Picture])(implicit kojoWorld: KojoWorld) = new HPicsCentered(pics)
+  def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new HPicsCentered(pics)
 }
 
-class GPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends Picture {
+class HPicsCentered(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends Picture {
   val tnode = new PIXI.Container()
 
   pics.foreach { p =>
     tnode.addChild(p.tnode)
+  }
+
+  import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+  ready.foreach { _ =>
+    var prevPic: Option[Picture] = None
+    pics.foreach { pic =>
+      prevPic match {
+        case Some(ppic) =>
+          val pbounds = ppic.bounds
+          val tx = pbounds.x + pbounds.width
+          pic.offset(tx, 0)
+          val bounds = pic.bounds
+          val ty = pbounds.y - bounds.y + (pbounds.height - bounds.height) / 2
+          val tx2 = pbounds.x + pbounds.width - bounds.x
+          pic.offset(tx2, ty)
+        case None =>
+      }
+      prevPic = Some(pic)
+    }
   }
 
   def made: Boolean = {
@@ -30,14 +49,14 @@ class GPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends Pictu
   def ready: Future[Unit] = {
     val futures = pics map (_.ready)
     import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-    futures.reduce { (f1, f2) => for(_ <- f1; _ <- f2) yield ()}
+    futures.reduce { (f1, f2) => for (_ <- f1; _ <- f2) yield () }
   }
 
   def realDraw(): Unit = {
     kojoWorld.addLayer(tnode)
-    pics.foreach { p =>
-      p.updateGeomTransform()
-    }
+    //    pics.foreach { p =>
+    //      p.updateGeomTransform()
+    //    }
   }
 
   def initGeom() = {

@@ -1,20 +1,30 @@
 package kojo
 
-import scala.concurrent.Future
-
 import kojo.doodle.Color
 import pixiscalajs.PIXI
 
-object GPics {
-  def apply(pics: List[Picture])(implicit kojoWorld: KojoWorld) = new GPics(pics)
-  def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new GPics(pics)
+import scala.concurrent.Future
+
+object HPics {
+  def apply(pics: List[Picture])(implicit kojoWorld: KojoWorld) = new HPics(pics)
+  def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new HPics(pics)
 }
 
-class GPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends Picture {
+class HPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends Picture {
   val tnode = new PIXI.Container()
 
   pics.foreach { p =>
     tnode.addChild(p.tnode)
+  }
+
+  import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+  ready.foreach { _ =>
+    var ox = 0.0
+    pics.foreach { pic =>
+      pic.offset(ox, 0)
+      val nbounds = pic.bounds
+      ox = nbounds.x + nbounds.width
+    }
   }
 
   def made: Boolean = {
@@ -30,14 +40,14 @@ class GPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends Pictu
   def ready: Future[Unit] = {
     val futures = pics map (_.ready)
     import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-    futures.reduce { (f1, f2) => for(_ <- f1; _ <- f2) yield ()}
+    futures.reduce { (f1, f2) => for (_ <- f1; _ <- f2) yield () }
   }
 
   def realDraw(): Unit = {
     kojoWorld.addLayer(tnode)
-    pics.foreach { p =>
-      p.updateGeomTransform()
-    }
+    //    pics.foreach { p =>
+    //      p.updateGeomTransform()
+    //    }
   }
 
   def initGeom() = {

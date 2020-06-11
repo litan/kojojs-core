@@ -38,11 +38,27 @@ object Utils {
     println(LineString.asString(geom.asInstanceOf[LineString]))
   }
 
+  def distance(p1: Point, p2: Point) =
+    math.sqrt(math.pow(p2.x - p1.x, 2) + math.pow(p2.y - p1.y, 2))
+
   def transformRectangle(rect: Rectangle, m: Matrix): Rectangle = {
+    // assume rectangle stays a rectangle!
     val bottomLeft = Point(rect.x, rect.y)
+    val bottomRight = Point(rect.x + rect.width, rect.y)
+    val topLeft = Point(rect.x, rect.y + rect.height)
     val topRight = Point(rect.x + rect.width, rect.y + rect.height)
     val newBottomLeft = m.apply(bottomLeft)
+    val newBottomRight = m.apply(bottomRight)
+    val newTopLeft = m.apply(topLeft)
     val newTopRight = m.apply(topRight)
-    new Rectangle(newBottomLeft.x, newBottomLeft.y, newTopRight.x - newBottomLeft.x, newTopRight.y - newBottomLeft.y)
+    val minx = math.min(math.min(math.min(newBottomLeft.x, newTopLeft.x), newTopRight.x), newBottomRight.x)
+    val miny = math.min(math.min(math.min(newBottomLeft.y, newTopLeft.y), newTopRight.y), newBottomRight.y)
+    val maxx = math.max(math.max(math.max(newBottomLeft.x, newTopLeft.x), newTopRight.x), newBottomRight.x)
+    val maxy = math.max(math.max(math.max(newBottomLeft.y, newTopLeft.y), newTopRight.y), newBottomRight.y)
+    new Rectangle(minx, miny, maxx - minx, maxy - miny)
+  }
+
+  def printRectangle(r: Rectangle): Unit = {
+    println(s"Rectangle(${r.x}, ${r.y}, ${r.width}, ${r.height})")
   }
 }

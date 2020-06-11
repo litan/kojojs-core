@@ -1,32 +1,10 @@
 package kojo.syntax
 
-import scala.scalajs.js.Date
-
+import kojo._
 import org.scalajs.dom.window
+import pixiscalajs.PIXI.{Graphics, Rectangle}
 
-import kojo.CirclePic
-import kojo.FillColor
-import kojo.GlobalTurtleForPicture
-import kojo.ImagePic
-import kojo.KeyCodes
-import kojo.KojoWorld
-import kojo.Mp3Player
-import kojo.Offset
-import kojo.PathPic
-import kojo.PenColor
-import kojo.PenThickness
-import kojo.Picture
-import kojo.Rotate
-import kojo.Scale
-import kojo.ScaleXY
-import kojo.SwedishTurtle
-import kojo.TextPic
-import kojo.Translate
-import kojo.Turtle
-import kojo.TurtlePicture
-import kojo.Vector2D
-import pixiscalajs.PIXI.Graphics
-import pixiscalajs.PIXI.Rectangle
+import scala.scalajs.js.Date
 
 class Builtins(implicit kojoWorld: KojoWorld) {
   var turtle0 = new Turtle(0, 0)
@@ -79,7 +57,9 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   val bounceVecOffStage = kojoWorld.bounceVecOffStage _
   def bouncePicVectorOffPic(pic: Picture, v: Vector2D, obstacle: Picture): Vector2D =
     kojoWorld.bouncePicVectorOffPic(pic, v, obstacle, Random)
+  def bouncePicOffPic(pic: Picture, v: Vector2D, obstacle: Picture): Vector2D = bouncePicVectorOffPic(pic, v, obstacle)
   def bouncePicVectorOffStage(p: Picture, v: Vector2D): Vector2D = bouncePicVectorOffPic(p, v, kojoWorld.stageBorder)
+  def bouncePicOffStage(p: Picture, v: Vector2D): Vector2D = bouncePicVectorOffPic(p, v, kojoWorld.stageBorder)
 
   val isKeyPressed = kojoWorld.isKeyPressed _
   lazy val stageBorder = kojoWorld.stageBorder
@@ -150,6 +130,8 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def drawAndHide(pictures: Picture*) = pictures.foreach { p => p.draw(); p.invisible() }
 
   val GPics = kojo.GPics
+  val HPics = kojo.HPics
+  val HPics2 = kojo.HPicsHPicsCentered
   def rot(angle: Double) = Rotate(angle)
   def trans(x: Double, y: Double) = Translate(x, y)
   def offset(x: Double, y: Double) = Offset(x, y)
@@ -168,7 +150,8 @@ class Builtins(implicit kojoWorld: KojoWorld) {
       path.lineTo(0, 0)
     }
 
-    def rectangle(w: Double, h: Double) = rect(h, w)
+    def rectangle(w: Double, h: Double) = new RectanglePic(w, h)
+    // def rectangle(w: Double, h: Double) = rect(h, w)
 
     def circle(r: Double) = new CirclePic(r)
 
@@ -201,7 +184,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
       new ImagePic(url, Some(envelope))
     }
 
-    def fromPath(fn: Graphics => Unit) = { val path = new Graphics(); new PathPic(path, fn) }
+    def fromPath(fn: Graphics => Unit) = { new PathPic(fn) }
   }
   val PicShape = Picture
 
@@ -253,4 +236,6 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def schedule(seconds: Double)(code: => Unit) = kojoWorld.runLater(seconds * 1000) {
     code
   }
+
+  def clearOutput(): Unit = {}
 }

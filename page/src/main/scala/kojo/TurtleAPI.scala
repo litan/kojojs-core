@@ -8,6 +8,7 @@ trait TurtleAPI {
   def hop(n: Double): Unit
   def turn(angle: Double): Unit
   def setAnimationDelay(delay: Long): Unit
+  def setSlowness(delay: Long): Unit = setAnimationDelay(delay)
   def setPenThickness(t: Double): Unit
   def setPenColor(color: Color): Unit
   def setPenFontSize(n: Int): Unit
