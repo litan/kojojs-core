@@ -13,7 +13,7 @@ trait VectorGraphicsPic extends Picture with ReadyPromise {
   val tnode = path
   makeDone()
 
-  override def realDraw(): Unit = {
+  def realDraw(): Unit = {
     kojoWorld.addLayer(tnode)
   }
 

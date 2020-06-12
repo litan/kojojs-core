@@ -23,19 +23,60 @@ class Builtins(implicit kojoWorld: KojoWorld) {
 
   val Random = new java.util.Random
 
+  def setRandomSeed(seed: Long): Unit = { Random.setSeed(seed) }
   def random(upperBound: Int) = Random.nextInt(upperBound)
-
-  def randomDouble(upperBound: Int) = Random.nextDouble * upperBound
-
-  def randomNormalDouble = Random.nextGaussian
-
+  def random(lowerBound: Int, upperBound: Int): Int = {
+    if (lowerBound >= upperBound) lowerBound else
+      lowerBound + random(upperBound - lowerBound)
+  }
+  def randomDouble(upperBound: Double): Double = {
+    if ((upperBound == 0) || (upperBound != upperBound)) 0 else
+      Random.nextDouble * upperBound
+  }
+  def randomDouble(lowerBound: Double, upperBound: Double): Double = {
+    if (lowerBound >= upperBound) lowerBound else
+      lowerBound + randomDouble(upperBound - lowerBound)
+  }
+  def randomNormalDouble = Random.nextGaussian()
   def randomBoolean = Random.nextBoolean
+  def randomInt = Random.nextInt
+  def randomLong = Random.nextLong
+  def randomFrom[T](seq: collection.Seq[T]) = seq(random(seq.length))
+  def randomFrom[T](seq: collection.Seq[T], weights: collection.mutable.Seq[Int]): T = randomFrom(seq, weights map (_.toDouble))
+  def randomFrom[T](seq: collection.Seq[T], weights: collection.immutable.Seq[Int]): T = randomFrom(seq, weights map (_.toDouble))
+  def randomFrom[T](seq: collection.Seq[T], weights: Seq[Double]): T = {
+    val sum = weights.sum
+    val probabilities = if (Utils.doublesEqual(sum, 1.0, 1e-3)) {
+      weights
+    }
+    else {
+      weights.map { w => w / sum }
+    }
 
-  def randomFrom[T](seq: Seq[T]) = seq(random(seq.length))
+    // sourced from:
+    // https://stackoverflow.com/questions/24869304/scala-how-can-i-generate-numbers-according-to-an-expected-distribution
+    val p = Random.nextDouble
+    val it = seq.zip(probabilities).iterator
+    var accum = 0.0
+    while (it.hasNext) {
+      val (item, itemProb) = it.next
+      accum += itemProb
+      if (accum >= p)
+        return item // return so that we don't have to search through the whole distribution
+    }
+    sys.error("this should never happen") // needed so it will compile
+  }
 
   def randomColor = Color(random(256), random(256), random(256))
-
   def randomTransparentColor = Color(random(256), random(256), random(256), 100 + random(156))
+  def initRandomGenerator(): Unit = {
+    initRandomGenerator(randomLong)
+  }
+
+  def initRandomGenerator(seed: Long): Unit = {
+    println(s"Random seed set to: ${seed}L")
+    setRandomSeed(seed)
+  }
 
   def readln(prompt: String): String = {
     val ret = window.prompt(prompt, "Type here")
@@ -131,7 +172,17 @@ class Builtins(implicit kojoWorld: KojoWorld) {
 
   val GPics = kojo.GPics
   val HPics = kojo.HPics
-  val HPics2 = kojo.HPicsHPicsCentered
+  val VPics = kojo.VPics
+  val GPics2 = kojo.GPicsCentered
+  val HPics2 = kojo.HPicsCentered
+  val VPics2 = kojo.VPicsCentered
+  val picRow = HPics
+  val picCol = VPics
+  val picStack = GPics
+  val picRowCentered = HPics2
+  val picColCentered = VPics2
+  val picStackCentered = GPics2
+
   def rot(angle: Double) = Rotate(angle)
   def trans(x: Double, y: Double) = Translate(x, y)
   def offset(x: Double, y: Double) = Offset(x, y)
