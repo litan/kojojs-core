@@ -2,8 +2,9 @@ package kojo
 
 import kojo.Speed.Speed
 import kojo.doodle.Color
+import pixiscalajs.PIXI.{Graphics, Polygon}
 
-trait TurtleAPI {
+trait TurtleAPI extends VertexShapeSupport {
   def forward(n: Double): Unit
   def hop(n: Double): Unit
   def turn(angle: Double): Unit
@@ -16,6 +17,7 @@ trait TurtleAPI {
   def setPosition(x: Double, y: Double): Unit
   def setHeading(theta: Double): Unit
   def moveTo(x: Double, y: Double): Unit
+  def lineTo(x: Double, y: Double) = moveTo(x, y)
   def arc2(r: Double, a: Double): Unit
   def write(text: String): Unit
   def savePosHe(): Unit
@@ -42,4 +44,26 @@ trait TurtleAPI {
   def turn(angle: Double, rad: Double): Unit
   def arc(r: Double, a: Double): Unit
   def circle(r: Double): Unit
+
+  def shapeDone(path: Graphics): Unit = {
+    path.graphicsData.foreach { gd =>
+      val tpe = gd.`type`
+      if (tpe == 0) {
+        var first = true
+        val points = gd.shape.asInstanceOf[Polygon].points.grouped(2).foreach { xy =>
+          val (x, y) = (xy(0), xy(1))
+          if (first) {
+            setPosition(x, y)
+            first = false
+          }
+          else {
+            moveTo(x, y)
+          }
+        }
+      }
+      else {
+        println(s"Warning: geometry not supported for graphic type: $tpe")
+      }
+    }
+  }
 }

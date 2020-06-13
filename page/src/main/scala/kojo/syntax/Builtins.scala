@@ -110,6 +110,10 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   lazy val stageRight = kojoWorld.stageRight
   lazy val stageArea = kojoWorld.stageArea
   val Kc = new KeyCodes
+
+  val kmath = Kmath
+  val mathx = kmath
+
   val canvasBounds = {
     val pos = kojoWorld.stagePosition
     new Rectangle(-pos.x, -pos.y, kojoWorld.width, kojoWorld.height)
@@ -236,6 +240,10 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     }
 
     def fromPath(fn: Graphics => Unit) = { new PathPic(fn) }
+
+    def fromVertexShape(fn: VertexShape => Unit) = fromPath { g =>
+      fn(new VertexShape(g))
+    }
   }
   val PicShape = Picture
 
