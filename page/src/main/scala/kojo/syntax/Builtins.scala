@@ -231,7 +231,13 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def draw(pictures: Picture*) = pictures.foreach { _ draw () }
   def draw(pictures: IndexedSeq[Picture]) = pictures.foreach { _ draw () }
   def draw(pictures: List[Picture]) = pictures.foreach { _ draw () }
-  def drawAndHide(pictures: Picture*) = pictures.foreach { p => p.draw(); p.invisible() }
+  def drawAndHide(pictures: Picture*) = pictures.foreach { p =>
+    import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+    p.ready.foreach { _ =>
+      p.draw()
+      p.invisible()
+    }
+  }
 
   val GPics = kojo.GPics
   val HPics = kojo.HPics
