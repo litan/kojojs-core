@@ -32,6 +32,7 @@ trait KojoWorld {
   def animate(fn: => Unit): Unit
   def timer(ms: Long)(fn: => Unit): Unit
   def stopAnimation(): Unit
+  def setup(fn: => Unit): Unit
 
   def drawStage(fillc: Color)(implicit kojoWorld: KojoWorld)
   def bounceVecOffStage(v: Vector2D, p: Picture): Vector2D
@@ -48,6 +49,10 @@ trait KojoWorld {
   def positionOnStage(data: InteractionData): Point
   def isAMouseButtonPressed: Boolean
   def mouseMoveOnlyWhenInside(on: Boolean): Unit
+  def size(width: Int, height: Int): Unit
+  def zoomXY(xfactor: Double, yfactor: Double, cx: Double, cy: Double): Unit
+  def mouseXY: Point
+  def erasePictures(): Unit
 }
 
 class KojoWorldImpl extends KojoWorld {
@@ -56,8 +61,10 @@ class KojoWorldImpl extends KojoWorld {
     document.getElementById("fiddle-container").asInstanceOf[html.Div]
   private val canvas_holder =
     document.getElementById("canvas-holder").asInstanceOf[html.Div]
-  val (width, height) =
+  val (container_width, container_height) =
     (fiddleContainer.clientWidth, fiddleContainer.clientHeight)
+  var width = container_width
+  var height = container_height
   private val renderer = PIXI.Pixi.autoDetectRenderer(width, height, rendererOptions(), noWebGL = false)
   private val interaction = renderer.plugins.interaction
   private val stage = new PIXI.Container()
@@ -75,6 +82,28 @@ class KojoWorldImpl extends KojoWorld {
     initEvents()
   }
 
+  def size(w: Int, h: Int): Unit = {
+    width = w
+    height = h
+    stage.width = w
+    stage.height = h
+    renderer.resize(w, h)
+    stage.setTransform(width / 2, height / 2, 1, -1, 0, 0, 0, 0, 0)
+    render()
+  }
+
+  def originAt(x: Double, y: Double): Unit = {
+    stage.setTransform(x, y, 1, -1, 0, 0, 0, 0, 0)
+    render()
+  }
+
+  def zoomXY(xfactor: Double, yfactor: Double, cx: Double, cy: Double): Unit = {
+    //    stage.setTransform(width / 2 - cx, height / 2 + cy, xfactor, -yfactor, 0, 0, 0, 0, 0)
+    stage.scale.set(xfactor, -yfactor)
+    stage.position.set(width / 2 - cx * xfactor, height / 2 + cy * yfactor)
+    render()
+  }
+
   def addLayer(layer: PIXI.Container): Unit = {
     stage.addChild(layer)
     render()
@@ -82,6 +111,16 @@ class KojoWorldImpl extends KojoWorld {
 
   def removeLayer(layer: PIXI.Container): Unit = {
     stage.removeChild(layer)
+    render()
+  }
+
+  def erasePictures(): Unit = {
+    val children = stage.children.toBuffer
+    children.foreach { c =>
+      if (c.name != "Turtle Layer") {
+        stage.removeChild(c)
+      }
+    }
     render()
   }
 
@@ -161,6 +200,18 @@ class KojoWorldImpl extends KojoWorld {
       }
       if (animating) {
         animateHelper(fn)
+      }
+    }
+  }
+
+  def setup(fn: => Unit): Unit = {
+    loadCheck()
+    window.requestAnimationFrame { _ =>
+      if (loaded) {
+        fn
+      }
+      else {
+        setup(fn)
       }
     }
   }
@@ -377,4 +428,5 @@ class KojoWorldImpl extends KojoWorld {
   def mouseMoveOnlyWhenInside(on: Boolean): Unit = {
     interaction.moveWhenInside = on
   }
+  def mouseXY = interaction.mouse.getLocalPosition(stage)
 }

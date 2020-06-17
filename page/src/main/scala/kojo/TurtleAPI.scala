@@ -39,11 +39,11 @@ trait TurtleAPI extends VertexShapeSupport {
   def hop(): Unit
   def back(): Unit
   def setSpeed(speed: Speed): Unit
-  def left(angle: Double, rad: Double): Unit
-  def right(angle: Double, rad: Double): Unit
-  def turn(angle: Double, rad: Double): Unit
-  def arc(r: Double, a: Double): Unit
-  def circle(r: Double): Unit
+  def left(angle: Double, radius: Double): Unit
+  def right(angle: Double, radius: Double): Unit
+  def turn(angle: Double, radius: Double): Unit
+  def arc(radius: Double, angle: Double): Unit
+  def circle(radius: Double): Unit
 
   def shapeDone(path: Graphics): Unit = {
     path.graphicsData.foreach { gd =>

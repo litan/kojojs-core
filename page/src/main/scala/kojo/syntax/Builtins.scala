@@ -78,6 +78,15 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     setRandomSeed(seed)
   }
 
+  def rangeTo(start: Int, end: Int, step: Int = 1) = start to end by step
+  def rangeTill(start: Int, end: Int, step: Int = 1) = start until end by step
+
+  def rangeTo(start: Double, end: Double, step: Double) = Range.BigDecimal.inclusive(start, end, step)
+  def rangeTill(start: Double, end: Double, step: Double) = Range.BigDecimal(start, end, step)
+
+  import scala.language.implicitConversions
+  implicit def bd2double(bd: BigDecimal) = bd.doubleValue
+
   def readln(prompt: String): String = {
     val ret = window.prompt(prompt, "Type here")
     if (ret == null)
@@ -90,19 +99,69 @@ class Builtins(implicit kojoWorld: KojoWorld) {
 
   def readDouble(prompt: String): Double = readln(prompt).toDouble
 
-  val setBackground = kojoWorld.setBackground _
-  val animate = kojoWorld.animate _
-  val timer = kojoWorld.timer _
-  val drawStage = kojoWorld.drawStage _
+  def setBackground(color: Color): Unit = {
+    kojoWorld.setBackground(color)
+  }
+  // background gradients currently not supported. Maybe with pixi v5
+  def setBackgroundH(c1: Color, c2: Color) = setBackground(c1)
+  def setBackgroundV(c1: Color, c2: Color) = setBackground(c1)
 
-  val bounceVecOffStage = kojoWorld.bounceVecOffStage _
+  def animate(fn: => Unit): Unit = {
+    kojoWorld.animate(fn)
+  }
+
+  def setup(fn: => Unit) = {
+    kojoWorld.setup(fn)
+  }
+
+  def drawLoop(fn: => Unit) = animate(fn)
+
+  def timer(ms: Long)(fn: => Unit): Unit = {
+    kojoWorld.timer(ms)(fn)
+  }
+
+  def drawStage(fillc: Color)(implicit kojoWorld: KojoWorld): Unit = {
+    kojoWorld.drawStage(fillc)
+  }
+
+  def size(width: Int, height: Int): Unit = {
+    kojoWorld.size(width, height)
+  }
+
+  def zoomXY(xfactor: Double, yfactor: Double, cx: Double, cy: Double): Unit = {
+    kojoWorld.zoomXY(xfactor, yfactor, cx, cy)
+  }
+
+  def zoom(factor: Double, cx: Double, cy: Double): Unit = {
+    zoomXY(factor, factor, cx, cy)
+  }
+
+  def cwidth = kojoWorld.width
+  def cheight = kojoWorld.height
+
+  def mouseX = kojoWorld.mouseXY.x
+  def mouseY = kojoWorld.mouseXY.y
+
+  def originTopLeft(): Unit = {
+    zoomXY(1, -1, cwidth / 2, -cheight / 2)
+  }
+
+  def originBottomLeft(): Unit = {
+    zoomXY(1, 1, cwidth / 2, cheight / 2)
+  }
+
+  def erasePictures() = kojoWorld.erasePictures()
+
+  def bounceVecOffStage(v: Vector2D, p: Picture): Vector2D =
+    kojoWorld.bounceVecOffStage(v, p)
   def bouncePicVectorOffPic(pic: Picture, v: Vector2D, obstacle: Picture): Vector2D =
     kojoWorld.bouncePicVectorOffPic(pic, v, obstacle, Random)
   def bouncePicOffPic(pic: Picture, v: Vector2D, obstacle: Picture): Vector2D = bouncePicVectorOffPic(pic, v, obstacle)
   def bouncePicVectorOffStage(p: Picture, v: Vector2D): Vector2D = bouncePicVectorOffPic(p, v, kojoWorld.stageBorder)
   def bouncePicOffStage(p: Picture, v: Vector2D): Vector2D = bouncePicVectorOffPic(p, v, kojoWorld.stageBorder)
 
-  val isKeyPressed = kojoWorld.isKeyPressed _
+  def isKeyPressed(keyCode: Int): Boolean = kojoWorld.isKeyPressed(keyCode)
+
   lazy val stageBorder = kojoWorld.stageBorder
   lazy val stageTop = kojoWorld.stageTop
   lazy val stageBot = kojoWorld.stageBot
