@@ -5,31 +5,32 @@ import pixiscalajs.PIXI
 
 import scala.concurrent.Future
 
-abstract class BasePicSequece(pics: Seq[Picture]) extends Picture {
+abstract class BasePicSequence(pics: Seq[Picture]) extends Picture with ReadyPromise {
   import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
   val tnode = new PIXI.Container()
 
-  pics.foreach { p =>
-    tnode.addChild(p.tnode)
-  }
-
-  def made: Boolean = {
-    val notMade = pics.find { p =>
-      !p.made
-    }
-    notMade match {
-      case Some(_) => false
-      case None    => true
-    }
-  }
-
-  lazy val ready: Future[Unit] = {
+  lazy val childrenReady: Future[Unit] = {
     val futures = pics map (_.ready)
     futures.reduce { (f1, f2) => for (_ <- f1; _ <- f2) yield () }
   }
 
+  // Note - pic sequences get ready only after draw is called on them
+  def layoutChildren(): Unit
+  def layout(): Unit = {
+    layoutChildren()
+    makeDone()
+  }
+
   def realDraw(): Unit = {
+    pics.foreach { p =>
+      p.realDraw()
+      tnode.addChild(p.tnode)
+    }
     kojoWorld.addLayer(tnode)
+    import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+    childrenReady.foreach { _ =>
+      layout()
+    }
   }
 
   def initGeom() = {
@@ -69,7 +70,8 @@ object GPics {
   def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new GPics(pics)
 }
 
-class GPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequece(pics) {
+class GPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequence(pics) {
+  def layoutChildren(): Unit = {}
 }
 
 object GPicsCentered {
@@ -78,9 +80,8 @@ object GPicsCentered {
   def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new GPicsCentered(pics)
 }
 
-class GPicsCentered(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequece(pics) {
-  import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-  ready.foreach { _ =>
+class GPicsCentered(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequence(pics) {
+  def layoutChildren(): Unit = {
     var prevPic: Option[Picture] = None
     pics.foreach { pic =>
       prevPic match {
@@ -103,9 +104,8 @@ object HPics {
   def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new HPics(pics)
 }
 
-class HPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequece(pics) {
-  import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-  ready.foreach { _ =>
+class HPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequence(pics) {
+  def layoutChildren(): Unit = {
     var ox = 0.0
     pics.foreach { pic =>
       pic.offset(ox, 0)
@@ -121,9 +121,8 @@ object HPicsCentered {
   def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new HPicsCentered(pics)
 }
 
-class HPicsCentered(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequece(pics) {
-  import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-  ready.foreach { _ =>
+class HPicsCentered(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequence(pics) {
+  def layoutChildren(): Unit = {
     var prevPic: Option[Picture] = None
     pics.foreach { pic =>
       prevPic match {
@@ -148,9 +147,8 @@ object VPics {
   def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new VPics(pics)
 }
 
-class VPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequece(pics) {
-  import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-  ready.foreach { _ =>
+class VPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequence(pics) {
+  def layoutChildren(): Unit = {
     var oy = 0.0
     pics.foreach { pic =>
       pic.offset(0, oy)
@@ -166,9 +164,8 @@ object VPicsCentered {
   def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new VPicsCentered(pics)
 }
 
-class VPicsCentered(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequece(pics) {
-  import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-  ready.foreach { _ =>
+class VPicsCentered(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequence(pics) {
+  def layoutChildren(): Unit = {
     var prevPic: Option[Picture] = None
     pics.foreach { pic =>
       prevPic match {

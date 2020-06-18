@@ -34,7 +34,7 @@ class TextPic(text: Any, fontSize: Int, color: Color)(implicit val kojoWorld: Ko
   }
 
   override def setPenColor(c: Color): Unit = {
-    textNode.style.stroke = c.toCanvas
+    textNode.style.fill = c.toCanvas
     kojoWorld.render()
   }
 

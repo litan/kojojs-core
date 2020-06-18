@@ -106,6 +106,8 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def setBackgroundH(c1: Color, c2: Color) = setBackground(c1)
   def setBackgroundV(c1: Color, c2: Color) = setBackground(c1)
 
+  def disablePanAndZoom(): Unit = {}
+
   def animate(fn: => Unit): Unit = {
     kojoWorld.animate(fn)
   }
@@ -143,7 +145,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def mouseY = kojoWorld.mouseXY.y
 
   def originTopLeft(): Unit = {
-    zoomXY(1, -1, cwidth / 2, -cheight / 2)
+    zoomXY(1, -1, cwidth / 2, cheight / 2)
   }
 
   def originBottomLeft(): Unit = {
@@ -233,9 +235,24 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def draw(pictures: List[Picture]) = pictures.foreach { _ draw () }
   def drawAndHide(pictures: Picture*) = pictures.foreach { p =>
     import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+    p.draw()
     p.ready.foreach { _ =>
-      p.draw()
       p.invisible()
+    }
+  }
+
+  def drawCentered(pic: Picture): Unit = {
+    def center(pic: Picture): Unit = {
+      val cb = canvasBounds
+      val pb = pic.bounds
+      val xDelta = cb.x - pb.x + (cb.width - pb.width) / 2
+      val yDelta = cb.y - pb.y + (cb.height - pb.height) / 2
+      pic.offset(xDelta, yDelta)
+    }
+    pic.draw()
+    import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+    pic.ready.foreach { _ =>
+      center(pic)
     }
   }
 
@@ -259,6 +276,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def scale(fx: Double, fy: Double) = ScaleXY(fx, fy)
   def penColor(c: Color) = PenColor(c)
   def penWidth(t: Double) = PenThickness(t)
+  def penThickness(t: Double) = PenThickness(t)
   def fillColor(c: Color) = FillColor(c)
 
   object Picture {
@@ -309,6 +327,9 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     def fromVertexShape(fn: VertexShape => Unit) = fromPath { g =>
       fn(new VertexShape(g))
     }
+
+    def hgap(gap: Double) = penColor(noColor) * penThickness(0.001) -> Picture.rectangle(gap, 0.001)
+    def vgap(gap: Double) = penColor(noColor) * penThickness(0.001) -> Picture.rectangle(0.001, gap)
   }
   val PicShape = Picture
 

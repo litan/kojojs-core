@@ -437,6 +437,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
       pixiText.position = position
       pixiText.rotation = (heading - 90).toRadians
       pixiText.style.fontSize = penFontSize
+      pixiText.style.fill = penColor.toCanvas
       turtleLayer.addChild(pixiText)
       kojoWorld.render()
     }
