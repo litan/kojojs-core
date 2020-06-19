@@ -265,6 +265,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   val picRow = HPics
   val picCol = VPics
   val picStack = GPics
+  val picBatch = BatchPics
   val picRowCentered = HPics2
   val picColCentered = VPics2
   val picStackCentered = GPics2

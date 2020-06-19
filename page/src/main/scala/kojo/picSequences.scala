@@ -1,5 +1,6 @@
 package kojo
 
+import com.vividsolutions.jts.geom.Geometry
 import kojo.doodle.Color
 import pixiscalajs.PIXI
 
@@ -183,3 +184,39 @@ class VPicsCentered(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) exten
     }
   }
 }
+
+object BatchPics {
+  def apply(pics: collection.immutable.Seq[Picture])(implicit kojoWorld: KojoWorld) = new BatchPics(pics)
+  def apply(pics: collection.mutable.Seq[Picture])(implicit kojoWorld: KojoWorld) = new BatchPics(pics)
+  def apply(pics: Picture*)(implicit kojoWorld: KojoWorld) = new BatchPics(pics)
+}
+
+class BatchPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequence(pics) {
+  def layoutChildren(): Unit = {
+    pics.tail.foreach { p =>
+      p.invisible()
+    }
+  }
+
+  var currPic = 0
+  var lastDraw = System.currentTimeMillis
+  def showNext(gap: Long) = {
+    val currTime = System.currentTimeMillis
+    if (currTime - lastDraw > gap) {
+      pics(currPic).invisible()
+      currPic += 1
+      if (currPic == pics.size) {
+        currPic = 0
+      }
+      pics(currPic).visible()
+      lastDraw = currTime
+    }
+  }
+  def showNext(): Unit = showNext(100)
+
+  override def picGeom: Geometry = {
+    pgTransform.transform(pics(currPic).picGeom)
+  }
+
+}
+

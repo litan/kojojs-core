@@ -252,7 +252,9 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
     kojoWorld.scheduleLater(queueHandler)
   }
 
-  private def realSetPenColor(color: Color): Unit = {
+  val noColor = Color(0, 0, 0, 0)
+  private def realSetPenColor(color0: Color): Unit = {
+    val color = if (color0 == null) noColor else color0
     penColor = color
     turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
     kojoWorld.scheduleLater(queueHandler)
@@ -263,7 +265,8 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
     kojoWorld.scheduleLater(queueHandler)
   }
 
-  private def realSetFillColor(color: Color): Unit = {
+  private def realSetFillColor(color0: Color): Unit = {
+    val color = if (color0 == null) noColor else color0
     // start new path
     turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
     // set new fill
