@@ -175,7 +175,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   val kmath = Kmath
   val mathx = kmath
 
-  val canvasBounds = {
+  def canvasBounds = {
     val pos = kojoWorld.stagePosition
     new Rectangle(-pos.x, -pos.y, kojoWorld.width, kojoWorld.height)
   }
