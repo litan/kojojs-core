@@ -343,23 +343,18 @@ class KojoWorldImpl extends KojoWorld {
   }
 
   def bouncePicVectorOffPic(pic: Picture, vel: Vector2D, obstacle: Picture, rg: Random): Vector2D = {
-    val pt = pic.intersection(obstacle)
-    val iCoords = pt.getCoordinates
-
     // returns points on the obstacle that contain the given collision coordinate
     def obstacleCollPoints(c: Coordinate): Option[js.Array[Coordinate]] = {
       obstacle.picGeom.getCoordinates.sliding(2).find { cs =>
-        val xcheck =
-          if (cs(0).x > cs(1).x)
-            cs(0).x >= c.x && c.x >= cs(1).x
-          else
-            cs(0).x <= c.x && c.x <= cs(1).x
+        val xcheck = if (cs(0).x > cs(1).x)
+          cs(0).x >= c.x && c.x >= cs(1).x
+        else
+          cs(0).x <= c.x && c.x <= cs(1).x
 
-        val ycheck =
-          if (cs(0).y > cs(1).y)
-            cs(0).y >= c.y && c.y >= cs(1).y
-          else
-            cs(0).y <= c.y && c.y <= cs(1).y
+        val ycheck = if (cs(0).y > cs(1).y)
+          cs(0).y >= c.y && c.y >= cs(1).y
+        else
+          cs(0).y <= c.y && c.y <= cs(1).y
         xcheck && ycheck
       }
     }
@@ -376,6 +371,9 @@ class KojoWorldImpl extends KojoWorld {
     }
 
     def collisionVector = {
+      val pt = obstacle.intersection(pic)
+      val iCoords = pt.getCoordinates
+
       if (iCoords.length == 0) {
         Vector2D(rg.nextDouble, rg.nextDouble).normalize
       }
@@ -400,7 +398,7 @@ class KojoWorldImpl extends KojoWorld {
         pic.offset(v2)
         pulled += 1
       }
-      //      pic.offset(velNorm * 2)
+      pic.offset(velNorm)
     }
 
     pullbackCollision()
