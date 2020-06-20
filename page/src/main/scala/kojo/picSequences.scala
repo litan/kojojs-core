@@ -215,6 +215,9 @@ class BatchPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends B
   def showNext(): Unit = showNext(100)
 
   override def picGeom: Geometry = {
+    if (!made) {
+      return null
+    }
     pgTransform.transform(pics(currPic).picGeom)
   }
 

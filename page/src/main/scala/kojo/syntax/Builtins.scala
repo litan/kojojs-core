@@ -377,7 +377,8 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def stopMp3() = mp3player.stopMp3()
   def stopMp3Loop() = mp3player.stopMp3Loop()
 
-  def epochTimeMillis = new Date().getTime()
+  def epochTimeMillis = System.currentTimeMillis
+  def epochTime = epochTimeMillis / 1000.0
 
   def schedule(seconds: Double)(code: => Unit) = kojoWorld.runLater(seconds * 1000) {
     code
