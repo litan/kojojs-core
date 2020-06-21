@@ -227,7 +227,9 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     }
   }
   def switchToDefault2Perspective() {}
-  def toggleFullScreenCanvas() {}
+  def toggleFullScreenCanvas(): Unit = {
+    kojoWorld.toggleFullScreenCanvas()
+  }
 
   val stopAnimation = kojoWorld.stopAnimation _
   def draw(pictures: Picture*) = pictures.foreach { _ draw () }

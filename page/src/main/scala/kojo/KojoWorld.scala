@@ -2,20 +2,15 @@ package kojo
 
 import java.util.Random
 
-import scala.scalajs.js
-
-import org.scalajs.dom.document
-import org.scalajs.dom.html
-import org.scalajs.dom.raw.KeyboardEvent
-import org.scalajs.dom.window
-
 import com.vividsolutions.jts.geom.Coordinate
-
 import kojo.doodle.Color
+import org.scalajs.dom.raw.{KeyboardEvent, UIEvent}
+import org.scalajs.dom.{document, html, window}
 import pixiscalajs.PIXI
-import pixiscalajs.PIXI.Point
-import pixiscalajs.PIXI.RendererOptions
+import pixiscalajs.PIXI.{Point, RendererOptions}
 import pixiscalajs.PIXI.interaction.InteractionData
+
+import scala.scalajs.js
 
 trait KojoWorld {
   def width: Int
@@ -53,6 +48,7 @@ trait KojoWorld {
   def zoomXY(xfactor: Double, yfactor: Double, cx: Double, cy: Double): Unit
   def mouseXY: Point
   def erasePictures(): Unit
+  def toggleFullScreenCanvas(): Unit
 }
 
 class KojoWorldImpl extends KojoWorld {
@@ -68,6 +64,7 @@ class KojoWorldImpl extends KojoWorld {
   private val renderer = PIXI.Pixi.autoDetectRenderer(width, height, rendererOptions(), noWebGL = false)
   private val interaction = renderer.plugins.interaction
   private val stage = new PIXI.Container()
+  window.addEventListener("resize", resize)
   init()
 
   def init() {
@@ -82,6 +79,16 @@ class KojoWorldImpl extends KojoWorld {
     initEvents()
   }
 
+  def toggleFullScreenCanvas(): Unit = {
+    import org.scalajs.dom.experimental.Fullscreen._
+    if (window.document.fullscreenElement == null) {
+      fiddleContainer.requestFullscreen()
+    }
+    else {
+      window.document.exitFullscreen()
+    }
+  }
+
   def size(w: Int, h: Int): Unit = {
     width = w
     height = h
@@ -90,6 +97,10 @@ class KojoWorldImpl extends KojoWorld {
     renderer.resize(w, h)
     stage.setTransform(width / 2, height / 2, 1, -1, 0, 0, 0, 0, 0)
     render()
+  }
+
+  def resize(event: UIEvent): Unit = {
+    size(fiddleContainer.clientWidth, fiddleContainer.clientHeight)
   }
 
   def originAt(x: Double, y: Double): Unit = {
