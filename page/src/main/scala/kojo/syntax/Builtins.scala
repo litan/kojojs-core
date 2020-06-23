@@ -226,7 +226,10 @@ class Builtins(implicit kojoWorld: KojoWorld) {
       window.focus()
     }
   }
-  def switchToDefault2Perspective() {}
+  def switchToDefault2Perspective(): Unit = {}
+  def showAxes(): Unit = {}
+  def showGrid(): Unit = {}
+
   def toggleFullScreenCanvas(): Unit = {
     kojoWorld.toggleFullScreenCanvas()
   }
