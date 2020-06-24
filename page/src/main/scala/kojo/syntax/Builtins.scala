@@ -154,13 +154,14 @@ class Builtins(implicit kojoWorld: KojoWorld) {
 
   def erasePictures() = kojoWorld.erasePictures()
 
-  def bounceVecOffStage(v: Vector2D, p: Picture): Vector2D =
-    kojoWorld.bounceVecOffStage(v, p)
+  //  def bounceVecOffStage(v: Vector2D, p: Picture): Vector2D =
+  //    kojoWorld.bounceVecOffStage(v, p)
+  def bouncePicVectorOffStage(p: Picture, v: Vector2D): Vector2D = bouncePicVectorOffPic(p, v, kojoWorld.stageBorder)
   def bouncePicVectorOffPic(pic: Picture, v: Vector2D, obstacle: Picture): Vector2D =
     kojoWorld.bouncePicVectorOffPic(pic, v, obstacle, Random)
-  def bouncePicOffPic(pic: Picture, v: Vector2D, obstacle: Picture): Vector2D = bouncePicVectorOffPic(pic, v, obstacle)
-  def bouncePicVectorOffStage(p: Picture, v: Vector2D): Vector2D = bouncePicVectorOffPic(p, v, kojoWorld.stageBorder)
-  def bouncePicOffStage(p: Picture, v: Vector2D): Vector2D = bouncePicVectorOffPic(p, v, kojoWorld.stageBorder)
+
+  def bouncePicOffStage(pic: Picture, vel: Vector2D): Vector2D = kojoWorld.bounceVecOffStage(vel, pic)
+  def bouncePicOffPic(pic: Picture, v: Vector2D, obstacle: Picture): Vector2D = kojoWorld.bouncePicVectorOffPic(pic, v, obstacle, Random)
 
   def isKeyPressed(keyCode: Int): Boolean = kojoWorld.isKeyPressed(keyCode)
 
