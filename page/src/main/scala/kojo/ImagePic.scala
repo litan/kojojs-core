@@ -13,7 +13,7 @@ class ImagePic(url: String, envelope: Option[Picture])(implicit val kojoWorld: K
   var sprite: PIXI.Sprite = _
   val tnode = imgLayer
 
-  TurtleImageHelper.addAndLoad(url, url, init)
+  AssetLoader.addAndLoad(url, url, init)
 
   private def init(loader: PIXI.loaders.Loader, any: Any): Unit = {
     sprite = new PIXI.Sprite(loader.resources(url).texture)

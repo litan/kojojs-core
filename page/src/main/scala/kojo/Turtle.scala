@@ -1,51 +1,12 @@
 package kojo
 
-import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
-
-import org.scalajs.dom.window
-
 import kojo.doodle.Color
+import org.scalajs.dom.window
 import pixiscalajs.PIXI
-import pixiscalajs.PIXI
-import pixiscalajs.PIXI.Pixi
 import pixiscalajs.PIXI.Point
 
-object TurtleImageHelper {
-  private val loader = Pixi.loader
-
-  case class QEntry(name: String, url: String, doneFn: (PIXI.loaders.Loader, Any) => Unit)
-
-  val queue = mutable.Queue.empty[QEntry]
-
-  def addAndLoad(name: String, url: String, doneFn: (PIXI.loaders.Loader, Any) => Unit): Unit = {
-
-    def checkQ(): Unit = {
-      if (queue.nonEmpty) {
-        val qe = queue.dequeue()
-        addAndLoad(qe.name, qe.url, qe.doneFn)
-      }
-    }
-
-    if (!loader.loading) {
-      val resVal = loader.resources(name)
-      if (resVal == ()) {
-        loader.add(name, url)
-        loader.load { (loader, any) =>
-          doneFn(loader, any)
-          checkQ()
-        }
-      }
-      else {
-        doneFn(loader, resVal)
-        checkQ()
-      }
-    }
-    else {
-      queue.enqueue(QEntry(name, url, doneFn))
-    }
-  }
-}
+import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: KojoWorld)
   extends TurtleAPI
@@ -83,7 +44,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
 
   var commandQs = mutable.Queue.empty[Command] :: Nil
 
-  TurtleImageHelper.addAndLoad("turtle32", "assets/images/turtle32.png", init)
+  AssetLoader.addAndLoad("turtle32", "assets/images/turtle32.png", init)
 
   private def init(loader: PIXI.loaders.Loader, any: Any) {
     turtleLayer.name = "Turtle Layer"

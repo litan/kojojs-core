@@ -193,7 +193,7 @@ class KojoWorldImpl extends KojoWorld {
   var timers = Vector.empty[Int]
 
   def loadCheck(): Unit = {
-    if (!loaded && TurtleImageHelper.queue.isEmpty) {
+    if (!loaded && AssetLoader.queue.isEmpty) {
       loaded = true
     }
   }
@@ -245,7 +245,7 @@ class KojoWorldImpl extends KojoWorld {
     timers = timers :+ handle
   }
 
-  val noPic = TurtlePicture { t =>
+  lazy val noPic = TurtlePicture { t =>
   }(this)
   @volatile var stageBorder: Picture = _
   @volatile var stageLeft: Picture = _
