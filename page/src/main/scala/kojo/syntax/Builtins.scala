@@ -391,4 +391,5 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   }
 
   def clearOutput(): Unit = {}
+  def joystick(radius: Double) = new JoyStick(radius)(this)
 }
