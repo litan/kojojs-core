@@ -193,7 +193,7 @@ class KojoWorldImpl extends KojoWorld {
   }
 
   var animating = false
-  def loaded = AssetLoader.queue.isEmpty
+  def loaded = !AssetLoader.loading
   var timers = Vector.empty[Int]
 
   def animate(fn: => Unit): Unit = {

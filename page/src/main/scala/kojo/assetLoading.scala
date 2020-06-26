@@ -13,6 +13,7 @@ object AssetLoader {
 
   val queue = mutable.Queue.empty[QEntry]
   var loadProgress: LoadProgress = _
+  def loading = loadProgress != null && loadProgress.isActive
 
   def addAndLoad(name: String, url: String, doneFn: (PIXI.loaders.Loader, Any) => Unit)(implicit kojoWorld: KojoWorld): Unit = {
     if (loadProgress == null) {
@@ -77,7 +78,10 @@ class LoadProgress(implicit kw: KojoWorld) {
     loadingPic.visible()
     loadingPic.moveToFront()
   }
+
   def hide(): Unit = {
     loadingPic.invisible()
   }
+
+  def isActive = loadingPic.isVisible
 }
