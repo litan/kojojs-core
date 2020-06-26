@@ -57,10 +57,9 @@ class KojoWorldImpl extends KojoWorld {
     document.getElementById("fiddle-container").asInstanceOf[html.Div]
   private val canvas_holder =
     document.getElementById("canvas-holder").asInstanceOf[html.Div]
-  val (container_width, container_height) =
-    (fiddleContainer.clientWidth, fiddleContainer.clientHeight)
-  var width = container_width
-  var height = container_height
+  val margin = 4
+  var width = fiddleContainer.clientWidth - margin
+  var height = fiddleContainer.clientHeight - margin
   private val renderer = PIXI.Pixi.autoDetectRenderer(width, height, rendererOptions(), noWebGL = false)
   private val interaction = renderer.plugins.interaction
   private val stage = new PIXI.Container()
@@ -80,12 +79,17 @@ class KojoWorldImpl extends KojoWorld {
   }
 
   def toggleFullScreenCanvas(): Unit = {
-    import org.scalajs.dom.experimental.Fullscreen._
-    if (window.document.fullscreenElement == null) {
-      fiddleContainer.requestFullscreen()
+    try {
+      import org.scalajs.dom.experimental.Fullscreen._
+      if (window.document.fullscreenElement == null) {
+        fiddleContainer.requestFullscreen()
+      }
+      else {
+        window.document.exitFullscreen()
+      }
     }
-    else {
-      window.document.exitFullscreen()
+    catch {
+      case _: Throwable =>
     }
   }
 
@@ -100,7 +104,7 @@ class KojoWorldImpl extends KojoWorld {
   }
 
   def resize(event: UIEvent): Unit = {
-    size(fiddleContainer.clientWidth, fiddleContainer.clientHeight)
+    size(fiddleContainer.clientWidth - margin, fiddleContainer.clientHeight - margin)
   }
 
   def originAt(x: Double, y: Double): Unit = {
