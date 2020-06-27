@@ -8,4 +8,5 @@ import scala.scalajs.js.annotation.JSGlobal
 class AffineTransformation extends js.Object {
   def this(matrix: js.Array[Double]) = this()
   def transform(g: Geometry): Geometry = js.native
+  def getInverse(): AffineTransformation = js.native
 }
