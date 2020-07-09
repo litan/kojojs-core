@@ -22,4 +22,6 @@ class RectanglePic(w: Double, h: Double)(implicit val kojoWorld: KojoWorld) exte
     import scala.scalajs.js.JSConverters._
     Utils.Gf.createLineString(cab.toJSArray)
   }
+
+  def copy: Picture = new RectanglePic(w, h)
 }

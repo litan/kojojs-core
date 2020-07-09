@@ -51,4 +51,6 @@ class TextPic(text: Any, fontSize: Int, color: Color)(implicit val kojoWorld: Ko
     textNode.text = text.toString
     kojoWorld.render()
   }
+
+  def copy: Picture = new TextPic(text, fontSize, color)
 }

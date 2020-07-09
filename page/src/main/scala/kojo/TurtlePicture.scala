@@ -10,20 +10,20 @@ import kojo.doodle.Color
 
 object TurtlePicture {
   def apply(fn: Turtle => Unit)(implicit kojoWorld: KojoWorld): TurtlePicture = {
-    val tp = new TurtlePicture
-    tp.make(fn)
+    val tp = new TurtlePicture(fn)
+    tp.make()
     tp
   }
 }
 
-class TurtlePicture private[kojo] (implicit val kojoWorld: KojoWorld)
+class TurtlePicture private[kojo] (fn: Turtle => Unit)(implicit val kojoWorld: KojoWorld)
   extends Picture with ReadyPromise {
   val turtle = new Turtle(0, 0, true)
   val picLayer = turtle.turtleLayer
   val tnode = picLayer
   val noColor = Color(0, 0, 0, 0)
 
-  def make(fn: Turtle => Unit): Unit = {
+  def make(): Unit = {
     turtle.setAnimationDelay(0)
     turtle.setFillColor(noColor)
     invisible()
@@ -98,4 +98,6 @@ class TurtlePicture private[kojo] (implicit val kojoWorld: KojoWorld)
       kojoWorld.render()
     }
   }
+
+  def copy = TurtlePicture(fn)
 }

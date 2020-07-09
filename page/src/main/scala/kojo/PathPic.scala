@@ -37,4 +37,6 @@ class PathPic(fn: Graphics => Unit)(implicit val kojoWorld: KojoWorld) extends V
     import scala.scalajs.js.JSConverters._
     Utils.Gf.createLineString(cab.toJSArray)
   }
+
+  def copy: Picture = new PathPic(fn)
 }

@@ -61,4 +61,6 @@ class ImagePic(url: String, envelope: Option[Picture])(implicit val kojoWorld: K
     case Some(p) =>
       p.picGeom
   }
+
+  def copy: Picture = new ImagePic(url, envelope)
 }

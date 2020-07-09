@@ -16,4 +16,6 @@ class CirclePic(r: Double)(implicit val kojoWorld: KojoWorld) extends VectorGrap
     import scala.scalajs.js.JSConverters._
     Utils.Gf.createLineString(cab.toJSArray)
   }
+
+  def copy: Picture = new CirclePic(r)
 }

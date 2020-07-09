@@ -184,11 +184,11 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     TurtlePicture(fn)
   }
   def Picture(fn: => Unit)(implicit kojoWorld: KojoWorld): TurtlePicture = {
-    val tp = new TurtlePicture
-    turtle.globalTurtle = tp.turtle
-    tp.make { t =>
+    val tp = new TurtlePicture({ _ =>
       fn
-    }
+    })
+    turtle.globalTurtle = tp.turtle
+    tp.make()
     turtle.globalTurtle = turtle0
     tp
   }
@@ -276,15 +276,19 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   val picColCentered = VPics2
   val picStackCentered = GPics2
 
-  def rot(angle: Double) = Rotate(angle)
-  def trans(x: Double, y: Double) = Translate(x, y)
-  def offset(x: Double, y: Double) = Offset(x, y)
-  def scale(f: Double) = Scale(f)
-  def scale(fx: Double, fy: Double) = ScaleXY(fx, fy)
-  def penColor(c: Color) = PenColor(c)
-  def penWidth(t: Double) = PenThickness(t)
-  def penThickness(t: Double) = PenThickness(t)
-  def fillColor(c: Color) = FillColor(c)
+  def transform(fn: Picture => Unit) = preDrawTransform(fn)
+  def preDrawTransform(fn: Picture => Unit) = PreDrawTransformc(fn)
+  def postDrawTransform(fn: Picture => Unit) = PostDrawTransformc(fn)
+
+  def rot(angle: Double) = transform(_.rotate(angle))
+  def trans(x: Double, y: Double) = transform {p => p.translate(x, y); println(s"translate($x, $y)") }
+  def offset(x: Double, y: Double) = transform(_.offset(x, y))
+  def scale(f: Double) = transform(_.scale(f))
+  def scale(fx: Double, fy: Double) = transform(_.scale(fx, fy))
+  def penColor(c: Color) = transform(_.setPenColor(c))
+  def penWidth(t: Double) = transform(_.setPenThickness(t))
+  def penThickness(t: Double) = transform(_.setPenThickness(t))
+  def fillColor(c: Color) = transform(_.setFillColor(c))
 
   object Picture {
     def rect(h: Double, w: Double) = Picture.fromPath { path =>
@@ -316,7 +320,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
       forward(n)
     }
 
-    def textu(text: Any, fontSize: Int, color: Color = Color.black)(implicit kojoWorld: KojoWorld): TextPic = {
+    def textu(text: Any, fontSize: Int, color: Color = Color.red)(implicit kojoWorld: KojoWorld): TextPic = {
       new TextPic(text, fontSize, color)
     }
     def text(s0: Any, fontSize: Int = 15) = textu(s0, fontSize)
