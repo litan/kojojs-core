@@ -9,9 +9,20 @@ import kojo.Utils.newCoordinate
 import kojo.doodle.Color
 
 object TurtlePicture {
+  var turtle: GlobalTurtleForPicture = _
+  var turtle0: Turtle = _
+
   def apply(fn: Turtle => Unit)(implicit kojoWorld: KojoWorld): TurtlePicture = {
     val tp = new TurtlePicture(fn)
     tp.make()
+    tp
+  }
+
+  def apply(fn: => Unit)(implicit kojoWorld: KojoWorld): GlobalTurtlePicture = {
+    val tp = new GlobalTurtlePicture(fn)
+    turtle.globalTurtle = tp.turtle
+    tp.make()
+    turtle.globalTurtle = turtle0
     tp
   }
 }
@@ -100,4 +111,10 @@ class TurtlePicture private[kojo] (fn: Turtle => Unit)(implicit val kojoWorld: K
   }
 
   def copy = TurtlePicture(fn)
+}
+
+class GlobalTurtlePicture private[kojo] (fn: => Unit)(implicit kojoWorld: KojoWorld)
+  extends TurtlePicture(_ => fn) {
+
+  override def copy = TurtlePicture(fn)
 }

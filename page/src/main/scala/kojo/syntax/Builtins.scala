@@ -11,6 +11,8 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   val turtle = new GlobalTurtleForPicture
   turtle.globalTurtle = turtle0
   val svTurtle = new SwedishTurtle(turtle0)
+  TurtlePicture.turtle = turtle
+  TurtlePicture.turtle0 = turtle0
 
   val Color = kojo.doodle.Color
   type Color = kojo.doodle.Color
@@ -184,13 +186,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     TurtlePicture(fn)
   }
   def Picture(fn: => Unit)(implicit kojoWorld: KojoWorld): TurtlePicture = {
-    val tp = new TurtlePicture({ _ =>
-      fn
-    })
-    turtle.globalTurtle = tp.turtle
-    tp.make()
-    turtle.globalTurtle = turtle0
-    tp
+    TurtlePicture(fn)
   }
 
   def textExtent(str: String, fontSize: Int) = {
