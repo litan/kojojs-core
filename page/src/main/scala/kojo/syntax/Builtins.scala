@@ -140,8 +140,8 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     zoomXY(factor, factor, cx, cy)
   }
 
-  def cwidth = kojoWorld.width
-  def cheight = kojoWorld.height
+  def cwidth = kojoWorld.canvasWidth
+  def cheight = kojoWorld.canvasHeight
 
   def mouseX = kojoWorld.mouseXY.x
   def mouseY = kojoWorld.mouseXY.y
@@ -178,10 +178,8 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   val kmath = Kmath
   val mathx = kmath
 
-  def canvasBounds = {
-    val pos = kojoWorld.stagePosition
-    new Rectangle(-pos.x, -pos.y, kojoWorld.width, kojoWorld.height)
-  }
+  def canvasBounds = kojoWorld.canvasBounds
+
   def PictureT(fn: Turtle => Unit)(implicit kojoWorld: KojoWorld): TurtlePicture = {
     TurtlePicture(fn)
   }
