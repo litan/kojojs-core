@@ -132,12 +132,19 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     kojoWorld.size(width, height)
   }
 
+  // Zooms in by the given factor, and positions (cx, cy) at the center of the canvas.
   def zoomXY(xfactor: Double, yfactor: Double, cx: Double, cy: Double): Unit = {
     kojoWorld.zoomXY(xfactor, yfactor, cx, cy)
   }
 
   def zoom(factor: Double, cx: Double, cy: Double): Unit = {
     zoomXY(factor, factor, cx, cy)
+  }
+
+  def zoom(factor: Double): Unit = {
+    // the behavior is a little different from desktop-Kojo as
+    // we don't leave the center unchanged but set it to (0, 0)
+    zoomXY(factor, factor, 0, 0)
   }
 
   def cwidth = kojoWorld.canvasWidth
