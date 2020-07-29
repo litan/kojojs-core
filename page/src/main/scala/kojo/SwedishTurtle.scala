@@ -17,6 +17,8 @@ class SwedishTurtle(val englishTurtle: Turtle) {
 
   def hoppa(steg: Double) = englishTurtle.hop(steg)
 
+  def hoppa() = englishTurtle.hop(25)
+
   def sakta(n: Long) = englishTurtle.setAnimationDelay(n)
 
   //loops in Swedish

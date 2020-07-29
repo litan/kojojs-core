@@ -44,6 +44,8 @@ trait TurtleAPI extends VertexShapeSupport {
   def turn(angle: Double, radius: Double): Unit
   def arc(radius: Double, angle: Double): Unit
   def circle(radius: Double): Unit
+  def beamsOn(): Unit = {} // no-op for now
+  def beamsOff(): Unit = {} // no-op for now
 
   def shapeDone(path: Graphics): Unit = {
     path.graphicsData.foreach { gd =>
