@@ -12,14 +12,23 @@ object AssetLoader {
   case class QEntry(name: String, url: String, doneFn: (PIXI.loaders.Loader, Any) => Unit)
 
   val queue = mutable.Queue.empty[QEntry]
-  var loadProgress: LoadProgress = _
+  private var loadProgress: LoadProgress = _
+
   def loading = loadProgress != null && loadProgress.isActive
 
-  def addAndLoad(name: String, url: String, doneFn: (PIXI.loaders.Loader, Any) => Unit)(implicit kojoWorld: KojoWorld): Unit = {
+  def showLoading()(implicit kojoWorld: KojoWorld): Unit = {
     if (loadProgress == null) {
       loadProgress = new LoadProgress
     }
     loadProgress.show()
+  }
+
+  def hideLoading(): Unit = {
+    loadProgress.hide()
+  }
+
+  def addAndLoad(name: String, url: String, doneFn: (PIXI.loaders.Loader, Any) => Unit)(implicit kojoWorld: KojoWorld): Unit = {
+    showLoading()
 
     def checkQ(): Unit = {
       if (queue.nonEmpty) {
@@ -27,7 +36,7 @@ object AssetLoader {
         addAndLoad(qe.name, qe.url, qe.doneFn)
       }
       else {
-        loadProgress.hide()
+        hideLoading()
       }
     }
 

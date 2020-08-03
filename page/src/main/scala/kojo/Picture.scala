@@ -201,6 +201,15 @@ trait Picture {
     picGeom.intersection(other.picGeom)
   }
 
+  def distanceTo(other: Picture): Double = {
+    if (picGeom == null || other.picGeom == null) {
+      Double.MaxValue
+    }
+    else {
+      picGeom.distance(other.picGeom)
+    }
+  }
+
   def handlerWrapper(fn: (Double, Double) => Unit, stop: Boolean = true)(event: InteractionEvent): Unit = {
     val pos = kojoWorld.positionOnStage(event.data)
     if (stop) {

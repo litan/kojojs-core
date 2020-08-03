@@ -236,7 +236,12 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     kojoWorld.toggleFullScreenCanvas()
   }
 
-  val stopAnimation = kojoWorld.stopAnimation _
+  def stopAnimation(): Unit = {
+    kojoWorld.stopAnimation()
+    stopMp3()
+    stopMp3Loop()
+  }
+
   def draw(pictures: Picture*) = pictures.foreach { _ draw () }
   def draw(pictures: IndexedSeq[Picture]) = pictures.foreach { _ draw () }
   def draw(pictures: List[Picture]) = pictures.foreach { _ draw () }
@@ -282,7 +287,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def postDrawTransform(fn: Picture => Unit) = PostDrawTransformc(fn)
 
   def rot(angle: Double) = transform(_.rotate(angle))
-  def trans(x: Double, y: Double) = transform {p => p.translate(x, y); println(s"translate($x, $y)") }
+  def trans(x: Double, y: Double) = transform (_.translate(x, y))
   def offset(x: Double, y: Double) = transform(_.offset(x, y))
   def scale(f: Double) = transform(_.scale(f))
   def scale(fx: Double, fy: Double) = transform(_.scale(fx, fy))
@@ -376,7 +381,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     }
   }
 
-  def newMp3Player = new Mp3Player
+  def newMp3Player = new Mp3Player()
   val mp3player = newMp3Player
   def playMp3(mp3File: String) {
     mp3player.playMp3(mp3File)

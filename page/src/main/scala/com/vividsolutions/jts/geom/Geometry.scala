@@ -10,4 +10,5 @@ class Geometry extends js.Object {
   def union(other: Geometry): Geometry = js.native
   def getCoordinates(): js.Array[Coordinate] = js.native
   def intersection(other: Geometry): Geometry = js.native
+  def distance(other: Geometry): Double = js.native
 }

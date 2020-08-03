@@ -209,7 +209,7 @@ class KojoWorldImpl extends KojoWorld {
   }
 
   var animating = false
-  def loaded = !AssetLoader.loading
+  def notAssetLoading = !AssetLoader.loading
   var timers = Vector.empty[Int]
 
   def animate(fn: => Unit): Unit = {
@@ -219,7 +219,7 @@ class KojoWorldImpl extends KojoWorld {
 
   def animateHelper(fn: => Unit): Unit = {
     window.requestAnimationFrame { t =>
-      if (loaded) {
+      if (notAssetLoading) {
         fn
       }
       if (animating) {
@@ -230,7 +230,7 @@ class KojoWorldImpl extends KojoWorld {
 
   def setup(fn: => Unit): Unit = {
     window.requestAnimationFrame { _ =>
-      if (loaded) {
+      if (notAssetLoading) {
         fn
       }
       else {
@@ -249,7 +249,7 @@ class KojoWorldImpl extends KojoWorld {
 
   def timer(ms: Long)(fn: => Unit): Unit = {
     val handle = window.setInterval({ () =>
-      if (loaded) {
+      if (notAssetLoading) {
         fn
       }
     }, ms)
