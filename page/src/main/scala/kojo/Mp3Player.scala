@@ -42,6 +42,9 @@ class Mp3Player()(implicit kojoWorld: KojoWorld) {
           "onstop" -> { id: Int =>
             mp3Done()
           },
+          "onend" -> { id: Int =>
+            mp3Done()
+          },
           "onplay" -> { id: Int =>
             AssetLoader.hideLoading()
           }
@@ -51,7 +54,21 @@ class Mp3Player()(implicit kojoWorld: KojoWorld) {
     }
   }
 
-  def playMp3Sound(mp3FileUrl: String) = playMp3(mp3FileUrl)
+  def playMp3Sound(mp3FileUrl: String) = {
+    if (!seen.contains(mp3FileUrl)) {
+      seen.add(mp3FileUrl)
+      AssetLoader.showLoading()
+    }
+    val transientHowl = new Howl(
+      js.Dynamic.literal(
+        "src" -> js.Array(mp3FileUrl),
+        "onplay" -> { id: Int =>
+          AssetLoader.hideLoading()
+        }
+      )
+    )
+    transientHowl.play()
+  }
 
   def playMp3Loop(mp3FileUrl: String) {
     if (loopHowl == null) {
