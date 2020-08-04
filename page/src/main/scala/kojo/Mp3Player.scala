@@ -2,6 +2,7 @@ package kojo
 
 import howlerscalajs.howler.Howl
 
+import scala.collection.mutable
 import scala.scalajs.js
 
 class Mp3Player()(implicit kojoWorld: KojoWorld) {
@@ -10,9 +11,31 @@ class Mp3Player()(implicit kojoWorld: KojoWorld) {
   var playId: Int = -1
   var playLoopId: Int = -1
 
+  val seen = mutable.HashSet.empty[String]
+
+  def preloadMp3(mp3FileUrl: String): Unit = {
+    if (!seen.contains(mp3FileUrl)) {
+      seen.add(mp3FileUrl)
+      AssetLoader.showLoading()
+      howl = new Howl(
+        js.Dynamic.literal(
+          "src" -> js.Array(mp3FileUrl),
+          "onload" -> { () =>
+            AssetLoader.hideLoading()
+            howl = null
+          }
+        )
+      )
+      howl.load()
+    }
+  }
+
   def playMp3(mp3FileUrl: String): Unit = {
     if (howl == null) {
-      AssetLoader.showLoading()
+      if (!seen.contains(mp3FileUrl)) {
+        seen.add(mp3FileUrl)
+        AssetLoader.showLoading()
+      }
       howl = new Howl(
         js.Dynamic.literal(
           "src" -> js.Array(mp3FileUrl),
@@ -32,7 +55,10 @@ class Mp3Player()(implicit kojoWorld: KojoWorld) {
 
   def playMp3Loop(mp3FileUrl: String) {
     if (loopHowl == null) {
-      AssetLoader.showLoading()
+      if (!seen.contains(mp3FileUrl)) {
+        seen.add(mp3FileUrl)
+        AssetLoader.showLoading()
+      }
       loopHowl = new Howl(
         js.Dynamic.literal(
           "src" -> js.Array(mp3FileUrl),

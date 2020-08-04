@@ -7,6 +7,7 @@ import scala.scalajs.js.annotation.JSGlobal
 @JSGlobal("Howl")
 class Howl(o: js.Dynamic) extends js.Object {
   def play(): Int = js.native
+  def load(): Unit = js.native
   def stop(id: Int): Unit = js.native
   def playing(): Boolean = js.native
 }

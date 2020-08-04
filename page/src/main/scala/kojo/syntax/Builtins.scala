@@ -387,6 +387,10 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     mp3player.playMp3(mp3File)
   }
 
+  def preloadMp3(mp3File: String): Unit = {
+    mp3player.preloadMp3(mp3File)
+  }
+
   def playMp3Sound(mp3File: String) {
     mp3player.playMp3Sound(mp3File)
   }
