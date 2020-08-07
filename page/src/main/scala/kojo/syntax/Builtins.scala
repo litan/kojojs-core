@@ -381,6 +381,12 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     }
   }
 
+  def preloadImage(url: String): Unit = {
+    import pixiscalajs.PIXI
+    def noOp(loader: PIXI.loaders.Loader, any: Any): Unit = {}
+    AssetLoader.addAndLoad(url, url, noOp)
+  }
+
   def newMp3Player = new Mp3Player()
   val mp3player = newMp3Player
   def playMp3(mp3File: String) {
