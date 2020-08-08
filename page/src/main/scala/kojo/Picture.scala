@@ -180,7 +180,10 @@ trait Picture {
   }
 
   def collidesWith(other: Picture): Boolean = {
-    if (picGeom == null || other.picGeom == null) {
+    if (other == this) {
+      false
+    }
+    else if (picGeom == null || other.picGeom == null) {
       false
     }
     else {
@@ -198,7 +201,15 @@ trait Picture {
   }
 
   def intersection(other: Picture): Geometry = {
-    picGeom.intersection(other.picGeom)
+    if (this == other) {
+      Utils.Gf.createGeometryCollection(null)
+    }
+    else if (picGeom == null || other.picGeom == null) {
+      Utils.Gf.createGeometryCollection(null)
+    }
+    else {
+      picGeom.intersection(other.picGeom)
+    }
   }
 
   def distanceTo(other: Picture): Double = {

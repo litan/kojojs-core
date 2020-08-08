@@ -5,13 +5,17 @@ import howlerscalajs.howler.Howl
 import scala.collection.mutable
 import scala.scalajs.js
 
+object Mp3Player {
+  val seen = mutable.HashSet.empty[String]
+}
+
 class Mp3Player()(implicit kojoWorld: KojoWorld) {
+  import Mp3Player.seen
+
   var howl: Howl = _
   var loopHowl: Howl = _
   var playId: Int = -1
   var playLoopId: Int = -1
-
-  val seen = mutable.HashSet.empty[String]
 
   def preloadMp3(mp3FileUrl: String): Unit = {
     if (!seen.contains(mp3FileUrl)) {

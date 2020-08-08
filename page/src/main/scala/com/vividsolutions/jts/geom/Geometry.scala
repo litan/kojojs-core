@@ -11,4 +11,8 @@ class Geometry extends js.Object {
   def getCoordinates(): js.Array[Coordinate] = js.native
   def intersection(other: Geometry): Geometry = js.native
   def distance(other: Geometry): Double = js.native
+  def getArea: Double = js.native
+
+  override def toString(): String = js.native
+  def toText(): String = js.native
 }
