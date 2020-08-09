@@ -288,7 +288,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def postDrawTransform(fn: Picture => Unit) = PostDrawTransformc(fn)
 
   def rot(angle: Double) = transform(_.rotate(angle))
-  def trans(x: Double, y: Double) = transform (_.translate(x, y))
+  def trans(x: Double, y: Double) = transform(_.translate(x, y))
   def offset(x: Double, y: Double) = transform(_.offset(x, y))
   def scale(f: Double) = transform(_.scale(f))
   def scale(fx: Double, fy: Double) = transform(_.scale(fx, fy))
@@ -418,5 +418,12 @@ class Builtins(implicit kojoWorld: KojoWorld) {
 
   def clearOutput(): Unit = {}
   def joystick(radius: Double) = new JoyStick(radius)(this)
-  def eval(expr: String) = js.eval(s"{ $expr }")
+  def eval(expr: String): Option[Any] = {
+    try {
+      Some(js.eval(s"{ $expr }"))
+    }
+    catch {
+      case t: Throwable => None
+    }
+  }
 }
