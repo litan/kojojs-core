@@ -4,6 +4,7 @@ import kojo._
 import org.scalajs.dom.window
 import pixiscalajs.PIXI.{Graphics, Rectangle}
 
+import scala.scalajs.js
 import scala.scalajs.js.Date
 
 class Builtins(implicit kojoWorld: KojoWorld) {
@@ -417,4 +418,5 @@ class Builtins(implicit kojoWorld: KojoWorld) {
 
   def clearOutput(): Unit = {}
   def joystick(radius: Double) = new JoyStick(radius)(this)
+  def eval(expr: String) = js.eval(s"{ $expr }")
 }
