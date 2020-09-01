@@ -282,6 +282,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   val picRowCentered = HPics2
   val picColCentered = VPics2
   val picStackCentered = GPics2
+  type PicScreen = kojo.PicScreen
 
   def transform(fn: Picture => Unit) = preDrawTransform(fn)
   def preDrawTransform(fn: Picture => Unit) = PreDrawTransformc(fn)

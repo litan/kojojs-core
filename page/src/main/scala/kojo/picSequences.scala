@@ -1,9 +1,9 @@
 package kojo
 
 import com.vividsolutions.jts.geom.Geometry
+import kojo.PicCache.freshPics
 import kojo.doodle.Color
 import pixiscalajs.PIXI
-import kojo.PicCache.freshPics
 
 import scala.concurrent.Future
 
@@ -238,3 +238,60 @@ class BatchPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends B
   def copy = new BatchPics(picsCopy)
 }
 
+class PicScreen {
+  import scala.collection.mutable.ArrayBuffer
+
+  val pics = ArrayBuffer.empty[Picture]
+  var drawn = false
+  var showCmd: Option[() => Unit] = None
+  var hideCmd: Option[() => Unit] = None
+
+  def add(ps: Picture*): Unit = {
+    ps.foreach { pics.append(_) }
+  }
+
+  def add(ps: Iterable[Picture]): Unit = {
+    ps.foreach { pics.append(_) }
+  }
+
+  private def draw(): Unit = {
+    pics.foreach { _.draw() }
+  }
+
+  def hide(): Unit = {
+    pics.foreach { _.invisible() }
+    hideCmd.foreach { c =>
+      c()
+    }
+  }
+
+  private def unhide(): Unit = {
+    pics.foreach { _.visible() }
+  }
+
+  def show(): Unit = {
+    if (!drawn) {
+      draw()
+      drawn = true
+    }
+    else {
+      unhide()
+    }
+
+    showCmd.foreach { c =>
+      c()
+    }
+  }
+
+  def erase(): Unit = {
+    pics.foreach { _.erase() }
+  }
+
+  def onShow(cmd: => Unit): Unit = {
+    showCmd = Some(() => cmd)
+  }
+
+  def onHide(cmd: => Unit): Unit = {
+    hideCmd = Some(() => cmd)
+  }
+}
