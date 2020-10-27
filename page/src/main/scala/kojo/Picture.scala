@@ -221,6 +221,9 @@ trait Picture {
     }
   }
 
+  def showNext(): Unit = showNext(100)
+  def showNext(gap: Long): Unit = Utils.notSupported("showNext", "for non-batch picture")
+
   def handlerWrapper(fn: (Double, Double) => Unit, stop: Boolean = true)(event: InteractionEvent): Unit = {
     val pos = kojoWorld.positionOnStage(event.data)
     if (stop) {

@@ -5,10 +5,13 @@ import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.geom.GeometryFactory
 import com.vividsolutions.jts.geom.LineString
 import com.vividsolutions.jts.geom.PrecisionModel
-
+import pixiscalajs.PIXI
 import pixiscalajs.PIXI.Matrix
 import pixiscalajs.PIXI.Point
 import pixiscalajs.PIXI.Rectangle
+
+import scala.concurrent.{Future, Promise}
+import org.scalajs.dom.html.{Image => DomImage}
 
 object Utils {
   def doublesEqual(d1: Double, d2: Double, tol: Double): Boolean = {
@@ -61,4 +64,16 @@ object Utils {
   def printRectangle(r: Rectangle): Unit = {
     println(s"Rectangle(${r.x}, ${r.y}, ${r.width}, ${r.height})")
   }
+
+  def image(url: String)(implicit kojoWorld: KojoWorld): SubImage = {
+    val ret = Promise[DomImage]()
+    def init(loader: PIXI.loaders.Loader, any: Any): Unit = {
+      val img = loader.resources(url)
+      ret.success(img.data.asInstanceOf[DomImage])
+    }
+    AssetLoader.addAndLoad(url, url, init)
+    SubImage(ret.future, None)
+  }
+
+  def notSupported(name: String, reason: String) = throw new UnsupportedOperationException(s"$name - operation not available $reason:\n${toString}")
 }

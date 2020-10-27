@@ -8,6 +8,7 @@ import scala.scalajs.js.annotation.{JSGlobal, JSName, ScalaJSDefined}
 import scala.scalajs.js.typedarray.Uint16Array
 import scala.scalajs.js.|
 import interaction.InteractionManager
+import org.scalajs.dom.html.Image
 
 @js.native
 @JSGlobal("PIXI.RENDERER_TYPE")
@@ -1367,6 +1368,8 @@ class Texture protected () extends utils.EventEmitter {
 @js.native
 @JSGlobal("PIXI.Texture")
 object Texture extends js.Object {
+  def from(img: Image): Texture = js.native
+
   def fromImage(imageUrl: String, crossOrigin: Boolean = ???, scaleMode: Double = ???): Texture = js.native
 
   def fromFrame(frameId: String): Texture = js.native

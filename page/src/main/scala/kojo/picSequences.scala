@@ -214,7 +214,7 @@ class BatchPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends B
 
   var currPic = 0
   var lastDraw = System.currentTimeMillis
-  def showNext(gap: Long) = {
+  override def showNext(gap: Long) = {
     val currTime = System.currentTimeMillis
     if (currTime - lastDraw > gap) {
       pics(currPic).invisible()
@@ -226,7 +226,6 @@ class BatchPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends B
       lastDraw = currTime
     }
   }
-  def showNext(): Unit = showNext(100)
 
   override def picGeom: Geometry = {
     if (!made) {

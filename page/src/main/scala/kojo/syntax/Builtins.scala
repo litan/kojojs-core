@@ -1,11 +1,13 @@
 package kojo.syntax
 
 import kojo._
+import org.scalajs.dom.html.{Image => DomImage}
 import org.scalajs.dom.window
-import pixiscalajs.PIXI.{Graphics, Rectangle}
+import pixiscalajs.PIXI
+import pixiscalajs.PIXI.Graphics
 
+import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
-import scala.scalajs.js.Date
 
 class Builtins(implicit kojoWorld: KojoWorld) {
   var turtle0 = new Turtle(0, 0)
@@ -298,6 +300,13 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def penThickness(t: Double) = transform(_.setPenThickness(t))
   def fillColor(c: Color) = transform(_.setFillColor(c))
 
+  type Image = SubImage
+
+  def image(url: String): Image = Utils.image(url)
+
+  type SpriteSheet = kojo.SpriteSheet
+  def SpriteSheet(url: String, tileX: Int, tileY: Int) = kojo.SpriteSheet(url, tileX, tileY)
+
   object Picture {
     def rect(h: Double, w: Double) = Picture.fromPath { path =>
       path.moveTo(0, 0)
@@ -332,6 +341,14 @@ class Builtins(implicit kojoWorld: KojoWorld) {
       new TextPic(text, fontSize, color)
     }
     def text(s0: Any, fontSize: Int = 15) = textu(s0, fontSize)
+
+    def image(img: SubImage)(implicit kojoWorld: KojoWorld): ImagePicRaw = {
+      new ImagePicRaw(img, None)
+    }
+
+    def image(img: SubImage, envelope: Picture)(implicit kojoWorld: KojoWorld): ImagePicRaw = {
+      new ImagePicRaw(img, Some(envelope))
+    }
 
     def image(url: String)(implicit kojoWorld: KojoWorld): ImagePic = {
       new ImagePic(url, None)
