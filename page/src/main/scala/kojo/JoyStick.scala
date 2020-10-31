@@ -17,9 +17,29 @@ class JoyStick(radius: Double)(builtins: Builtins) {
   control.setOpacity(opacity)
 
   val origin = Picture.circle(radius / 5)
-  origin.setPenColor(noColor)
-  origin.setFillColor(cm.black)
-  origin.setOpacity(opacity)
+  //  origin.setPenColor(noColor)
+  //  origin.setFillColor(cm.black)
+  //  origin.setOpacity(opacity)
+
+  def setPerimeterColor(c: Color): Unit = {
+    perimeter.setFillColor(c)
+    perimeter.setOpacity(1)
+  }
+
+  def setPerimeterPenColor(c: Color): Unit = {
+    perimeter.setPenColor(c)
+    perimeter.setOpacity(1)
+  }
+
+  def setControlColor(c: Color): Unit = {
+    control.setFillColor(c)
+    control.setOpacity(1)
+  }
+
+  //  def setOriginColor(c: Color): Unit = {
+  //    origin.setFillColor(c)
+  //    origin.setOpacity(1)
+  //  }
 
   val zeroVec = Vector2D(0, 0)
   private var currentVec = zeroVec
@@ -51,11 +71,21 @@ class JoyStick(radius: Double)(builtins: Builtins) {
 
   def currentVector = currentVec
 
-  def movePlayer(player: Picture, scaleVelocity: Double = 1, directionConstraint: kojo.Vector2D = null): Unit = {
-    import kojo.RepeatCommands._
+  def movePlayerHelper(player: Picture, scaleVelocity: Double = 1, directionConstraint: kojo.Vector2D = null) = {
     val vel = if (directionConstraint == null)
       currentVector * scaleVelocity else currentVector.project(directionConstraint) * scaleVelocity
     player.offset(vel)
+    vel
+  }
+
+  def movePlayer(player: Picture, scaleVelocity: Double = 1, directionConstraint: kojo.Vector2D = null): Unit = {
+    movePlayerHelper(player, scaleVelocity, directionConstraint)
+  }
+
+  def movePlayerWithinStage(player: Picture, scaleVelocity: Double = 1, directionConstraint: kojo.Vector2D = null): Unit = {
+    import kojo.RepeatCommands._
+
+    val vel = movePlayerHelper(player, scaleVelocity, directionConstraint)
 
     def handlePossibleCollision(stagePart: Picture, vel: Vector2D): Unit = {
       if (player.collidesWith(stagePart)) {
