@@ -30,11 +30,15 @@ class Mp3Player()(implicit kojoWorld: KojoWorld) {
           }
         )
       )
-      howl.load()
+      // creating the Howl loads it ('preload' is true by default)
+      // explicit load right after 'new Howl' results in two net requests for the file
+      // howl.load()
     }
   }
 
   def playMp3(mp3FileUrl: String): Unit = {
+    // As per current design:
+    // A play does not work immediately after a preload. Only after the preload is done will a play work.
     if (howl == null) {
       if (!seen.contains(mp3FileUrl)) {
         seen.add(mp3FileUrl)
