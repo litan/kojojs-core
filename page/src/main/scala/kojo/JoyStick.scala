@@ -4,42 +4,28 @@ import kojo.syntax.Builtins
 
 class JoyStick(radius: Double)(builtins: Builtins) {
   import builtins._
-  val opacity = 0.6
   val perimeter = Picture.circle(radius)
-  perimeter.setFillColor(cm.khaki)
+  perimeter.setFillColor(ColorMaker.rgb(120, 120, 120).fadeOut(0.2))
   perimeter.setPenColor(cm.black)
   perimeter.setPenThickness(4)
-  perimeter.setOpacity(opacity)
 
   val control = Picture.circle(radius / 2)
   control.setPenColor(noColor)
-  control.setFillColor(cm.black)
-  control.setOpacity(opacity)
+  control.setFillColor(ColorMaker.white.fadeOut(0.2))
 
   val origin = Picture.circle(radius / 5)
-  //  origin.setPenColor(noColor)
-  //  origin.setFillColor(cm.black)
-  //  origin.setOpacity(opacity)
 
   def setPerimeterColor(c: Color): Unit = {
     perimeter.setFillColor(c)
-    perimeter.setOpacity(1)
   }
 
   def setPerimeterPenColor(c: Color): Unit = {
     perimeter.setPenColor(c)
-    perimeter.setOpacity(1)
   }
 
   def setControlColor(c: Color): Unit = {
     control.setFillColor(c)
-    control.setOpacity(1)
   }
-
-  //  def setOriginColor(c: Color): Unit = {
-  //    origin.setFillColor(c)
-  //    origin.setOpacity(1)
-  //  }
 
   val zeroVec = Vector2D(0, 0)
   private var currentVec = zeroVec
@@ -63,6 +49,7 @@ class JoyStick(radius: Double)(builtins: Builtins) {
     control.draw()
   }
 
+  def setPosition(x: Double, y: Double): Unit = setPostiion(x, y)
   def setPostiion(x: Double, y: Double): Unit = {
     perimeter.setPosition(x, y)
     control.setPosition(x, y)
