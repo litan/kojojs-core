@@ -7,7 +7,6 @@ This repo contains the router and compiler services for KojoJS.
 ### How to run in terminal:
   
 * Start `sbt` i terminal.
-* Fork and clone this repo to your local machine.
 * Execute the `compile` command inside sbt.
 * Execute the `update` command inside sbt.
 * Execute the `router/reStart` command inside sbt to get the **router** going.
