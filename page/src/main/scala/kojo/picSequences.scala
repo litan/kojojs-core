@@ -7,7 +7,7 @@ import pixiscalajs.PIXI
 
 import scala.concurrent.Future
 
-abstract class BasePicSequence(pics: Seq[Picture]) extends Picture with ReadyPromise {
+abstract class BasePicSequence(val pics: Seq[Picture]) extends Picture with ReadyPromise {
   import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
   val tnode = new PIXI.Container()
 
@@ -212,17 +212,20 @@ class BatchPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends B
     }
   }
 
-  var currPic = 0
+  var currPicIndex = 0
   var lastDraw = System.currentTimeMillis
+
+  def currentPicture = pics(currPicIndex)
+
   override def showNext(gap: Long) = {
     val currTime = System.currentTimeMillis
     if (currTime - lastDraw > gap) {
-      pics(currPic).invisible()
-      currPic += 1
-      if (currPic == pics.size) {
-        currPic = 0
+      pics(currPicIndex).invisible()
+      currPicIndex += 1
+      if (currPicIndex == pics.size) {
+        currPicIndex = 0
       }
-      pics(currPic).visible()
+      pics(currPicIndex).visible()
       lastDraw = currTime
     }
   }
@@ -231,7 +234,7 @@ class BatchPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends B
     if (!made) {
       return null
     }
-    pgTransform.transform(pics(currPic).picGeom)
+    pgTransform.transform(pics(currPicIndex).picGeom)
   }
 
   def copy = new BatchPics(picsCopy)
