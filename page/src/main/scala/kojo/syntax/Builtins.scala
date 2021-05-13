@@ -176,6 +176,8 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def bouncePicOffPic(pic: Picture, v: Vector2D, obstacle: Picture): Vector2D = kojoWorld.bouncePicVectorOffPic(pic, v, obstacle, Random)
 
   def isKeyPressed(keyCode: Int): Boolean = kojoWorld.isKeyPressed(keyCode)
+  def onKeyPress(fn: Int => Unit): Unit = kojoWorld.onKeyPress(fn)
+  def onKeyRelease(fn: Int => Unit): Unit = kojoWorld.onKeyRelease(fn)
 
   lazy val stageBorder = kojoWorld.stageBorder
   lazy val stageTop = kojoWorld.stageTop
@@ -320,6 +322,9 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     // def rectangle(w: Double, h: Double) = rect(h, w)
 
     def circle(r: Double) = new CirclePic(r)
+
+    def ellipse(rx: Double, ry: Double) = new EllipsePic(rx, ry)
+    def ellipseInRect(width: Double, height: Double) = trans(width / 2, height / 2) -> ellipse(width / 2, height / 2)
 
     def line(width: Double, height: Double) = Picture.fromPath { path =>
       path.moveTo(0, 0)

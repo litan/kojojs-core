@@ -40,6 +40,8 @@ trait KojoWorld {
   def stageArea: Picture
 
   def isKeyPressed(keyCode: Int): Boolean
+  def onKeyPress(fn: Int => Unit): Unit
+  def onKeyRelease(fn: Int => Unit): Unit
   def stagePosition: Point
   def positionOnStage(data: InteractionData): Point
   def isAMouseButtonPressed: Boolean
@@ -123,9 +125,11 @@ class KojoWorldImpl extends KojoWorld {
   def zoomXY(xfactor: Double, yfactor: Double, cx: Double, cy: Double): Unit = {
     //    stage.setTransform(width / 2 - cx, height / 2 + cy, xfactor, -yfactor, 0, 0, 0, 0, 0)
     stage.scale.set(xfactor, -yfactor)
-    stage.position.set(screenWidth / 2 - cx * xfactor, screenHeight / 2 + cy * yfactor)
-    canvasWidth = screenWidth / xfactor
-    canvasHeight = screenHeight / yfactor.abs
+    val cw = canvasWidth
+    val ch = canvasHeight
+    stage.position.set(cw / 2 - cx * xfactor, ch / 2 + cy * yfactor)
+    canvasWidth = cw / xfactor
+    canvasHeight = ch / yfactor.abs
     canvasOriginX = cx - canvasWidth / 2
     canvasOriginY = cy - canvasHeight / 2
     render()
@@ -448,4 +452,17 @@ class KojoWorldImpl extends KojoWorld {
     interaction.moveWhenInside = on
   }
   def mouseXY = interaction.mouse.getLocalPosition(stage)
+
+  def onKeyPress(fn: Int => Unit): Unit = {
+    def keyDown(e: KeyboardEvent): Unit = {
+      fn(e.keyCode)
+    }
+    window.addEventListener("keydown", keyDown(_), false)
+  }
+  def onKeyRelease(fn: Int => Unit): Unit = {
+    def keyUp(e: KeyboardEvent): Unit = {
+      fn(e.keyCode)
+    }
+    window.addEventListener("keyup", keyUp(_), false)
+  }
 }
