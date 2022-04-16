@@ -13,6 +13,8 @@ trait Picture {
   def ready: Future[Unit]
 
   def tnode: PIXI.DisplayObject
+  def pnode = tnode
+
   def bounds = Utils.transformRectangle(tnode.getLocalBounds(), tnode.localTransform)
   def copy: Picture
 
@@ -144,6 +146,28 @@ trait Picture {
   def setFillColor(c: Color): Unit
   def setPenColor(c: Color): Unit
   def setPenThickness(t: Double): Unit
+
+  def thatsRotated(angle: Double): Picture = PreDrawTransform { pic => pic.rotate(angle) }(this)
+  def thatsRotatedAround(angle: Double, x: Double, y: Double): Picture =
+    PreDrawTransform { pic => pic.rotateAboutPoint(angle, x, y) }(this)
+  def thatsTranslated(x: Double, y: Double): Picture = PreDrawTransform { pic => pic.translate(x, y) }(this)
+  def thatsScaled(factor: Double): Picture = PreDrawTransform { pic => pic.scale(factor) }(this)
+  def thatsScaled(factorX: Double, factorY: Double): Picture =
+    PreDrawTransform { pic => pic.scale(factorX, factorY) }(this)
+  def thatsFilledWith(color: Color): Picture = PostDrawTransform { pic => pic.setFillColor(color) }(this)
+  def thatsStrokeColored(color: Color): Picture = PostDrawTransform { pic => pic.setPenColor(color) }(this)
+  def thatsStrokeSized(t: Double): Picture = PostDrawTransform { pic => pic.setPenThickness(t) }(this)
+
+  def withRotation(angle: Double): Picture =  thatsRotated(angle)
+  def withRotationAround(angle: Double, x: Double, y: Double): Picture = thatsRotatedAround(angle, x, y)
+  def withTranslation(x: Double, y: Double): Picture = thatsTranslated(x, y)
+  def withScaling(factor: Double): Picture = thatsScaled(factor)
+  def withScaling(factorX: Double, factorY: Double): Picture = thatsScaled(factorX, factorY)
+  def withFillColor(color: Color): Picture = thatsFilledWith(color)
+  def withPenColor(color: Color): Picture = thatsStrokeColored(color)
+  def withPenThickness(t: Double): Picture = thatsStrokeSized(t)
+  def withOpacity(opacity: Double): Picture = PostDrawTransform { pic => pic.setOpacity(opacity) }(this)
+  def withPosition(x: Double, y: Double): Picture = PostDrawTransform { pic => pic.setPosition(x, y) }(this)
 
   private var _picGeom: Geometry = _
   protected var _pgTransform: AffineTransformation = _

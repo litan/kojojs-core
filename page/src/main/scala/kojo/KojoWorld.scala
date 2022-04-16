@@ -75,6 +75,7 @@ class KojoWorldImpl extends KojoWorld {
 
   def init() {
     canvas_holder.appendChild(renderer.view)
+//    renderer.context.lineCap = "round"
     render()
     stage.name = "Stage"
     //    stage.width = canvasWidth

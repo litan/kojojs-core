@@ -47,6 +47,16 @@ trait TurtleAPI extends VertexShapeSupport {
   def beamsOn(): Unit = {} // no-op for now
   def beamsOff(): Unit = {} // no-op for now
 
+  def dot(diameter: Int): Unit = {
+//    saveStyle()
+//    savePosHe()
+//    setPenThickness(diameter)
+//    hop(-0.01 / 2)
+//    forward(0.01)
+//    restorePosHe()
+//    restoreStyle()
+  }
+
   def shapeDone(path: Graphics): Unit = {
     path.graphicsData.foreach { gd =>
       val tpe = gd.`type`
