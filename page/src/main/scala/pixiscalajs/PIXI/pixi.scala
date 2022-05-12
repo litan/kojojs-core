@@ -140,6 +140,7 @@ class TransformBase extends js.Object {
 @JSGlobal("PIXI.TransformStatic")
 class TransformStatic extends TransformBase {
   def onChange(): Unit = js.native
+  def setFromMatrix(m: Matrix): Unit = js.native
 }
 
 @js.native

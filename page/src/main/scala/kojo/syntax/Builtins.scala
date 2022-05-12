@@ -75,7 +75,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def randomColor = Color(random(256), random(256), random(256))
   def randomTransparentColor = Color(random(256), random(256), random(256), 100 + random(156))
   def initRandomGenerator(): Unit = {
-    initRandomGenerator(randomLong)
+    initRandomGenerator(System.currentTimeMillis())
   }
 
   def initRandomGenerator(seed: Long): Unit = {
@@ -150,8 +150,8 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     zoomXY(factor, factor, 0, 0)
   }
 
-  def cwidth = kojoWorld.canvasWidth
-  def cheight = kojoWorld.canvasHeight
+  def cwidth = kojoWorld.canvasWidth.toInt
+  def cheight = kojoWorld.canvasHeight.toInt
 
   def mouseX = kojoWorld.mouseXY.x
   def mouseY = kojoWorld.mouseXY.y

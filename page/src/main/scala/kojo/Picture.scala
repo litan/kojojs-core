@@ -129,6 +129,29 @@ trait Picture {
     transformDone()
   }
 
+/*
+  // flip around X, i.e. flip Y!
+  def flipX(): Unit = {
+//    val tr = tnode.localTransform
+//    val m = new Matrix()
+//    m.d = -1
+//    tr.append(m)
+//    tnode.transform.setFromMatrix(tr)
+//    transformDone()
+    scale(1, -1)
+  }
+
+  def flipY(): Unit = {
+//    val tr = tnode.localTransform
+//    val m = new Matrix()
+//    m.a = -1
+//    tr.append(m)
+//    tnode.transform.setFromMatrix(tr)
+//    transformDone()
+    scale(-1, 1)
+  }
+*/
+
   def setScale(f: Double): Unit = {
     tnode.scale.set(f, f)
     transformDone()
@@ -168,6 +191,8 @@ trait Picture {
   def withPenThickness(t: Double): Picture = thatsStrokeSized(t)
   def withOpacity(opacity: Double): Picture = PostDrawTransform { pic => pic.setOpacity(opacity) }(this)
   def withPosition(x: Double, y: Double): Picture = PostDrawTransform { pic => pic.setPosition(x, y) }(this)
+//  def withFlippedX: Picture = PreDrawTransform { pic => pic.flipY() }(this)
+//  def withFlippedY: Picture = PreDrawTransform { pic => pic.flipX() }(this)
 
   private var _picGeom: Geometry = _
   protected var _pgTransform: AffineTransformation = _

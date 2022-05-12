@@ -113,11 +113,17 @@ object HPics {
 
 class HPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequence(pics) {
   def layoutChildren(): Unit = {
-    var ox = 0.0
+    var prevPic: Option[Picture] = None
     pics.foreach { pic =>
-      pic.offset(ox, 0)
-      val nbounds = pic.bounds
-      ox = nbounds.x + nbounds.width
+      prevPic match {
+        case Some(ppic) =>
+          val pbounds = ppic.bounds
+          val bounds = pic.bounds
+          val tx = pbounds.x + pbounds.width - bounds.x
+          pic.offset(tx, 0)
+        case None =>
+      }
+      prevPic = Some(pic)
     }
   }
 
@@ -137,12 +143,10 @@ class HPicsCentered(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) exten
       prevPic match {
         case Some(ppic) =>
           val pbounds = ppic.bounds
-          val tx = pbounds.x + pbounds.width
-          pic.offset(tx, 0)
           val bounds = pic.bounds
+          val tx = pbounds.x + pbounds.width - bounds.x
           val ty = pbounds.y - bounds.y + (pbounds.height - bounds.height) / 2
-          val tx2 = pbounds.x + pbounds.width - bounds.x
-          pic.offset(tx2, ty)
+          pic.offset(tx, ty)
         case None =>
       }
       prevPic = Some(pic)
@@ -160,11 +164,17 @@ object VPics {
 
 class VPics(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) extends BasePicSequence(pics) {
   def layoutChildren(): Unit = {
-    var oy = 0.0
+    var prevPic: Option[Picture] = None
     pics.foreach { pic =>
-      pic.offset(0, oy)
-      val nbounds = pic.bounds
-      oy = nbounds.y + nbounds.height
+      prevPic match {
+        case Some(ppic) =>
+          val pbounds = ppic.bounds
+          val bounds = pic.bounds
+          val ty = pbounds.y + pbounds.height - bounds.y
+          pic.offset(0, ty)
+        case None =>
+      }
+      prevPic = Some(pic)
     }
   }
 
@@ -184,12 +194,10 @@ class VPicsCentered(pics: Seq[Picture])(implicit val kojoWorld: KojoWorld) exten
       prevPic match {
         case Some(ppic) =>
           val pbounds = ppic.bounds
-          val ty = pbounds.y + pbounds.height
-          pic.offset(0, ty)
           val bounds = pic.bounds
           val tx = pbounds.x - bounds.x + (pbounds.width - bounds.width) / 2
-          val ty2 = pbounds.y + pbounds.height - bounds.y
-          pic.offset(tx, ty2)
+          val ty = pbounds.y + pbounds.height - bounds.y
+          pic.offset(tx, ty)
         case None =>
       }
       prevPic = Some(pic)
