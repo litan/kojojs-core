@@ -296,7 +296,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def trans(x: Double, y: Double) = transform(_.translate(x, y))
   def offset(x: Double, y: Double) = transform(_.offset(x, y))
   def scale(f: Double) = transform(_.scale(f))
-  def scale(fx: Double, fy: Double) = transform(_.scale(fx, fy))
+  def scaleXY_experimental(fx: Double, fy: Double) = transform(_.scaleXY_experimental(fx, fy))
   def penColor(c: Color) = transform(_.setPenColor(c))
   def penWidth(t: Double) = transform(_.setPenThickness(t))
   def penThickness(t: Double) = transform(_.setPenThickness(t))

@@ -84,12 +84,18 @@ trait Picture {
   }
 
   def scale(f: Double): Unit = {
-    scale(f, f)
+    scaleXY_experimental(f, f)
   }
 
   def rotate(angle: Double): Unit = {
     val angleRads = Utils.deg2radians(angle)
-    tnode.rotation += angleRads
+    val s = tnode.scale
+    if (s.x < 0 || s.y < 0) {
+      tnode.rotation -= angleRads
+    }
+    else {
+      tnode.rotation += angleRads
+    }
     tnode.rotation = tnode.rotation % (math.Pi * 2)
     transformDone()
   }
@@ -123,34 +129,22 @@ trait Picture {
     transformDone()
   }
 
-  def scale(fx: Double, fy: Double): Unit = {
+  // non uniform scaling does not interact well with rotation!
+  def scaleXY_experimental(fx: Double, fy: Double): Unit = {
     val scale = tnode.scale
     scale.set(scale.x * fx, scale.y * fy)
     transformDone()
   }
 
-/*
-  // flip around X, i.e. flip Y!
+  // flip around X, i.e. invert Y
   def flipX(): Unit = {
-//    val tr = tnode.localTransform
-//    val m = new Matrix()
-//    m.d = -1
-//    tr.append(m)
-//    tnode.transform.setFromMatrix(tr)
-//    transformDone()
-    scale(1, -1)
+    scaleXY_experimental(1, -1)
   }
 
+  // flip around Y, i.e. invert X
   def flipY(): Unit = {
-//    val tr = tnode.localTransform
-//    val m = new Matrix()
-//    m.a = -1
-//    tr.append(m)
-//    tnode.transform.setFromMatrix(tr)
-//    transformDone()
-    scale(-1, 1)
+    scaleXY_experimental(-1, 1)
   }
-*/
 
   def setScale(f: Double): Unit = {
     tnode.scale.set(f, f)
@@ -175,8 +169,8 @@ trait Picture {
     PreDrawTransform { pic => pic.rotateAboutPoint(angle, x, y) }(this)
   def thatsTranslated(x: Double, y: Double): Picture = PreDrawTransform { pic => pic.translate(x, y) }(this)
   def thatsScaled(factor: Double): Picture = PreDrawTransform { pic => pic.scale(factor) }(this)
-  def thatsScaled(factorX: Double, factorY: Double): Picture =
-    PreDrawTransform { pic => pic.scale(factorX, factorY) }(this)
+//  def thatsScaled(factorX: Double, factorY: Double): Picture =
+//    PreDrawTransform { pic => pic.scale(factorX, factorY) }(this)
   def thatsFilledWith(color: Color): Picture = PostDrawTransform { pic => pic.setFillColor(color) }(this)
   def thatsStrokeColored(color: Color): Picture = PostDrawTransform { pic => pic.setPenColor(color) }(this)
   def thatsStrokeSized(t: Double): Picture = PostDrawTransform { pic => pic.setPenThickness(t) }(this)
@@ -185,14 +179,14 @@ trait Picture {
   def withRotationAround(angle: Double, x: Double, y: Double): Picture = thatsRotatedAround(angle, x, y)
   def withTranslation(x: Double, y: Double): Picture = thatsTranslated(x, y)
   def withScaling(factor: Double): Picture = thatsScaled(factor)
-  def withScaling(factorX: Double, factorY: Double): Picture = thatsScaled(factorX, factorY)
+//  def withScaling(factorX: Double, factorY: Double): Picture = thatsScaled(factorX, factorY)
   def withFillColor(color: Color): Picture = thatsFilledWith(color)
   def withPenColor(color: Color): Picture = thatsStrokeColored(color)
   def withPenThickness(t: Double): Picture = thatsStrokeSized(t)
   def withOpacity(opacity: Double): Picture = PostDrawTransform { pic => pic.setOpacity(opacity) }(this)
   def withPosition(x: Double, y: Double): Picture = PostDrawTransform { pic => pic.setPosition(x, y) }(this)
-//  def withFlippedX: Picture = PreDrawTransform { pic => pic.flipY() }(this)
-//  def withFlippedY: Picture = PreDrawTransform { pic => pic.flipX() }(this)
+  def withFlippedX: Picture = PreDrawTransform { pic => pic.flipY() }(this)
+  def withFlippedY: Picture = PreDrawTransform { pic => pic.flipX() }(this)
 
   private var _picGeom: Geometry = _
   protected var _pgTransform: AffineTransformation = _
