@@ -1,12 +1,10 @@
 package kojo.syntax
 
+import kojo.Speed.{slow, superFast}
 import kojo._
-import org.scalajs.dom.html.{Image => DomImage}
 import org.scalajs.dom.window
-import pixiscalajs.PIXI
 import pixiscalajs.PIXI.Graphics
 
-import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
 
 class Builtins(implicit kojoWorld: KojoWorld) {
@@ -234,7 +232,53 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     }
   }
   def switchToDefault2Perspective(): Unit = {}
-  def showAxes(): Unit = {}
+  def showAxes(): Unit = {
+    import turtle._
+    def drawTick() {
+      savePosHe()
+      right(90)
+      forward(3)
+      hop(-3)
+      forward(-3)
+      restorePosHe()
+    }
+
+    def drawAxis(range: Double, delta: Double) {
+      savePosHe()
+      drawTick()
+      var moved = 0.0
+      while (moved <= range / 2) {
+        forward(delta)
+        drawTick()
+        moved += delta
+      }
+      restorePosHe()
+      savePosHe()
+      moved = 0.0
+      while (moved >= -range / 2) {
+        forward(-delta)
+        drawTick()
+        moved -= delta
+      }
+      restorePosHe()
+    }
+
+    savePosHe()
+    setSpeed(superFast)
+    setPenColor(cm.darkGray)
+    setPenThickness(1)
+    val cb = canvasBounds
+    setPosition(0, 0)
+    setHeading(90)
+    drawAxis(cb.height, 50)
+    right(90)
+    drawAxis(cb.width, 50)
+    setSpeed(slow)
+    setPenColor(cm.red)
+    setPenThickness(2)
+    restorePosHe()
+  }
+
   def showGrid(): Unit = {}
 
   def toggleFullScreenCanvas(): Unit = {

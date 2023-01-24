@@ -1,11 +1,10 @@
 package kojo
 
 import java.util.Random
-
 import com.vividsolutions.jts.geom.Coordinate
 import kojo.doodle.Color
 import org.scalajs.dom.raw.{KeyboardEvent, UIEvent}
-import org.scalajs.dom.{document, html, window}
+import org.scalajs.dom.{WheelEvent, document, html, window}
 import pixiscalajs.PIXI
 import pixiscalajs.PIXI.{Point, Rectangle, RendererOptions}
 import pixiscalajs.PIXI.interaction.InteractionData
@@ -65,8 +64,8 @@ class KojoWorldImpl extends KojoWorld {
   var canvasHeight = fiddleContainer.clientHeight - margin
   var canvasOriginX = -canvasWidth / 2
   var canvasOriginY = -canvasHeight / 2
-  val screenWidth = canvasWidth
-  val screenHeight = canvasHeight
+  var screenWidth = canvasWidth
+  var screenHeight = canvasHeight
   private val renderer = PIXI.Pixi.autoDetectRenderer(canvasWidth, canvasHeight, rendererOptions(), noWebGL = false)
   private val interaction = renderer.plugins.interaction
   private val stage = new PIXI.Container()
@@ -104,6 +103,8 @@ class KojoWorldImpl extends KojoWorld {
   def size(w: Double, h: Double): Unit = {
     canvasWidth = w
     canvasHeight = h
+    screenWidth = canvasWidth
+    screenHeight = canvasHeight
     canvasOriginX = -canvasWidth / 2
     canvasOriginY = -canvasHeight / 2
     //    stage.width = w
@@ -124,10 +125,10 @@ class KojoWorldImpl extends KojoWorld {
   //
 
   def zoomXY(xfactor: Double, yfactor: Double, cx: Double, cy: Double): Unit = {
-    //    stage.setTransform(width / 2 - cx, height / 2 + cy, xfactor, -yfactor, 0, 0, 0, 0, 0)
+    val cw = screenWidth
+    val ch = screenHeight
+//    stage.setTransform(cw / 2 - cx, ch / 2 + cy, xfactor, -yfactor, 0, 0, 0, 0, 0)
     stage.scale.set(xfactor, -yfactor)
-    val cw = canvasWidth
-    val ch = canvasHeight
     stage.position.set(cw / 2 - cx * xfactor, ch / 2 + cy * yfactor)
     canvasWidth = cw / xfactor
     canvasHeight = ch / yfactor.abs
@@ -441,8 +442,20 @@ class KojoWorldImpl extends KojoWorld {
     def keyUp(e: KeyboardEvent): Unit = {
       pressedKeys.remove(e.keyCode)
     }
+    var zoomf = 1.0
+    def mouseWheel(e: WheelEvent): Unit = {
+      val direction = e.deltaY
+      if (direction > 0) {
+        zoomf = zoomf * 0.9
+      }
+      else {
+        zoomf = zoomf * 1.1
+      }
+      zoomXY(zoomf, zoomf, 0, 0)
+    }
     window.addEventListener("keydown", keyDown(_), false)
     window.addEventListener("keyup", keyUp(_), false)
+    window.addEventListener("wheel", mouseWheel(_), false)
   }
 
   def isKeyPressed(keyCode: Int) = pressedKeys.contains(keyCode)
