@@ -115,6 +115,9 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     kojoWorld.animate(fn)
   }
 
+  def animateWithState[S](initState: S)(nextState: S => S): Unit = {
+    kojoWorld.animateWithState(initState)(nextState)
+  }
   def setup(fn: => Unit) = {
     kojoWorld.setup(fn)
   }
@@ -202,13 +205,19 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     pic.tnode.getBounds()
   }
 
-  def drawCenteredMessage(message: String, color: Color = Color.black, fontSize: Int = 15) {
+  def makeCenteredMessage(message: String, color: Color = Color.black, fontSize: Int = 15): Picture = {
     val cb = canvasBounds
     val te = textExtent(message, fontSize)
     val pic = Picture.textu(message, fontSize, color)
     pic.translate(cb.x + (cb.width - te.width) / 2, 0)
+    pic
+  }
+
+  def drawCenteredMessage(message: String, color: Color = Color.black, fontSize: Int = 15) {
+    val pic = makeCenteredMessage(message, color, fontSize)
     draw(pic)
   }
+
   def showGameTime(limitSecs: Int, endMsg: String, color: Color = Color.black, fontSize: Int = 15): Unit = {
     val cb = canvasBounds
     @volatile var gameTime = 0

@@ -24,6 +24,7 @@ trait KojoWorld {
 
   def setBackground(color: Color): Unit
   def animate(fn: => Unit): Unit
+  def animateWithState[S](initState: S)(nextState: S => S): Unit
   def timer(ms: Long)(fn: => Unit): Unit
   def stopAnimation(): Unit
   def setup(fn: => Unit): Unit
@@ -231,6 +232,13 @@ class KojoWorldImpl extends KojoWorld {
       if (animating) {
         animateHelper(fn)
       }
+    }
+  }
+
+  def animateWithState[S](initState: S)(nextState: S => S): Unit = {
+    var state = initState
+    animate {
+      state = nextState(state)
     }
   }
 
