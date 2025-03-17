@@ -23,6 +23,7 @@ trait KojoWorld {
   def moveToBack(obj: PIXI.DisplayObject): Unit
 
   def setBackground(color: Color): Unit
+  def frameDeltaTime: Double
   def animate(fn: => Unit): Unit
   def animateWithState[S](initState: S)(nextState: S => S): Unit
   def timer(ms: Long)(fn: => Unit): Unit
@@ -218,9 +219,24 @@ class KojoWorldImpl extends KojoWorld {
   var animating = false
   def notAssetLoading = !AssetLoader.loading
   var timers = Vector.empty[Int]
+  private var prevFrameTime: Double = _
+
+  def frameDeltaTime: Double = {
+    val currFrameTime = System.currentTimeMillis() / 1000.0
+    if (prevFrameTime == -1) {
+      prevFrameTime = currFrameTime
+      0
+    }
+    else {
+      val delta = currFrameTime - prevFrameTime
+      prevFrameTime = currFrameTime
+      delta
+    }
+  }
 
   def animate(fn: => Unit): Unit = {
     animating = true
+    prevFrameTime = -1
     animateHelper(fn)
   }
 
@@ -262,6 +278,7 @@ class KojoWorldImpl extends KojoWorld {
   }
 
   def timer(ms: Long)(fn: => Unit): Unit = {
+    prevFrameTime = -1
     val handle = window.setInterval({ () =>
       if (notAssetLoading) {
         fn

@@ -111,6 +111,8 @@ class Builtins(implicit kojoWorld: KojoWorld) {
 
   def disablePanAndZoom(): Unit = {}
 
+  def frameDeltaTime = kojoWorld.frameDeltaTime
+
   def animate(fn: => Unit): Unit = {
     kojoWorld.animate(fn)
   }
