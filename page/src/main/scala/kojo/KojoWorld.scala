@@ -53,6 +53,7 @@ trait KojoWorld {
   def erasePictures(): Unit
   def toggleFullScreenCanvas(): Unit
   def canvasBounds: Rectangle
+  def noZoom(): Unit
 }
 
 class KojoWorldImpl extends KojoWorld {
@@ -458,6 +459,11 @@ class KojoWorldImpl extends KojoWorld {
     vel.bounceOff(cv)
   }
 
+  var zoomEnabled = true
+  def noZoom(): Unit = {
+    zoomEnabled = false
+  }
+
   val pressedKeys = new collection.mutable.HashSet[Int]
 
   def initEvents(): Unit = {
@@ -469,14 +475,16 @@ class KojoWorldImpl extends KojoWorld {
     }
     var zoomf = 1.0
     def mouseWheel(e: WheelEvent): Unit = {
-      val direction = e.deltaY
-      if (direction > 0) {
-        zoomf = zoomf * 0.9
+      if (zoomEnabled) {
+        val direction = e.deltaY
+        if (direction > 0) {
+          zoomf = zoomf * 0.9
+        }
+        else {
+          zoomf = zoomf * 1.1
+        }
+        zoomXY(zoomf, zoomf, 0, 0)
       }
-      else {
-        zoomf = zoomf * 1.1
-      }
-      zoomXY(zoomf, zoomf, 0, 0)
     }
     window.addEventListener("keydown", keyDown(_), false)
     window.addEventListener("keyup", keyUp(_), false)

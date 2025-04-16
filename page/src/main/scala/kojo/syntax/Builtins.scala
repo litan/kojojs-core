@@ -109,7 +109,9 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def setBackgroundH(c1: Color, c2: Color) = setBackground(c1)
   def setBackgroundV(c1: Color, c2: Color) = setBackground(c1)
 
-  def disablePanAndZoom(): Unit = {}
+  def disablePanAndZoom(): Unit = {
+    kojoWorld.noZoom()
+  }
 
   def frameDeltaTime = kojoWorld.frameDeltaTime
 
@@ -211,7 +213,7 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     val cb = canvasBounds
     val te = textExtent(message, fontSize)
     val pic = Picture.textu(message, fontSize, color)
-    pic.translate(cb.x + (cb.width - te.width) / 2, 0)
+    pic.translate(cb.x + (cb.width - te.width) / 2, cb.y + (cb.height - te.height) / 2 + te.height)
     pic
   }
 
