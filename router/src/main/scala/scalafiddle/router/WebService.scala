@@ -379,7 +379,44 @@ class WebService(system: ActorSystem, cache: Cache, compilerManager: ActorRef) {
         complete(HttpResponse(StatusCodes.Forbidden))
     }
   }
-  val route = extRoute ~ compilerRoute
+  /**
+    * Operations endpoints.
+    *
+    * /status gives the numbers (registered, ready, compiling, ... and one row per compiler) and needs
+    * the router secret, the same one that guards compiler registration (SCALAFIDDLE_SECRET). Not cached.
+    *
+    * /health carries its answer in the STATUS CODE, which is what an HTTP health check (a load
+    * balancer, Fly, Kubernetes) looks at: 200 when at least `min` compilers are registered
+    * (default 1), 503 otherwise. It needs no secret and has no body, so what it reveals is only
+    * "healthy or not". Example: /health?min=2.
+    */
+  val opsRoute: Route = {
+    get {
+      path("status") {
+        parameter("secret".?) { provided =>
+          if (!provided.contains(Config.secret)) complete(HttpResponse(StatusCodes.Forbidden))
+          else
+            complete {
+              ask(compilerManager, GetStatus).mapTo[RouterStatus].map { status =>
+                HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, write(status).getBytes("UTF-8")))
+                  .withHeaders(`Cache-Control`(`no-cache`))
+              }
+            }
+        }
+      } ~ path("health") {
+        parameter("min".as[Int].?) { min =>
+          complete {
+            ask(compilerManager, GetStatus).mapTo[RouterStatus].map { status =>
+              HttpResponse(if (Health.ok(status, min.getOrElse(1))) StatusCodes.OK else StatusCodes.ServiceUnavailable)
+                .withHeaders(`Cache-Control`(`no-cache`))
+            }
+          }
+        }
+      }
+    }
+  }
+
+  val route = extRoute ~ opsRoute ~ compilerRoute
 
   val bindingFuture = Http().bindAndHandle(route, Config.interface, Config.port)
 

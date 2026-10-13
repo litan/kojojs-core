@@ -154,7 +154,8 @@ lazy val router = (project in file("router"))
       "org.webjars.npm"       % "js-sha1"         % "0.4.0",
       "com.lihaoyi"           %% "upickle"        % versions.upickle,
       "com.github.marklister" %% "base64"         % versions.base64,
-      "ch.megard"             %% "akka-http-cors" % "0.4.3"
+      "ch.megard"             %% "akka-http-cors" % "0.4.3",
+      "org.scalatest"         %% "scalatest"      % versions.scalatest % Test
     ) ++ akka ++ logging,
     javaOptions in reStart ++= Seq("-Xmx1g"),
     scriptClasspath := Seq("../config/") ++ scriptClasspath.value,
