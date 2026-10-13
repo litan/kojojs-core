@@ -3,9 +3,7 @@ package scalafiddle.compiler
 import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable, PoisonPill, Props}
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.stream.ActorMaterializer
-import kamon.Kamon
-import kamon.metric.instrument.Histogram
-import org.scalajs.core.tools.io.VirtualScalaJSIRFile
+import org.scalajs.linker.interface.IRFile
 import upickle.default._
 
 import scala.collection.mutable
@@ -23,13 +21,6 @@ class CompileActor(out: ActorRef, manager: ActorRef) extends Actor with ActorLog
   var pongTimer: Cancellable         = _
   var libraryManager: LibraryManager = _
   var lastPong                       = System.currentTimeMillis() / 1000
-
-  val compilationCounter        = Kamon.metrics.counter("compilation")
-  val compilationFailCounter    = Kamon.metrics.counter("compilation-fail")
-  val autoCompletionCounter     = Kamon.metrics.counter("auto-complete")
-  val autoCompletionFailCounter = Kamon.metrics.counter("auto-complete-fail")
-  val compilationTime           = Kamon.metrics.histogram("compilation-time", Histogram.DynamicRange(10, 100000, 3))
-  val autoCompleteTime          = Kamon.metrics.histogram("auto-complete-time", Histogram.DynamicRange(2, 100000, 3))
 
   override def preStart(): Unit = {
     log.debug("Compiler actor starting")
@@ -79,18 +70,15 @@ class CompileActor(out: ActorRef, manager: ActorRef) extends Actor with ActorLog
                 case "full" => compiler.fullOpt _
               }
               val startTime = System.nanoTime()
-              val res       = doCompile(compiler, sourceCode, e => compiler.export(opt(e)))
+              val res       = doCompile(compiler, sourceCode, e => opt(e))
               val endTime   = System.nanoTime()
               log.debug(compiler.getInternalLog.mkString("\n"))
               log.debug(f" ==== Full compilation time: ${(endTime - startTime) / 1.0e6}%.1f ms")
-              compilationCounter.increment()
-              compilationTime.record((endTime - startTime) / 1000000L)
               sendOut(res)
             } catch {
               case e: Throwable =>
                 log.error(e, s"Error in compilation")
                 log.debug(compiler.getLog.mkString("\n"))
-                compilationFailCounter.increment()
                 sendOut(
                   CompilationResponse(None,
                                       Seq(EditorAnnotation(0, 0, e.getMessage +: compiler.getLog, "ERROR")),
@@ -105,12 +93,9 @@ class CompileActor(out: ActorRef, manager: ActorRef) extends Actor with ActorLog
               val startTime = System.nanoTime()
               val res       = CompletionResponse(compiler.autocomplete(offset.toInt))
               val endTime   = System.nanoTime()
-              autoCompletionCounter.increment()
-              autoCompleteTime.record((endTime - startTime) / 1000000L)
               sendOut(res)
             } catch {
               case e: Throwable =>
-                autoCompletionFailCounter.increment()
                 sendOut(CompletionResponse(List.empty))
             }
 
@@ -146,7 +131,7 @@ class CompileActor(out: ActorRef, manager: ActorRef) extends Actor with ActorLog
 
   def doCompile(compiler: Compiler,
                 sourceCode: String,
-                processor: Seq[VirtualScalaJSIRFile] => String): CompilationResponse = {
+                processor: Seq[IRFile] => String): CompilationResponse = {
     val output = mutable.Buffer.empty[String]
 
     val (logSpam, res) = compiler.compile(output.append(_))

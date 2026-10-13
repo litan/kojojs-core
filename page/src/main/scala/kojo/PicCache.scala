@@ -22,7 +22,9 @@ object PicCache {
       pic
     }
   }
-  def freshPics(ps: Seq[Picture]): Seq[Picture] = {
-    ps map freshPic
+  // In Scala 2.13 Seq is immutable.Seq; accept collection.Seq so that mutable
+  // callers (ArrayBuffer etc.) keep working. The result is an immutable Seq.
+  def freshPics(ps: collection.Seq[Picture]): Seq[Picture] = {
+    ps.iterator.map(freshPic).toSeq
   }
 }

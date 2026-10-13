@@ -5,6 +5,8 @@ case class ExtLib(group: String, artifact: String, version: String, compileTimeO
 }
 
 object ExtLib {
+  implicit val rw: upickle.default.ReadWriter[ExtLib] = upickle.default.macroRW
+
   val repoSJSRE = """([^ %]+) *%%% *([^ %]+) *% *([^ %]+)""".r
   val repoRE    = """([^ %]+) *%% *([^ %]+) *% *([^ %]+)""".r
 

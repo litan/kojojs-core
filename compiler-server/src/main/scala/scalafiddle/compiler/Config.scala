@@ -31,6 +31,8 @@ object Config {
   val scalaMainVersion   = scalaVersion.split('.').take(2).mkString(".")
   val scalaJSVersion     = versionProps.getProperty("scalaJSVersion")
   val scalaJSMainVersion = scalaJSVersion.split('.').take(2).mkString(".")
+  // in Scala.js 1.x the artifact suffix carries only the major version: page_sjs1_2.13
+  val scalaJSMajorVersion = scalaJSVersion.split('.').head
   val aceVersion         = versionProps.getProperty("aceVersion")
 
 }

@@ -4,7 +4,7 @@ import org.scalajs.dom.raw._
 
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
-import scala.scalajs.js.annotation.{JSGlobal, JSName, ScalaJSDefined}
+import scala.scalajs.js.annotation.{JSGlobal, JSName}
 import scala.scalajs.js.typedarray.Uint16Array
 import scala.scalajs.js.|
 import interaction.InteractionManager
