@@ -29,7 +29,7 @@ object Config {
   val extLibs          = read[Map[String, String]](config.getString("extLibs"))
   val refreshLibraries = FiniteDuration(config.getDuration("refreshLibraries").toMillis, TimeUnit.MILLISECONDS)
 
-  val corsOrigins = config.getStringList("corsOrigins").asScala
+  val corsOrigins = config.getStringList("corsOrigins").asScala.toSeq
 
   object compiler {
     val c    = config.getConfig("compiler")
@@ -43,10 +43,10 @@ object Config {
   val logoLight = config.getString("logoLight")
   val logoDark  = config.getString("logoDark")
 
-  val extJS       = config.getStringList("extJS").asScala
-  val extCSS      = config.getStringList("extCSS").asScala
+  val extJS       = config.getStringList("extJS").asScala.toSeq
+  val extCSS      = config.getStringList("extCSS").asScala.toSeq
   val baseEnv     = config.getString("baseEnv")
-  val clientFiles = config.getStringList("clientFiles").asScala
+  val clientFiles = config.getStringList("clientFiles").asScala.toSeq
 
   val cacheDir = config.getString("cacheDir")
 }

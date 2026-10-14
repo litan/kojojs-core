@@ -6,8 +6,6 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.ws.{Message, WebSocketRequest}
 import akka.stream.scaladsl.Flow
 import akka.stream.{ActorMaterializer, OverflowStrategy}
-import kamon.Kamon
-
 import scala.concurrent.duration._
 
 case object CompilerTerminated
@@ -43,14 +41,7 @@ class Manager extends Actor with ActorLogging {
 
   override def preStart(): Unit = {
     super.preStart()
-    Kamon.start()
-
     self ! ConnectRouter
-  }
-
-  override def postStop(): Unit = {
-    Kamon.shutdown()
-    super.postStop()
   }
 
   def receive = {

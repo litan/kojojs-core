@@ -13,7 +13,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel, JSGlobal}
 import scala.scalajs.js.timers.{SetIntervalHandle, SetTimeoutHandle}
 import scala.scalajs.js.typedarray.Uint8Array
-import scala.scalajs.niocharset.StandardCharsets
+import java.nio.charset.StandardCharsets
 import scala.util.Success
 import scalafiddle.shared.{CompilationResponse, CompletionResponse, EditorAnnotation}
 
@@ -151,8 +151,8 @@ class Client(editURL: String) {
     CompilationResponse(
       if (r.jsCode.isEmpty) None else Some(r.jsCode(0)),
       r.annotations.map { a =>
-        EditorAnnotation(a.row, a.col, a.text, a.tpe)
-      },
+        EditorAnnotation(a.row, a.col, a.text.toSeq, a.tpe)
+      }.toSeq,
       r.log
     )
   }

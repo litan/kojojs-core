@@ -1,25 +1,26 @@
 package scalafiddle.compiler.cache
 
-import java.io.{FileOutputStream, InputStream}
-import java.nio.file.Path
+import java.io.{FileOutputStream, InputStream, RandomAccessFile}
+import java.nio.channels.FileChannel
+import java.nio.charset.StandardCharsets
+import java.nio.file.{Files, Path}
 import java.util.zip.{ZipEntry, ZipInputStream}
 
-import com.google.common.io.Files
 import org.slf4j.LoggerFactory
 import org.xerial.snappy.Snappy
 import upickle.default._
-import xerial.larray._
-import xerial.larray.mmap.MMapMode
-
-import scala.io.Source
-import scala.reflect.io.Streamable
-import scala.scalajs.niocharset.StandardCharsets
 
 case class FlatFile(path: String, offset: Long, compressedSize: Int, origSize: Int)
 
+object FlatFile { implicit val rw: ReadWriter[FlatFile] = macroRW }
+
 case class FlatJar(name: String, files: Seq[FlatFile])
 
-class FlatFileSystem(data: MappedLByteArray, val jars: Seq[FlatJar], val index: Map[String, FlatFile]) {
+object FlatJar { implicit val rw: ReadWriter[FlatJar] = macroRW }
+
+// larray has no Scala 2.13 release, so the data file is read through a java.nio FileChannel:
+// for each file the relevant region is read and decompressed with Snappy in memory.
+class FlatFileSystem(dataChannel: FileChannel, val jars: Seq[FlatJar], val index: Map[String, FlatFile]) {
 
   def exists(path: String) = index.contains(path)
 
@@ -32,19 +33,19 @@ class FlatFileSystem(data: MappedLByteArray, val jars: Seq[FlatJar], val index: 
   }
 
   def load(file: FlatFile): Array[Byte] = {
-    val address = data.address + file.offset
-    val content = LArray.of[Byte](file.origSize).asInstanceOf[RawByteArray[Byte]]
-
-    Snappy.rawUncompress(address, file.compressedSize, content.address)
-    val bytes = Array.ofDim[Byte](file.origSize)
-    content.writeToArray(0, bytes, 0, file.origSize)
-    content.free
-    bytes
+    val compressed = java.nio.ByteBuffer.allocate(file.compressedSize)
+    var pos        = file.offset
+    while (compressed.hasRemaining) {
+      val n = dataChannel.read(compressed, pos)
+      if (n < 0) throw new java.io.EOFException(s"Unexpected EOF reading ${file.path}")
+      pos += n
+    }
+    Snappy.uncompress(compressed.array())
   }
 
   def filter(f: Set[String]): FlatFileSystem = {
     val newJars = jars.filter(j => f.contains(j.name))
-    new FlatFileSystem(data, newJars, FlatFileSystem.createIndex(newJars))
+    new FlatFileSystem(dataChannel, newJars, FlatFileSystem.createIndex(newJars))
   }
 }
 
@@ -55,21 +56,26 @@ object FlatFileSystem {
     location.toFile.mkdirs()
     val jars                         = readMetadata(location)
     val index: Map[String, FlatFile] = createIndex(jars)
-    val data                         = LArray.mmap(location.resolve("data").toFile, MMapMode.READ_ONLY)
-    new FlatFileSystem(data, jars, index)
+    new FlatFileSystem(openData(location), jars, index)
   }
 
+  private def openData(location: Path): FileChannel =
+    new RandomAccessFile(location.resolve("data").toFile, "r").getChannel
+
   private def createIndex(jars: Seq[FlatJar]): Map[String, FlatFile] = {
-    jars.flatMap(_.files.map(file => (file.path, file)))(collection.breakOut)
+    jars.iterator.flatMap(_.files.map(file => (file.path, file))).toMap
   }
 
   private def readMetadata(location: Path): Seq[FlatJar] = {
-    read[Seq[FlatJar]](Source.fromFile(location.resolve("index.json").toFile, "UTF-8").getLines.mkString)
+    read[Seq[FlatJar]](new String(Files.readAllBytes(location.resolve("index.json")), StandardCharsets.UTF_8))
   }
 
   private val validExtensions = Set("class", "sjsir")
   private def validFile(entry: ZipEntry) = {
-    !entry.isDirectory && validExtensions.contains(Files.getFileExtension(entry.getName))
+    val name = entry.getName
+    val dot  = name.lastIndexOf('.')
+    val ext  = if (dot < 0) "" else name.substring(dot + 1)
+    !entry.isDirectory && validExtensions.contains(ext)
   }
 
   def build(location: Path, jars: Seq[(String, InputStream)]): FlatFileSystem = {
@@ -98,7 +104,7 @@ object FlatFileSystem {
 
       val files = entries.map { entry =>
         // read and compress the file
-        val content    = Streamable.bytes(jarStream)
+        val content    = jarStream.readAllBytes()
         val compressed = Snappy.compress(content)
         fos.write(compressed)
         val ff = FlatFile(entry.getName, offset, compressed.length, content.length)
@@ -112,9 +118,8 @@ object FlatFileSystem {
 
     val finalJars = existingJars ++ addedJars
     val json      = write(finalJars)
-    Files.write(json, location.resolve("index.json").toFile, StandardCharsets.UTF_8)
+    Files.write(location.resolve("index.json"), json.getBytes(StandardCharsets.UTF_8))
 
-    val data = LArray.mmap(location.resolve("data").toFile, MMapMode.READ_ONLY)
-    new FlatFileSystem(data, finalJars, createIndex(finalJars))
+    new FlatFileSystem(openData(location), finalJars, createIndex(finalJars))
   }
 }

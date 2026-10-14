@@ -1,5 +1,5 @@
 package scalafiddle.compiler.cache
 
-import org.scalajs.core.tools.linker.Linker
+import org.scalajs.linker.interface.Linker
 
 object LinkerCache extends LRUCache[Linker]("Linker") {}

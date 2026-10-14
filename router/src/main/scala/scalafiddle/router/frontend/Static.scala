@@ -268,8 +268,10 @@ object Static {
               |      break;
               |    case "code":
               |      try {
-              |        eval(msg.data);
-              |        eval("var sf = ScalaFiddle;if(typeof sf === 'function' && typeof sf().main === 'function') sf().main();");
+              |        // ONE eval, not two. Scala.js 1.x declares `let Fiddle,ScalaFiddle;`; let declarations stay
+              |        // in the scope of the eval that created them, so a separate second eval fails with
+              |        // "ScalaFiddle is not defined".
+              |        eval(msg.data + "\n;if (typeof ScalaFiddle !== 'undefined') { var sf = ScalaFiddle; if (typeof sf === 'function' && typeof sf().main === 'function') sf().main(); }");
               |      } catch(ex) {
               |        panel.insertAdjacentHTML('beforeend', '<pre class="error">ERROR: ' + ex.message + '\n' + ex.stack + '</pre>')
               |      } finally {

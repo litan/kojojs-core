@@ -34,7 +34,7 @@ class AbstractFlatFile(flatFile: FlatFile, flatJar: FlatJar, ffs: FlatFileSystem
 }
 
 class AbstractFlatDir(val path: String, val children: ArrayBuffer[AbstractFile] = ArrayBuffer.empty) extends AbstractFile {
-  private lazy val files: Map[String, AbstractFile] = children.map(c => c.name -> c)(collection.breakOut)
+  private lazy val files: Map[String, AbstractFile] = children.iterator.map(c => c.name -> c).toMap
   override val name: String                         = path.split('/').last
   override def absolute: AbstractFile               = this
   override def container: AbstractFile              = NoAbstractFile

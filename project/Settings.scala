@@ -16,26 +16,21 @@ object Settings {
 
   /** Declare global dependency versions here to avoid mismatches in multi part dependencies */
   object versions {
-    val fiddle        = "1.1.1"
-    val scalatest     = "3.0.3"
-    val macroParadise = "2.1.0"
-    val kindProjector = "0.9.6"
-    val akka          = "2.5.12"
-    val akkaHttp      = "10.1.1"
-    val upickle       = "0.4.4"
-    val ace           = "1.2.2"
-    val dom           = "0.9.8"
-    val scalatags     = "0.6.7"
-    val async         = "0.9.7"
-    val coursier      = "1.0.3"
-    val kamon         = "0.6.7"
-    val base64        = "0.2.4"
-  }
+    val fiddle = "1.1.1"
 
-  val kamon = Seq(
-    "io.kamon" %% "kamon-core"   % versions.kamon,
-    "io.kamon" %% "kamon-statsd" % versions.kamon
-  )
+    // Versions compatible with Scala 2.13.18 / Scala.js 1.x. kamon, macro-paradise and
+    // kind-projector were removed entirely (not needed on 2.13, or no 2.13 releases).
+    val scalatest = "3.2.19"
+    val akka      = "2.5.32"  // last 2.5 line that supports 2.13
+    val akkaHttp  = "10.1.15" // 10.1 line that supports 2.13
+    val upickle   = "1.6.0"
+    val ace       = "1.2.2"
+    val dom       = "1.2.0"   // still has the raw package; the jump to 2.x is separate work
+    val scalatags = "0.9.4"
+    val async     = "1.0.1"   // needs the -Xasync compiler flag
+    val coursier  = "2.1.24"
+    val base64    = "0.3.0"
+  }
 
   val akka = Seq(
     "com.typesafe.akka" %% "akka-actor"  % versions.akka,
