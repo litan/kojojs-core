@@ -141,7 +141,9 @@ class CompilerManager extends Actor with ActorLogging {
       try {
         selectCompiler(req) match {
           case Some(compilerInfo) =>
-            compilers.update(compilerInfo.id, compilerInfo.copy(state = CompilerState.Compiling))
+            // lastActivity is refreshed here too, otherwise it would keep the time of the previous
+            // Ready state while the compiler is busy (the /status endpoint reports it)
+            compilers.update(compilerInfo.id, compilerInfo.copy(state = CompilerState.Compiling, lastActivity = now))
             compilationPending += compilerInfo.id -> sourceActor
             // add default libs
             log.debug(s"Sending compiler request to ${compilerInfo.id}")
@@ -253,6 +255,19 @@ class CompilerManager extends Actor with ActorLogging {
             context.stop(compiler.compilerService)
           }
       }
+
+    case GetStatus =>
+      sender() ! RouterStatus(
+        registered = compilers.size,
+        ready = compilers.values.count(_.state == CompilerState.Ready),
+        compiling = compilers.values.count(_.state == CompilerState.Compiling),
+        initializing = compilers.values.count(_.state == CompilerState.Initializing),
+        queued = compilerQueue.size,
+        pending = compilationPending.size,
+        compilers = compilers.values.toSeq.sortBy(_.id).map { c =>
+          CompilerStatus(c.id, c.scalaVersion, c.state.toString, (now - c.lastActivity) / 1000, (now - c.lastSeen) / 1000)
+        }
+      )
 
     case other =>
       log.error(s"Received unknown message $other")
