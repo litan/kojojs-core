@@ -1,0 +1,4 @@
+# Source of the translator copy in router/: this commit of bulent2k2/kojo.
+# For the copied files and the equality check see router/TRANSLATOR.md.
+# To upgrade: change the SHA, run router/translator-sync.sh, commit both together.
+94d379d4a6d99aa41e3f78ca8beb0b4653e403bb
