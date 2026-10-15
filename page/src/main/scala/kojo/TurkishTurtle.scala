@@ -15,7 +15,12 @@ class TurkishTurtle(val englishTurtle: TurtleAPI)
     extends kojo.tr.SayıYöntemleri
     with kojo.tr.MatematikYöntemleri
     with kojo.tr.BelkiYöntemleri
-    with kojo.tr.NoktaYöntemleri {
+    with kojo.tr.NoktaYöntemleri
+    with kojo.tr.HarfYöntemleri
+    with kojo.tr.İkisindenBiriYöntemleri
+    with kojo.tr.BölümselİşlevYöntemleri
+    with kojo.tr.KökTürYöntemleri
+    with kojo.tr.BuAnYöntemleri {
   // clearing
   def sil(): Unit      = englishTurtle.clear()
   def temizle(): Unit  = englishTurtle.cleari()
