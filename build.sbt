@@ -155,6 +155,10 @@ lazy val router = (project in file("router"))
       "com.lihaoyi"           %% "upickle"        % versions.upickle,
       "com.github.marklister" %% "base64"         % versions.base64,
       "ch.megard"             %% "akka-http-cors" % "0.4.3",
+      // /translate: the lexer in router/lib/scalariform.jar needs scala.xml.parsing.TokenTests at run
+      // time. scalatest already brings it onto the Test classpath, so the unit tests pass without it
+      // while a real server fails with NoClassDefFoundError on the first request. Keep it explicit.
+      "org.scala-lang.modules" %% "scala-xml"     % "2.1.0",
       "org.scalatest"         %% "scalatest"      % versions.scalatest % Test
     ) ++ akka ++ logging,
     javaOptions in reStart ++= Seq("-Xmx1g"),

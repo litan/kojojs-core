@@ -231,6 +231,36 @@ class WebService(system: ActorSystem, cache: Cache, compilerManager: ActorRef) {
             }
           }
         }
+      } ~ path("translate") {
+        // Koco <-> Kojo script translation. It does not touch the compiler: it is lexical, a request
+        // takes milliseconds, so it uses neither the compiler queue nor the cache and is NOT CACHED
+        // (the input is free text; translating the same script twice is cheap).
+        // Same body limit as /compile: the same script comes from the same editor.
+        handleRejections(CorsDirectives.corsRejectionHandler) {
+          CorsDirectives.cors(corsSettings) {
+            parameter("direction".?) { direction =>
+              withSizeLimit(64 * 1024) {
+                extractRequest { request =>
+                  complete {
+                    request.entity.toStrict(5.seconds).flatMap { entity =>
+                      val code = entity.data.decodeString(StandardCharsets.UTF_8)
+                      // Translation runs on its own pool (Translate.ec), not on the compiler dispatcher
+                      Future {
+                        Translate.translate(code, direction) match {
+                          case Right(result) =>
+                            HttpResponse(entity = HttpEntity(`application/json`, write(result).getBytes("UTF-8")))
+                              .withHeaders(`Cache-Control`(`no-cache`))
+                          case Left(message) =>
+                            HttpResponse(StatusCodes.BadRequest, entity = HttpEntity(`text/plain` withCharset `UTF-8`, message))
+                        }
+                      }(Translate.ec)
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       } ~ path("complete") {
         handleRejections(CorsDirectives.corsRejectionHandler) {
           CorsDirectives.cors(corsSettings) {
@@ -417,6 +447,11 @@ class WebService(system: ActorSystem, cache: Cache, compilerManager: ActorRef) {
   }
 
   val route = extRoute ~ opsRoute ~ compilerRoute
+
+  // The dictionary loads lazily (first request ~280 ms, measured); warm it once at startup so the first user does not feel it.
+  Future(Translate.translate("", None))(Translate.ec).failed.foreach { ex =>
+    log.warn(s"/translate warm-up failed: ${ex.getMessage}")
+  }
 
   val bindingFuture = Http().bindAndHandle(route, Config.interface, Config.port)
 
