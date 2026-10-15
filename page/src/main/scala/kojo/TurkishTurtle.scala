@@ -1,0 +1,67 @@
+package kojo
+
+import kojo.doodle.Color
+
+// Turkish names for the turtle commands, the same idea as SwedishTurtle. The names follow desktop Kojo's
+// Turkish layer (net.kogics.kojo.lite.i18n.trInit), so a script reads the same in both.
+//
+// englishTurtle is the TurtleAPI that Builtins passes in: its `turtle` (GlobalTurtleForPicture), not
+// `turtle0`. Picture { ... } swaps the global turtle for the picture's own turtle while its body runs, and
+// a wrapper bound to turtle0 would draw such a picture's lines on the canvas and leave the picture empty.
+//
+// Only commands that TurtleAPI has are here. Others (home, towards, costumes, saved styles...) follow when
+// the English API has them.
+class TurkishTurtle(val englishTurtle: TurtleAPI) {
+  // clearing
+  def sil(): Unit      = englishTurtle.clear()
+  def temizle(): Unit  = englishTurtle.cleari()
+  def görünür(): Unit  = englishTurtle.visible()
+  def görünmez(): Unit = englishTurtle.invisible()
+
+  // moving and turning
+  def ileri(adım: Double): Unit                = englishTurtle.forward(adım)
+  def ileri(): Unit                            = englishTurtle.forward()
+  def geri(adım: Double): Unit                 = englishTurtle.back(adım)
+  def geri(): Unit                             = englishTurtle.back()
+  def sağ(açı: Double, yarıçap: Double): Unit  = englishTurtle.right(açı, yarıçap)
+  def sağ(açı: Double): Unit                   = englishTurtle.right(açı)
+  def sağ(): Unit                              = englishTurtle.right()
+  def sol(açı: Double, yarıçap: Double): Unit  = englishTurtle.left(açı, yarıçap)
+  def sol(açı: Double): Unit                   = englishTurtle.left(açı)
+  def sol(): Unit                              = englishTurtle.left()
+  def dön(açı: Double, yarıçap: Double): Unit  = englishTurtle.turn(açı, yarıçap)
+  def dön(açı: Double): Unit                   = englishTurtle.turn(açı)
+  def zıpla(adım: Double): Unit                = englishTurtle.hop(adım)
+  def zıpla(): Unit                            = englishTurtle.hop()
+  def atla(x: Double, y: Double): Unit         = englishTurtle.setPosition(x, y)
+  def ilerle(x: Double, y: Double): Unit       = englishTurtle.moveTo(x, y)
+  def noktayaGit(x: Double, y: Double): Unit   = englishTurtle.lineTo(x, y)
+  def açıyaDön(açı: Double): Unit              = englishTurtle.setHeading(açı)
+  def doğu(): Unit                             = englishTurtle.setHeading(0)
+  def batı(): Unit                             = englishTurtle.setHeading(180)
+  def kuzey(): Unit                            = englishTurtle.setHeading(90)
+  def güney(): Unit                            = englishTurtle.setHeading(-90)
+  def konumVeYönüBelleğeYaz(): Unit            = englishTurtle.savePosHe()
+  def konumVeYönüGeriYükle(): Unit             = englishTurtle.restorePosHe()
+
+  // pen
+  def kalemiİndir(): Unit                      = englishTurtle.penDown()
+  def kalemiKaldır(): Unit                     = englishTurtle.penUp()
+  def kalemRenginiKur(renk: Color): Unit       = englishTurtle.setPenColor(renk)
+  def boyamaRenginiKur(renk: Color): Unit      = englishTurtle.setFillColor(renk)
+  def kalemKalınlığınıKur(kalınlık: Double): Unit = englishTurtle.setPenThickness(kalınlık)
+
+  // shapes and text
+  def yay(yarıçap: Double, açı: Double): Unit  = englishTurtle.arc(yarıçap, açı)
+  def daire(yarıçap: Double): Unit             = englishTurtle.circle(yarıçap)
+  def yazı(metin: String): Unit                = englishTurtle.write(metin)
+  def yazıBoyunuKur(boy: Int): Unit            = englishTurtle.setPenFontSize(boy)
+
+  // speed and waiting
+  def hızıKur(hız: Speed.Speed): Unit          = englishTurtle.setSpeed(hız)
+  def canlandırmaHızınıKur(n: Long): Unit      = englishTurtle.setAnimationDelay(n)
+  def bekle(saniye: Double): Unit              = englishTurtle.pause(saniye)
+
+  // repeating
+  def yinele(n: Int)(komutlar: => Unit): Unit = RepeatCommands.repeat(n)(komutlar)
+}
