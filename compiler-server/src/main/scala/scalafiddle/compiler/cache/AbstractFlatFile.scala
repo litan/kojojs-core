@@ -21,6 +21,10 @@ class AbstractFlatFile(flatFile: FlatFile, flatJar: FlatJar, ffs: FlatFileSystem
     new ByteArrayInputStream(ffs.load(flatFile.path))
   }
 
+  // scalac 2.13's ReusableDataReader (32 KB buffer) never grows the buffer when sizeOption is None
+  // and loops forever on a larger class file, so the size must be reported.
+  override def sizeOption: Option[Int] = Some(flatFile.origSize)
+
   override def toByteArray: Array[Byte] = {
     ffs.load(flatJar, flatFile.path)
   }
