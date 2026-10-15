@@ -11,7 +11,11 @@ import kojo.doodle.Color
 //
 // Only commands that TurtleAPI has are here. Others (home, towards, costumes, saved styles...) follow when
 // the English API has them.
-class TurkishTurtle(val englishTurtle: TurtleAPI) {
+class TurkishTurtle(val englishTurtle: TurtleAPI)
+    extends kojo.tr.SayıYöntemleri
+    with kojo.tr.MatematikYöntemleri
+    with kojo.tr.BelkiYöntemleri
+    with kojo.tr.NoktaYöntemleri {
   // clearing
   def sil(): Unit      = englishTurtle.clear()
   def temizle(): Unit  = englishTurtle.cleari()
