@@ -130,6 +130,24 @@ class Builtins(implicit kojoWorld: KojoWorld) {
 
   def drawLoop(fn: => Unit) = animate(fn)
 
+  type CanvasDraw = kojo.CanvasDraw
+  import scala.language.reflectiveCalls
+
+  // As on desktop Kojo: draw a sketch (anything with `setup` and `drawLoop`) on a canvas
+  def canvasSketch(
+      sketch: {
+        def setup(cd: CanvasDraw): Unit
+        def drawLoop(cd: CanvasDraw): Unit
+      },
+      scaleOutFactor: Double = 1
+  ): Unit = Picture.fromSketch(sketch, scaleOutFactor).draw()
+
+  def animateWithSetupCanvasDraw(setupCanvas: CanvasDraw => Unit)(drawFrame: CanvasDraw => Unit): Unit =
+    new SketchPic(setupCanvas, drawFrame, 1, setRandomSeed).draw()
+
+  def animateWithCanvasDraw(drawFrame: CanvasDraw => Unit): Unit =
+    animateWithSetupCanvasDraw { canvas => }(drawFrame)
+
   def timer(ms: Long)(fn: => Unit): Unit = {
     kojoWorld.timer(ms)(fn)
   }
@@ -422,6 +440,17 @@ class Builtins(implicit kojoWorld: KojoWorld) {
     }
 
     def fromPath(fn: Graphics => Unit) = { new PathPic(fn) }
+
+    // As on desktop Kojo: a sketch (Processing style) is one picture that is one canvas. `setup` runs once and
+    // `drawLoop` on every frame, both drawing on the same CanvasDraw. What is drawn is pixels. See SketchPic.
+    // The parameter is a structural type, with the signature of the desktop, so scripts move between the two unchanged.
+    def fromSketch(
+        sketch: {
+          def setup(cd: CanvasDraw): Unit
+          def drawLoop(cd: CanvasDraw): Unit
+        },
+        scaleOutFactor: Double = 1
+    ): Picture = new SketchPic(cd => sketch.setup(cd), cd => sketch.drawLoop(cd), scaleOutFactor, setRandomSeed)
 
     def fromVertexShape(fn: VertexShape => Unit) = fromPath { g =>
       fn(new VertexShape(g))
