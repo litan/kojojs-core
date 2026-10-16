@@ -1,6 +1,5 @@
 package kojo
 
-import kojo.doodle.Color
 
 // Turkish names for the turtle commands, the same idea as SwedishTurtle. The names follow desktop Kojo's
 // Turkish layer (net.kogics.kojo.lite.i18n.trInit), so a script reads the same in both.
@@ -9,12 +8,12 @@ import kojo.doodle.Color
 // `turtle0`. Picture { ... } swaps the global turtle for the picture's own turtle while its body runs, and
 // a wrapper bound to turtle0 would draw such a picture's lines on the canvas and leave the picture empty.
 //
-// Also the speeds and the colors, with the names of desktop Kojo's Turkish layer (the fork's gradients
-// and the color constructors are not here).
+// Also the speeds, and through the traits it extends the colors, the numbers, the collections and the sketch
+// drawing, with the names of desktop Kojo's Turkish layer.
 //
 // Only commands that TurtleAPI has are here. Others (home, towards, costumes, saved styles...) follow when
 // the English API has them.
-class TurkishTurtle(val englishTurtle: TurtleAPI)
+class TurkishTurtle(val englishTurtle: TurtleAPI, builtins: syntax.Builtins)(implicit kojoWorld: KojoWorld)
     extends kojo.tr.SayıYöntemleri
     with kojo.tr.MatematikYöntemleri
     with kojo.tr.BelkiYöntemleri
@@ -29,7 +28,10 @@ class TurkishTurtle(val englishTurtle: TurtleAPI)
     with kojo.tr.DizinYöntemleri
     with kojo.tr.MiskinDizinYöntemleri
     with kojo.tr.YöneyYöntemleri
-    with kojo.tr.Yöney2BYöntemleri {
+    with kojo.tr.Yöney2BYöntemleri
+    with kojo.tr.RenkYöntemleri
+    with kojo.tr.YazıyüzüYöntemleri
+    with kojo.tr.TuvalÇizimYöntemleri {
   // clearing
   def sil(): Unit      = englishTurtle.clear()
   def temizle(): Unit  = englishTurtle.cleari()
@@ -65,8 +67,8 @@ class TurkishTurtle(val englishTurtle: TurtleAPI)
   // pen
   def kalemiİndir(): Unit                      = englishTurtle.penDown()
   def kalemiKaldır(): Unit                     = englishTurtle.penUp()
-  def kalemRenginiKur(renk: Color): Unit       = englishTurtle.setPenColor(renk)
-  def boyamaRenginiKur(renk: Color): Unit      = englishTurtle.setFillColor(renk)
+  def kalemRenginiKur(renk: Renk): Unit       = englishTurtle.setPenColor(renk)
+  def boyamaRenginiKur(renk: Renk): Unit      = englishTurtle.setFillColor(renk)
   def kalemKalınlığınıKur(kalınlık: Double): Unit = englishTurtle.setPenThickness(kalınlık)
 
   // shapes and text
@@ -89,104 +91,11 @@ class TurkishTurtle(val englishTurtle: TurtleAPI)
   lazy val hızlı    = Speed.fast
   lazy val çokHızlı = Speed.superFast
 
-  // colors
-  type Renk = Color
 
-  object Renkler {
-    val renksiz: Renk = Color(0, 0, 0, 0)
-    val saydam: Renk  = renksiz
-    val mavi: Renk = Color.blue
-    val kırmızı: Renk = Color.red
-    val sarı: Renk = Color.yellow
-    val yeşil: Renk = Color.green
-    val mor: Renk = Color.purple
-    val pembe: Renk = Color.pink
-    val kahverengi: Renk = Color.brown
-    val siyah: Renk = Color.black
-    val beyaz: Renk = Color.white
-    val gri: Renk = Color.gray
-    val koyuGri: Renk = Color.darkGray
-    val açıkGri: Renk = Color.lightGray
-    val turuncu: Renk = Color.orange
-    val morumsu: Renk = Color.magenta
-    val camgöbeği: Renk = Color.cyan
-    val altınbaşak: Renk = Color.goldenrod
-    val altın: Renk = Color.gold
-    val yeşilimsiSarı: Renk = Color.greenYellow
-    val zeytin: Renk = Color.olive
-    val orkidePembesi: Renk = Color.orchid
-    val somon: Renk = Color.salmon
-    val denizYeşili: Renk = Color.seaGreen
-    val kurşunMavisi: Renk = Color.slateBlue
-    val kurşunGrisi: Renk = Color.slateGray
-    val turkuaz: Renk = Color.turquoise
-    val menekşe: Renk = Color.violet
-    val haki: Renk = Color.khaki
-    val mercan: Renk = Color.coral
-    val gökMavisi: Renk = Color.skyBlue
-    val çelikMavisi: Renk = Color.steelBlue
-    val beyazlatılmışBadem: Renk = Color.blanchedAlmond
-    val koyuMavi: Renk = Color.darkBlue
-    val koyuCamgöbeği: Renk = Color.darkCyan
-    val koyuAltınbaşak: Renk = Color.darkGoldenrod
-    val koyuKlasikGri: Renk = Color.darkGrayClassic
-    val koyuYeşil: Renk = Color.darkGreen
-    val koyuHaki: Renk = Color.darkKhaki
-    val koyuMorumsu: Renk = Color.darkMagenta
-    val koyuZeytinYeşili: Renk = Color.darkOliveGreen
-    val koyuTuruncu: Renk = Color.darkOrange
-    val koyuOrkidePembesi: Renk = Color.darkOrchid
-    val koyuKırmızı: Renk = Color.darkRed
-    val koyuSomon: Renk = Color.darkSalmon
-    val koyuDenizYeşili: Renk = Color.darkSeaGreen
-    val koyuKurşunMavisi: Renk = Color.darkSlateBlue
-    val koyuKurşunGrisi: Renk = Color.darkSlateGray
-    val koyuTurkuaz: Renk = Color.darkTurquoise
-    val koyuMenekşe: Renk = Color.darkViolet
-    val açıkMavi: Renk = Color.lightBlue
-    val açıkMercan: Renk = Color.lightCoral
-    val açıkCamgöbeği: Renk = Color.lightCyan
-    val açıkAltınbaşakSarısı: Renk = Color.lightGoldenrodYellow
-    val açıkYeşil: Renk = Color.lightGreen
-    val açıkPembe: Renk = Color.lightPink
-    val açıkSomon: Renk = Color.lightSalmon
-    val açıkDenizYeşili: Renk = Color.lightSeaGreen
-    val açıkGökMavisi: Renk = Color.lightSkyBlue
-    val açıkKurşunGrisi: Renk = Color.lightSlateGray
-    val açıkÇelikMavisi: Renk = Color.lightSteelBlue
-    val açıkSarı: Renk = Color.lightYellow
-  }
-
-  // the common ones without the prefix
-  val renksiz = Renkler.renksiz
-  val saydam = Renkler.saydam
-  val siyah = Renkler.siyah
-  val beyaz = Renkler.beyaz
-  val açıkGri = Renkler.açıkGri
-  val camgöbeği = Renkler.camgöbeği
-  val gri = Renkler.gri
-  val kahverengi = Renkler.kahverengi
-  val koyuGri = Renkler.koyuGri
-  val koyuMavi = Renkler.koyuMavi
-  val koyuYeşil = Renkler.koyuYeşil
-  val koyuKırmızı = Renkler.koyuKırmızı
-  val koyuTuruncu = Renkler.koyuTuruncu
-  val koyuCamgöbeği = Renkler.koyuCamgöbeği
-  val koyuMorumsu = Renkler.koyuMorumsu
-  val kırmızı = Renkler.kırmızı
-  val mavi = Renkler.mavi
-  val mor = Renkler.mor
-  val morumsu = Renkler.morumsu
-  val pembe = Renkler.pembe
-  val sarı = Renkler.sarı
-  val turuncu = Renkler.turuncu
-  val yeşil = Renkler.yeşil
-
-  implicit class RenkMetotları(r: Renk) {
-    def soluk(oran: Double): Renk       = r.fadeOut(oran)
-    def belirgin(oran: Double): Renk    = r.fadeIn(oran)
-    def çevir(açı: Double): Renk        = r.spin(açı)
-    def dahaAçıkYap(açıklık: Double): Renk = r.lighten(açıklık)
-    def dahaKoyuYap(koyuluk: Double): Renk = r.darken(koyuluk)
-  }
+  // sketches (Processing-style canvas drawing): the same names as on the desktop, see tr/eskiz.scala
+  def canlandırTuvalÇizimle(görüntüyüÇiz: TuvalÇizim => Unit): Unit = builtins.animateWithCanvasDraw(görüntüyüÇiz)
+  def canlandırKurulumluTuvalÇizimle(kurulum: TuvalÇizim => Unit)(görüntüyüÇiz: TuvalÇizim => Unit): Unit =
+    builtins.animateWithSetupCanvasDraw(kurulum)(görüntüyüÇiz)
+  def tuvalEskizi(eskiz: Eskiz, ölçekÇarpanı: Double = 1): Unit =
+    new SketchPic(eskiz.kurulum, eskiz.çizimDöngüsü, ölçekÇarpanı, builtins.setRandomSeed).draw()
 }
