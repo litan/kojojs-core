@@ -519,6 +519,24 @@ class Builtins(implicit kojoWorld: KojoWorld) {
   def stopMp3() = mp3player.stopMp3()
   def stopMp3Loop() = mp3player.stopMp3Loop()
 
+  // As on the desktop: playNote does not wait; the notes are queued with a time cursor (see kojo.NotePlayer).
+  val Instrument = kojo.Instrument
+  private[kojo] lazy val notePlayer = new NotePlayer
+  def playNote(pitch: Int, durationMillis: Int, volume: Int = 80): Unit =
+    notePlayer.playNote(pitch, durationMillis, volume)
+  def setNoteInstrument(instrumentCode: Int): Unit = notePlayer.setInstrument(instrumentCode)
+  def stopNotePlayer(): Unit = notePlayer.stop()
+  // Additions of the web Kojo (the desktop has one channel): notes that start at the same moment. The next
+  // note starts when the longest has ended. The volume is divided by the SQUARE ROOT of the number of
+  // notes (for crowded groups it is lowered further, for the safety of the peak).
+  def playChord(pitches: collection.Seq[Int], durationMillis: Int, volume: Int = 80): Unit =
+    notePlayer.playChord(pitches, durationMillis, volume)
+  def playTogether(notes: collection.Seq[(Int, Int)], volume: Int = 80): Unit =
+    notePlayer.playTogether(notes, volume)
+  // A silent wait (a rest) and a query "when does the playing end" (ms).
+  def playRest(durationMillis: Int): Unit = notePlayer.playRest(durationMillis)
+  def noteTimeLeftMillis: Int = notePlayer.timeLeftMillis
+
   def epochTimeMillis = System.currentTimeMillis
   def epochTime = epochTimeMillis / 1000.0
 
