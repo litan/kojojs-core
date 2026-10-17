@@ -74,38 +74,21 @@ class TurtlePicture private[kojo] (fn: Turtle => Unit)(implicit val kojoWorld: K
 
   def setFillColor(c: Color): Unit = {
     ready.foreach { u =>
-      val gds = turtle.turtlePath.graphicsData
-      gds.foreach { gd =>
-        gd.fillColor = c.toRGBDouble
-        gd.fillAlpha = c.alpha.get
-      }
-      turtle.turtlePath.dirty += 1
-      turtle.turtlePath.clearDirty += 1
+      PixiCompat.setFill(turtle.turtlePath, c.toRGBDouble, c.alpha.get)
       kojoWorld.render()
     }
   }
 
   def setPenColor(c: Color): Unit = {
     ready.foreach { u =>
-      val gds = turtle.turtlePath.graphicsData
-      gds.foreach { gd =>
-        gd.lineColor = c.toRGBDouble
-        gd.lineAlpha = c.alpha.get
-      }
-      turtle.turtlePath.dirty += 1
-      turtle.turtlePath.clearDirty += 1
+      PixiCompat.setPen(turtle.turtlePath, c.toRGBDouble, c.alpha.get)
       kojoWorld.render()
     }
   }
 
   def setPenThickness(t: Double): Unit = {
     ready.foreach { u =>
-      val gds = turtle.turtlePath.graphicsData
-      gds.foreach { gd =>
-        gd.lineWidth = t
-      }
-      turtle.turtlePath.dirty += 1
-      turtle.turtlePath.clearDirty += 1
+      PixiCompat.setPenWidth(turtle.turtlePath, t)
       kojoWorld.render()
     }
   }

@@ -2201,6 +2201,10 @@ object Pixi extends js.Object {
     noWebGL: Boolean         = false
   ): SystemRenderer = js.native
 
+  // The form with a single options object (with the width and the height in it): the only form of PIXI 5,
+  // and PIXI 4 takes it too, so the same build runs on both versions.
+  def autoDetectRenderer(options: js.Dynamic): SystemRenderer = js.native
+
   var loader: loaders.Loader = js.native
 
 }

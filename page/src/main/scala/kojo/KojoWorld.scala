@@ -69,7 +69,7 @@ class KojoWorldImpl extends KojoWorld {
   var canvasOriginY = -canvasHeight / 2
   var screenWidth = canvasWidth
   var screenHeight = canvasHeight
-  private val renderer = PIXI.Pixi.autoDetectRenderer(canvasWidth, canvasHeight, rendererOptions(), noWebGL = false)
+  private val renderer = PIXI.Pixi.autoDetectRenderer(rendererOptions(canvasWidth, canvasHeight))
   private val interaction = renderer.plugins.interaction
   private val stage = new PIXI.Container()
   window.addEventListener("resize", resize)
@@ -198,19 +198,22 @@ class KojoWorldImpl extends KojoWorld {
   }
 
   def rendererOptions(
+    width:             Double,
+    height:            Double,
     antialias:         Boolean = true,
     resolution:        Double  = 1,
     backgroundColor:   Int     = 0xFFFFFF,
     clearBeforeRender: Boolean = true
-  ): RendererOptions = {
+  ): js.Dynamic = {
     js.Dynamic
       .literal(
+        width = width,
+        height = height,
         antialias = antialias,
         resolution = resolution,
         backgroundColor = backgroundColor,
         clearBeforeRender = clearBeforeRender
       )
-      .asInstanceOf[RendererOptions]
   }
 
   def setBackground(color: Color): Unit = {
