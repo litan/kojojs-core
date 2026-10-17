@@ -112,4 +112,59 @@ class TurkishTurtle(val englishTurtle: TurtleAPI, builtins: syntax.Builtins)(imp
   def tuşBasılıMı(tuşKodu: Int): Boolean = builtins.isKeyPressed(tuşKodu)
   def canlandır(işlev: => Unit): Unit = builtins.animate(işlev)
   def canlandırmayıDurdur(): Unit = builtins.stopAnimation()
+
+  // output: the Turkish names of println and print
+  /**
+   * NOT `Predef.println`/`print`: in Scala.js those go to `console.log`, not to the output panel of the page,
+   * and a learner who wrote `satıryaz("merhaba")` saw nothing on the screen.
+   *
+   * The `fiddle.Fiddle` that writes to the panel lives in kojojs-core's page and is not in this repository,
+   * so the DOM contract that it uses (the element with id="output") is written to directly -- in the same way
+   * as `KojoWorldImpl` is tied directly to fiddle-container and canvas-holder. If the panel is not found (a run
+   * outside the browser, tests) it falls back to the console.
+   */
+  def satıryaz(): Unit = satıryaz("")
+  def satıryaz(veri: Any): Unit = writeToPanel(veri, newline = true)
+  def yaz(veri: Any): Unit = writeToPanel(veri, newline = false)
+
+  /**
+   * The open line (one that has not been given its line end yet). `yaz` adds to it, `satıryaz` adds and
+   * CLOSES it -- like print/println on a terminal.
+   */
+  private var openLine: org.scalajs.dom.Element = null
+
+  /**
+   * The text to write. `String.valueOf` for almost everything, but not for `Aralık`: it is a type alias, so
+   * `toString` cannot be overridden and Scala's own form would come out -- "inexact Range 1 until 200 by 7".
+   * The form for learners is `Aralık.gösterim`.
+   */
+  private def display(veri: Any): String = veri match {
+    case r: Range => Aralık.gösterim(r)
+    case _        => String.valueOf(veri)
+  }
+
+  private def writeToPanel(veri: Any, newline: Boolean): Unit = {
+    val document = org.scalajs.dom.document
+    val panel = document.getElementById("output")
+    val text = display(veri)
+    if (panel == null) {
+      if (newline) println(text) else print(text)
+    }
+    else {
+      // Is the open line still the LAST child of the panel? If not, someone else has written in between
+      // (fiddle.Fiddle.println adds its own div, a clear empties the panel) and adding to the old one would
+      // put the text in the wrong place.
+      if (openLine == null || !(panel.lastChild eq openLine)) {
+        openLine = document.createElement("div")
+        panel.appendChild(openLine)
+      }
+      openLine.appendChild(document.createTextNode(text))
+      if (newline) {
+        // An empty div has zero height: satıryaz() did not show a blank line.
+        if (openLine.textContent.isEmpty) openLine.appendChild(document.createTextNode("\u00a0"))
+        openLine = null
+      }
+      panel.scrollTop = panel.scrollHeight - panel.clientHeight
+    }
+  }
 }
