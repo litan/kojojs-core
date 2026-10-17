@@ -58,7 +58,7 @@ trait TurtleAPI extends VertexShapeSupport {
   }
 
   def shapeDone(path: Graphics): Unit = {
-    path.graphicsData.foreach { gd =>
+    PixiCompat.parts(path).foreach { gd =>
       val tpe = gd.`type`
       if (tpe == 0) {
         var first = true
