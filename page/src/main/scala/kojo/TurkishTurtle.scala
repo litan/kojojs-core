@@ -38,7 +38,9 @@ class TurkishTurtle(val englishTurtle: TurtleAPI, builtins: syntax.Builtins)(imp
     with kojo.tr.TuvalÇizimYöntemleri
     with kojo.tr.YinelenebilirYöntemleri
     with kojo.tr.EşlemYöntemleri
-    with kojo.tr.KümeYöntemleri {
+    with kojo.tr.KümeYöntemleri
+    with kojo.tr.KuyrukYöntemleri
+    with kojo.tr.YazıYöntemleri {
   // clearing
   def sil(): Unit      = englishTurtle.clear()
   def temizle(): Unit  = englishTurtle.cleari()
