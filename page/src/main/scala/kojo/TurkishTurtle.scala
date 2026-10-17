@@ -15,6 +15,7 @@ package kojo
 // the English API has them.
 class TurkishTurtle(val englishTurtle: TurtleAPI, builtins: syntax.Builtins)(implicit kojoWorld: KojoWorld)
     extends kojo.tr.SayıYöntemleri
+    with kojo.tr.KlavyeYöntemleri
     with kojo.tr.GelecekYöntemleri
     with kojo.tr.MatematikYöntemleri
     with kojo.tr.BelkiYöntemleri
@@ -32,7 +33,10 @@ class TurkishTurtle(val englishTurtle: TurtleAPI, builtins: syntax.Builtins)(imp
     with kojo.tr.Yöney2BYöntemleri
     with kojo.tr.RenkYöntemleri
     with kojo.tr.YazıyüzüYöntemleri
-    with kojo.tr.TuvalÇizimYöntemleri {
+    with kojo.tr.TuvalÇizimYöntemleri
+    with kojo.tr.YinelenebilirYöntemleri
+    with kojo.tr.EşlemYöntemleri
+    with kojo.tr.KümeYöntemleri {
   // clearing
   def sil(): Unit      = englishTurtle.clear()
   def temizle(): Unit  = englishTurtle.cleari()
@@ -99,4 +103,9 @@ class TurkishTurtle(val englishTurtle: TurtleAPI, builtins: syntax.Builtins)(imp
     builtins.animateWithSetupCanvasDraw(kurulum)(görüntüyüÇiz)
   def tuvalEskizi(eskiz: Eskiz, ölçekÇarpanı: Double = 1): Unit =
     new SketchPic(eskiz.kurulum, eskiz.çizimDöngüsü, ölçekÇarpanı, builtins.setRandomSeed).draw()
+
+  // games and interaction (the key codes are in tr/klavye.scala)
+  def tuşBasılıMı(tuşKodu: Int): Boolean = builtins.isKeyPressed(tuşKodu)
+  def canlandır(işlev: => Unit): Unit = builtins.animate(işlev)
+  def canlandırmayıDurdur(): Unit = builtins.stopAnimation()
 }
