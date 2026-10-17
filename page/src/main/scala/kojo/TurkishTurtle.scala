@@ -16,6 +16,7 @@ package kojo
 class TurkishTurtle(val englishTurtle: TurtleAPI, builtins: syntax.Builtins)(implicit kojoWorld: KojoWorld)
     extends kojo.tr.SayıYöntemleri
     with kojo.tr.KlavyeYöntemleri
+    with kojo.tr.GelecekYöntemleri
     with kojo.tr.MatematikYöntemleri
     with kojo.tr.BelkiYöntemleri
     with kojo.tr.NoktaYöntemleri
