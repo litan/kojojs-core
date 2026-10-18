@@ -17,7 +17,7 @@ class PathPic(fn: Graphics => Unit)(implicit val kojoWorld: KojoWorld) extends V
 
   def initGeom(): Geometry = {
     val cab = new ArrayBuffer[Coordinate]
-    path.graphicsData.foreach { gd =>
+    PixiCompat.parts(path).foreach { gd =>
       val tpe = gd.`type`
       if (tpe == 0) {
         gd.shape.asInstanceOf[Polygon].points.grouped(2).foreach { xy =>

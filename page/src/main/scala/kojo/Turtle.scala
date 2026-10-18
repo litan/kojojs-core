@@ -260,7 +260,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
     else {
       turtlePathLineTo(pfx, pfy)
     }
-    turtlePath.clearDirty += 1
+    if (!PixiCompat.isV5) turtlePath.clearDirty += 1
     turtleImage.position.x = pfx
     turtleImage.position.y = pfy
     kojoWorld.render()
@@ -295,7 +295,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
           turtleLayer.removeChild(tempForwardPath)
           turtlePathLineTo(pfx, pfy)
         }
-        turtlePath.clearDirty += 1
+        if (!PixiCompat.isV5) turtlePath.clearDirty += 1
         turtleImage.position.x = pfx
         turtleImage.position.y = pfy
         kojoWorld.render()
