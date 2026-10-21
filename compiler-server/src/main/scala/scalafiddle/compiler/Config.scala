@@ -29,6 +29,9 @@ object Config {
   val version            = versionProps.getProperty("version")
   val scalaVersion       = versionProps.getProperty("scalaVersion")
   val scalaMainVersion   = scalaVersion.split('.').take(2).mkString(".")
+  // The label this compiler registers with, which the router matches to "// $ScalaVersion". It is the main
+  // version, unless this compiler differs from the standard one (a patched scalac, say): "2.13-tr".
+  val scalaLabel = sys.env.getOrElse("SCALAFIDDLE_COMPILER_LABEL", scalaMainVersion)
   val scalaJSVersion     = versionProps.getProperty("scalaJSVersion")
   val scalaJSMainVersion = scalaJSVersion.split('.').take(2).mkString(".")
   // in Scala.js 1.x the artifact suffix carries only the major version: page_sjs1_2.13

@@ -23,7 +23,7 @@ class Manager extends Actor with ActorLogging {
       .actorRef[Message, Message](out => CompileActor.props(out, context.self), overflowStrategy = OverflowStrategy.fail)
     val (upgradeResponse, _) =
       Http().singleWebSocketRequest(
-        WebSocketRequest(s"${Config.routerUrl}?secret=${Config.secret}&scalaVersion=${Config.scalaMainVersion}"),
+        WebSocketRequest(s"${Config.routerUrl}?secret=${Config.secret}&scalaVersion=${Config.scalaLabel}"),
         wsFlow)
     upgradeResponse.map { upgrade =>
       // just like a regular http request we can access response status which is available via upgrade.response.status

@@ -34,3 +34,7 @@ The router has two endpoints for monitoring:
   health check. A compiler that is busy still counts as registered.
 
 If `SCALAFIDDLE_SECRET` is not set, the router starts with the public default secret and logs an error.
+
+### A compiler with a different label
+
+A compiler registers with the router under a Scala version label, and the router sends a fiddle to the compiler whose label equals the fiddle's `// $ScalaVersion` line. The label is the main version (`2.13`) unless `SCALAFIDDLE_COMPILER_LABEL` is set, for example to `2.13-tr` for a compiler with a patched `scalac`. For the router, add the label to `SCALAFIDDLE_SCALAVERSIONS` (`["2.13","2.13-tr"]`). A label that has no entry of its own in the library settings takes the libraries and default libraries of its base version (the part before the `-`).
