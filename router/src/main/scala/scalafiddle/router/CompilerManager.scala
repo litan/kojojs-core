@@ -32,8 +32,8 @@ class CompilerManager extends Actor with ActorLogging {
   var compilerTimer      = context.system.scheduler.schedule(5.minute, 1.minute, context.self, CheckCompilers)
   val dependencyRE       = """ *// \$FiddleDependency (.+)""".r
   val scalaVersionRE     = """ *// \$ScalaVersion (.+)""".r
-  val defaultLibs =
-    Config.defaultLibs.mapValues(_.map(lib => s"// $$FiddleDependency $lib").mkString("\n", "\n", "\n"))
+  val defaultLibs: Map[String, String] =
+    Config.defaultLibs.map { case (v, libs) => v -> libs.map(lib => s"// $$FiddleDependency $lib").mkString("\n", "\n", "\n") }
 
   def now = System.currentTimeMillis()
 
@@ -54,7 +54,7 @@ class CompilerManager extends Actor with ActorLogging {
 
   def loadLibraries(libUris: Map[String, String], defaultLibs: Map[String, Seq[String]]): Map[String, Seq[ExtLib]] = {
     Config.scalaVersions.map { version =>
-      version -> ((libUris.get(version), defaultLibs.get(version)) match {
+      version -> ((forLabel(libUris, version), forLabel(defaultLibs, version)) match {
         case (Some(uri), Some(versionLibs)) =>
           try {
             log.debug(s"Loading libraries from $uri")
@@ -147,7 +147,7 @@ class CompilerManager extends Actor with ActorLogging {
             compilationPending += compilerInfo.id -> sourceActor
             // add default libs
             log.debug(s"Sending compiler request to ${compilerInfo.id}")
-            compilerInfo.compilerService ! req.updated(src => src + defaultLibs(compilerInfo.scalaVersion))
+            compilerInfo.compilerService ! req.updated(src => src + forLabel(defaultLibs, compilerInfo.scalaVersion).getOrElse(""))
             // process next in queue
             processQueue()
           case None if compilers.isEmpty =>
@@ -276,6 +276,13 @@ class CompilerManager extends Actor with ActorLogging {
 
 object CompilerManager {
   def props = Props(new CompilerManager)
+
+  /** The Scala version a label stands for: "2.13-tr" is Scala 2.13, with a patched compiler. */
+  def baseVersion(label: String): String = label.takeWhile(_ != '-')
+
+  /** What is configured per Scala version, for a label: its own entry, else the one of its base version. */
+  def forLabel[A](byVersion: Map[String, A], label: String): Option[A] =
+    byVersion.get(label).orElse(byVersion.get(baseVersion(label)))
 
   case class CompilerInfo(id: String,
                           compilerService: ActorRef,
