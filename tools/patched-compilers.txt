@@ -1,0 +1,5 @@
+# Patched scala-compiler and scala-reflect jars that tools/stage-patched-compiler.sh can fetch by name.
+# name  release url (the jars are its assets)  sha256 of scala-compiler.jar  sha256 of scala-reflect.jar
+tr https://github.com/bulent2k2/scala-2/releases/download/v2.13.18-tr e8f890a527d9aa14d42eb9de66c8dee2639f93af27594f20cfaf84a7682f10e8 bcd34213f21aa3402de3413c515281a7706bf8e15c9102cc7c69610108c388be
+# sv: a pre-release, its keywords are AI-suggested and not reviewed by a native speaker yet. Not listed.
+# sv https://github.com/bulent2k2/scala-2/releases/download/v2.13.18-sv 8c36f20368464f9ae0dad36b048794d42c252e98fd6da136c3c6781a42c7d897 a16826019fad19b6ca7ddac5dd3d18b5e667397d4af9f28741739e29e3a93470

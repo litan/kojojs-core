@@ -3,24 +3,23 @@
 # (for example the Turkish keywords of kojo's scala-tr), to run under its own label:
 #
 #   sbt compilerServer/stage
-#   tools/stage-patched-compiler.sh compiler-server/target/universal/stage compiler-tr
+#   tools/stage-patched-compiler.sh compiler-server/target/universal/stage compiler-tr tr
 #   SCALAFIDDLE_COMPILER_LABEL=2.13-tr compiler-tr/bin/scalafiddle-core
 #
 # and the router gets SCALAFIDDLE_SCALAVERSIONS='["2.13","2.13-tr"]'.
 #
-# Where the patched jars come from (scala-compiler.jar and scala-reflect.jar, from `sbt dist/mkPack` of
-# a Scala checkout with the patch applied):
-#   SCALA_PATCHED_LIB=<dir>                a directory that has them, or
-#   SCALA_PATCHED_URL=<url> and SCALA_PATCHED_SHA256=<hash>
-#                                          a .tar.gz of such a directory (the files at its top, or in lib/),
-#                                          downloaded and checked against the hash.
+# The third argument says where the patched jars come from: a name from tools/patched-compilers.txt
+# (downloaded from the release url there and checked against the sha256 there), or a directory that has
+# scala-compiler.jar and scala-reflect.jar (for example the lib/ of `sbt dist/mkPack` of a Scala checkout
+# with the patch applied).
 # Both jars are replaced together: the patch is in both, and one without the other fails at run time with
 # a NoSuchMethodError. The Scala version of the jars must be the one of the staged compiler.
 set -eu
 
-[ $# -eq 2 ] || { echo "usage: $0 <staged-compiler-dir> <output-dir>" >&2; exit 2; }
+[ $# -eq 3 ] || { echo "usage: $0 <staged-compiler-dir> <output-dir> <name | jar-dir>" >&2; exit 2; }
 STAGE=$1
 OUT=$2
+SOURCE=$3
 [ -d "$STAGE/lib" ] || { echo "error: $STAGE/lib not found (run sbt compilerServer/stage)" >&2; exit 1; }
 [ ! -e "$OUT" ] || { echo "error: $OUT exists" >&2; exit 1; }
 
@@ -28,18 +27,23 @@ WORK=
 cleanup() { [ -z "$WORK" ] || rm -rf "$WORK"; }
 trap cleanup EXIT
 
-LIB=${SCALA_PATCHED_LIB:-}
-if [ -z "$LIB" ]; then
-  [ -n "${SCALA_PATCHED_URL:-}" ] && [ -n "${SCALA_PATCHED_SHA256:-}" ] ||
-    { echo "error: set SCALA_PATCHED_LIB, or SCALA_PATCHED_URL and SCALA_PATCHED_SHA256" >&2; exit 1; }
+sha256() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut -d' ' -f1; else shasum -a 256 "$1" | cut -d' ' -f1; fi; }
+
+if [ -d "$SOURCE" ]; then
+  LIB=$SOURCE
+else
+  TABLE=$(dirname "$0")/patched-compilers.txt
+  row=$(grep -v '^#' "$TABLE" | awk -v n="$SOURCE" '$1 == n { print; exit }')
+  [ -n "$row" ] || { echo "error: $SOURCE is neither a directory nor a name in $TABLE" >&2; exit 1; }
+  url=$(echo "$row" | awk '{print $2}')
   WORK=$(mktemp -d)
-  curl -fsSL "$SCALA_PATCHED_URL" -o "$WORK/patched.tar.gz"
-  if command -v sha256sum >/dev/null 2>&1; then got=$(sha256sum "$WORK/patched.tar.gz" | cut -d' ' -f1)
-  else got=$(shasum -a 256 "$WORK/patched.tar.gz" | cut -d' ' -f1); fi
-  [ "$got" = "$SCALA_PATCHED_SHA256" ] || { echo "error: sha256 is $got, expected $SCALA_PATCHED_SHA256" >&2; exit 1; }
-  mkdir "$WORK/x" && tar -xzf "$WORK/patched.tar.gz" -C "$WORK/x"
-  LIB=$WORK/x
-  [ -f "$LIB/scala-compiler.jar" ] || LIB=$WORK/x/lib
+  LIB=$WORK
+  for base in scala-compiler scala-reflect; do
+    want=$(echo "$row" | awk -v b="$base" '{ print (b == "scala-compiler") ? $3 : $4 }')
+    curl -fsSL "$url/$base.jar" -o "$WORK/$base.jar"
+    got=$(sha256 "$WORK/$base.jar")
+    [ "$got" = "$want" ] || { echo "error: $url/$base.jar has sha256 $got, expected $want" >&2; exit 1; }
+  done
 fi
 
 for base in scala-compiler scala-reflect; do
