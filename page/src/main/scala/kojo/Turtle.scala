@@ -16,8 +16,77 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
   private[kojo] val turtlePath = new PIXI.Graphics()
   private[kojo] val turtlePathPoints = ArrayBuffer[(Double, Double)]()
   var prevMoveTo: Option[Point] = None
+  // Where the pen is, for PixiCompat.continuePath: PIXI 5 forgets the path at a render
+  private var lastPathX = x
+  private var lastPathY = y
+
+  /*
+   * THE FILL on PIXI 5. PIXI 4 fills the path that is being drawn (`beginFill` on `turtlePath`). In PIXI 5 every
+   * render closes the half-finished polygon where it stands, so a shape that the turtle draws one side at a
+   * time, with a render after each side, ends as pieces of two points, none of which has an area. So on
+   * PIXI 5 the fill is not left to PIXI's open path: the turtle keeps the points of the polygon (`polyPoints`,
+   * from the last move of the pen) and draws it again COMPLETE, as one polygon, before each render
+   * (`fillCurrent`); when the polygon ends (the pen is moved, the fill color changes, the canvas is cleared) it
+   * goes to `fillDone`. The two sit under the line (`turtlePath`). On PIXI 4 none of this is used.
+   */
+  private[kojo] val fillDone = new PIXI.Graphics()
+  private val fillCurrent = new PIXI.Graphics()
+  private val polyPoints = ArrayBuffer[Double]()
+  private var polyColor: Color = Color(0, 0, 0, 0)
+  private var polyDirty = false
+
+  // A turtle of the canvas (not of a picture) with no fill color, which is the usual case, makes no polygons:
+  // nobody can ask for their color later. A picture is asked (Picture.setFillColor), so it keeps them.
+  private def polyIsDrawn = forPic || polyColor.alpha.get > 0
+
+  private def drawPoly(g: PIXI.Graphics): Unit = {
+    import scala.scalajs.js.JSConverters._
+    g.beginFill(polyColor.toRGBDouble, polyColor.alpha.get)
+    g.drawPolygon(polyPoints.toJSArray)
+    g.endFill()
+  }
+
+  /** The polygon ends: it goes to `fillDone` and the next one starts empty. */
+  private def polyCommit(): Unit = if (PixiCompat.isV5) {
+    if (polyPoints.size >= 6 && polyIsDrawn) drawPoly(fillDone)
+    fillCurrent.clear()
+    polyPoints.clear()
+    polyDirty = false
+  }
+
+  private def polyStart(x: Double, y: Double): Unit = if (PixiCompat.isV5) {
+    polyCommit()
+    polyPoints += x += y
+  }
+
+  private def polyAdd(x: Double, y: Double): Unit = if (PixiCompat.isV5) {
+    val n = polyPoints.size
+    if (n < 2 || polyPoints(n - 2) != x || polyPoints(n - 1) != y) {
+      polyPoints += x += y
+      polyDirty = true
+    }
+  }
+
+  /** The polygon that is still being drawn, complete, in `fillCurrent`; before every render. */
+  private def polyFlush(): Unit = if (PixiCompat.isV5 && polyDirty) {
+    fillCurrent.clear()
+    if (polyPoints.size >= 6 && polyIsDrawn) drawPoly(fillCurrent)
+    polyDirty = false
+  }
+
+  /** What a picture colors when its fill color is changed after it was drawn. */
+  private[kojo] def fillParts: Seq[PIXI.Graphics] =
+    if (PixiCompat.isV5) { polyCommit(); Seq(fillDone) } else Seq(turtlePath)
+
+  private def render(): Unit = {
+    polyFlush()
+    kojoWorld.render()
+  }
+
   private def turtlePathMoveTo(x: Double, y: Double): Unit = {
+    polyStart(x, y)
     turtlePath.moveTo(x, y)
+    lastPathX = x; lastPathY = y
     prevMoveTo = Some(Point(x, y))
     //    turtlePathPoints += ((x, y))
   }
@@ -28,7 +97,10 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
       prevMoveTo = None
     }
 
+    PixiCompat.continuePath(turtlePath, lastPathX, lastPathY)
     turtlePath.lineTo(x, y)
+    polyAdd(x, y)
+    lastPathX = x; lastPathY = y
     turtlePathPoints += ((x, y))
   }
 
@@ -55,6 +127,12 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
     turtleImage.name = "Turtle Icon"
 
     turtlePath.name = "Turtle Path"
+    if (PixiCompat.isV5) {
+      fillDone.name = "Turtle Fill"
+      fillCurrent.name = "Turtle Fill (current)"
+      turtleLayer.addChild(fillDone)
+      turtleLayer.addChild(fillCurrent)
+    }
     turtleLayer.addChild(turtlePath)
     if (!forPic) {
       turtleLayer.addChild(turtleImage)
@@ -232,7 +310,12 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
     turtlePath.lineStyle(penWidth, penColor.toRGBDouble, penColor.alpha.get)
     // set new fill
     fillColor = color
-    turtlePath.beginFill(fillColor.toRGBDouble, fillColor.alpha.get)
+    if (PixiCompat.isV5) {
+      // the polygon so far keeps its color; a new one, of the new color, starts where the pen is
+      polyStart(position.x, position.y)
+      polyColor = color
+    }
+    else turtlePath.beginFill(fillColor.toRGBDouble, fillColor.alpha.get)
     kojoWorld.scheduleLater(queueHandler)
   }
 
@@ -240,13 +323,13 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
     turtleImage.position.x = x
     turtleImage.position.y = y
     turtlePathMoveTo(x, y)
-    kojoWorld.render()
+    render()
     kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realSetHeading(theta: Double): Unit = {
     turtleImage.rotation = theta
-    kojoWorld.render()
+    render()
     kojoWorld.scheduleLater(queueHandler)
   }
 
@@ -263,7 +346,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
     if (!PixiCompat.isV5) turtlePath.clearDirty += 1
     turtleImage.position.x = pfx
     turtleImage.position.y = pfy
-    kojoWorld.render()
+    render()
     kojoWorld.scheduleLater(queueHandler)
   }
 
@@ -298,7 +381,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
         if (!PixiCompat.isV5) turtlePath.clearDirty += 1
         turtleImage.position.x = pfx
         turtleImage.position.y = pfy
-        kojoWorld.render()
+        render()
         kojoWorld.scheduleLater(queueHandler)
       }
       else {
@@ -315,7 +398,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
         turtleImage.position.y = currY
         window.requestAnimationFrame(forwardFrame)
       }
-      kojoWorld.render()
+      render()
     }
 
     window.requestAnimationFrame(forwardFrame)
@@ -326,7 +409,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
     def leftFrame(): Unit = {
       val angleRads = Utils.deg2radians(angle)
       turtleImage.rotation += angleRads
-      kojoWorld.render()
+      render()
       kojoWorld.scheduleLater(queueHandler)
     }
 
@@ -403,7 +486,7 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
       pixiText.style.fontSize = penFontSize
       pixiText.style.fill = penColor.toCanvas
       turtleLayer.addChild(pixiText)
-      kojoWorld.render()
+      render()
     }
     kojoWorld.scheduleLater(queueHandler)
   }
@@ -425,9 +508,13 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
 
   private def realClear(): Unit = {
     turtlePath.clear()
+    fillDone.clear()
+    fillCurrent.clear()
+    polyPoints.clear()
+    polyDirty = false
     turtlePathPoints.clear()
     initTurtleLayer()
-    kojoWorld.render()
+    render()
     kojoWorld.scheduleLater(queueHandler)
   }
 
@@ -456,13 +543,13 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
 
   private def realInvisible(): Unit = {
     turtleImage.visible = false
-    kojoWorld.render()
+    render()
     kojoWorld.scheduleLater(queueHandler)
   }
 
   private def realVisible(): Unit = {
     turtleImage.visible = true
-    kojoWorld.render()
+    render()
     kojoWorld.scheduleLater(queueHandler)
   }
 

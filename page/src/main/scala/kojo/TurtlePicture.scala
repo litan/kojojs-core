@@ -74,7 +74,7 @@ class TurtlePicture private[kojo] (fn: Turtle => Unit)(implicit val kojoWorld: K
 
   def setFillColor(c: Color): Unit = {
     ready.foreach { u =>
-      PixiCompat.setFill(turtle.turtlePath, c.toRGBDouble, c.alpha.get)
+      turtle.fillParts.foreach(g => PixiCompat.setFill(g, c.toRGBDouble, c.alpha.get))
       kojoWorld.render()
     }
   }
