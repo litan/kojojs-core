@@ -32,6 +32,22 @@ object PixiCompat {
     a.asInstanceOf[js.Array[js.Dynamic]]
   }
 
+  /**
+   * Call it before a `lineTo` of a path that is drawn a piece at a time with renders in between (the turtle).
+   * In PIXI 5 `moveTo` keeps the path waiting in `currentPath`, and every render calls `finishPoly()`: a
+   * path of one point (two numbers) is emptied, and a longer one is pushed into the geometry and
+   * `currentPath` becomes null. The next `lineTo` then goes on from nothing: from (0, 0) if the path is null, or
+   * from no point at all if it was emptied, so no line shows. If the path is gone, this starts it again at
+   * the point where the pen was (`lastX`, `lastY`). In PIXI 4 the path is on the Graphics itself and nothing is
+   * lost; it does nothing there.
+   */
+  def continuePath(gr: Graphics, lastX: Double, lastY: Double): Unit =
+    if (isV5) {
+      val path = dyn(gr).currentPath
+      val gone = js.isUndefined(path) || path == null || path.points.asInstanceOf[js.Array[Double]].length < 2
+      if (gone) gr.moveTo(lastX, lastY)
+    }
+
   /** Makes PIXI draw the parts again after their styles were changed. */
   def refresh(gr: Graphics): Unit = {
     val d = dyn(gr)
