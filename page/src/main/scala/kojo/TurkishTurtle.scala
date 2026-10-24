@@ -8,7 +8,7 @@ package kojo
 // `turtle0`. Picture { ... } swaps the global turtle for the picture's own turtle while its body runs, and
 // a wrapper bound to turtle0 would draw such a picture's lines on the canvas and leave the picture empty.
 //
-// Also the speeds, and through the traits it extends the colors, the numbers, the collections and the sketch
+// Also the speeds, and through the traits it extends the colors, the numbers, the collections, the notes and the sketch
 // drawing, with the names of desktop Kojo's Turkish layer.
 //
 // Only commands that TurtleAPI has are here. Others (home, towards, costumes, saved styles...) follow when
@@ -40,7 +40,10 @@ class TurkishTurtle(val englishTurtle: TurtleAPI, builtins: syntax.Builtins)(imp
     with kojo.tr.EşlemYöntemleri
     with kojo.tr.KümeYöntemleri
     with kojo.tr.KuyrukYöntemleri
-    with kojo.tr.YazıYöntemleri {
+    with kojo.tr.YazıYöntemleri
+    with kojo.tr.SesYöntemleri {
+  override protected def notaÇalar: kojo.NotePlayer = builtins.notePlayer
+
   // clearing
   def sil(): Unit      = englishTurtle.clear()
   def temizle(): Unit  = englishTurtle.cleari()
