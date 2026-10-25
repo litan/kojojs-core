@@ -16,8 +16,13 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
   private[kojo] val turtlePath = new PIXI.Graphics()
   private[kojo] val turtlePathPoints = ArrayBuffer[(Double, Double)]()
   var prevMoveTo: Option[Point] = None
+  // Where the pen is, for PixiCompat.continuePath: PIXI 5 forgets the path at a render
+  private var lastPathX = x
+  private var lastPathY = y
+
   private def turtlePathMoveTo(x: Double, y: Double): Unit = {
     turtlePath.moveTo(x, y)
+    lastPathX = x; lastPathY = y
     prevMoveTo = Some(Point(x, y))
     //    turtlePathPoints += ((x, y))
   }
@@ -28,7 +33,9 @@ class Turtle(x: Double, y: Double, forPic: Boolean = false)(implicit kojoWorld: 
       prevMoveTo = None
     }
 
+    PixiCompat.continuePath(turtlePath, lastPathX, lastPathY)
     turtlePath.lineTo(x, y)
+    lastPathX = x; lastPathY = y
     turtlePathPoints += ((x, y))
   }
 
